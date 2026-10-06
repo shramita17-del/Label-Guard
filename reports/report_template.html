@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LabelGuard AI Compliance Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+        h1 { color: #222; }
+        .verdict { font-size: 20px; font-weight: bold; padding: 10px; border-radius: 5px; margin-bottom: 20px; display: inline-block; }
+        .PASS { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .FAIL { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .REVIEW { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .annotated-img { max-width: 100%; margin-top: 10px; border: 1px solid #ccc; max-height: 500px; object-fit: contain; }
+        .evidence { font-size: 12px; color: #555; font-style: italic; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <h1>LabelGuard AI - Compliance Report</h1>
+    <p><strong>Scan ID:</strong> {{ report.scan_id }}</p>
+    <p><strong>Category:</strong> {{ report.category.value }}</p>
+    <p><strong>Generated At:</strong> {{ report.generated_at }}</p>
+    
+    <div class="verdict {{ report.overall_verdict.value }}">
+        Overall Verdict: {{ report.overall_verdict.value }}
+    </div>
+
+    {% if report.annotated_image_base64 %}
+    <h2>Annotated Scan</h2>
+    <img class="annotated-img" src="{{ report.annotated_image_base64 }}" alt="Annotated image showing compliance checks" />
+    {% endif %}
+
+    <h2>Check Results</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Rule Ref</th>
+            <th>Severity</th>
+            <th>Status</th>
+            <th>Reason / Evidence</th>
+        </tr>
+        {% for check in report.check_results %}
+        <tr class="{{ check.status.value }}">
+            <td>{{ check.check_id }}</td>
+            <td>{{ check.check_name }}</td>
+            <td>{{ check.rule_ref }}</td>
+            <td>{{ check.severity.value }}</td>
+            <td><strong>{{ check.status.value }}</strong></td>
+            <td>
+                {{ check.reason or "No reason provided" }}
+                {% if check.evidence_text %}
+                <div class="evidence">Evidence: "{{ check.evidence_text }}"</div>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

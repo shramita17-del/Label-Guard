@@ -1,0 +1,17 @@
+{
+    "10012011000168": {
+        "status": "Active",
+        "company_name": "Demo Foods Pvt Ltd",
+        "valid_upto": "2027-12-31"
+    },
+    "22721034000305": {
+        "status": "Active",
+        "company_name": "Hackathon Beverages",
+        "valid_upto": "2026-10-15"
+    },
+    "11219331000123": {
+        "status": "Inactive",
+        "company_name": "Old Foods",
+        "valid_upto": "2021-01-01"
+    }
+}

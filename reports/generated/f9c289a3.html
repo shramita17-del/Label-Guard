@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LabelGuard AI Compliance Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+        h1 { color: #222; }
+        .verdict { font-size: 20px; font-weight: bold; padding: 10px; border-radius: 5px; margin-bottom: 20px; display: inline-block; }
+        .PASS { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .FAIL { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .REVIEW { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .annotated-img { max-width: 100%; margin-top: 10px; border: 1px solid #ccc; max-height: 500px; object-fit: contain; }
+        .evidence { font-size: 12px; color: #555; font-style: italic; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <h1>LabelGuard AI - Compliance Report</h1>
+    <p><strong>Scan ID:</strong> f9c289a3</p>
+    <p><strong>Category:</strong> food_beverage</p>
+    <p><strong>Generated At:</strong> 2026-09-27T14:17:42.563714</p>
+    
+    <div class="verdict REVIEW">
+        Overall Verdict: REVIEW
+    </div>
+
+    
+    <h2>Annotated Scan</h2>
+    <img class="annotated-img" src="data:image/jpeg;base64,ZmFrZV9iYXNlNjRfZGF0YQ==" alt="Annotated image showing compliance checks" />
+    
+
+    <h2>Check Results</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Rule Ref</th>
+            <th>Severity</th>
+            <th>Status</th>
+            <th>Reason / Evidence</th>
+        </tr>
+        
+        <tr class="PASS">
+            <td>01</td>
+            <td>MRP</td>
+            <td>Rule_6_1_e</td>
+            <td>blocking</td>
+            <td><strong>PASS</strong></td>
+            <td>
+                MRP value and tax inclusive phrase found.
+                
+                <div class="evidence">Evidence: "Rs. 500 incl tax"</div>
+                
+            </td>
+        </tr>
+        
+        <tr class="REVIEW">
+            <td>02</td>
+            <td>Net Quantity</td>
+            <td>Rule_6_1_c</td>
+            <td>major</td>
+            <td><strong>REVIEW</strong></td>
+            <td>
+                OCR confidence below 85%.
+                
+            </td>
+        </tr>
+        
+        <tr class="REVIEW">
+            <td>03</td>
+            <td>Date of Mfg</td>
+            <td>Rule_6_1_d</td>
+            <td>major</td>
+            <td><strong>REVIEW</strong></td>
+            <td>
+                OCR confidence below 85%.
+                
+            </td>
+        </tr>
+        
+        <tr class="REVIEW">
+            <td>04</td>
+            <td>Country of Origin</td>
+            <td>Rule_6_1_aa</td>
+            <td>major</td>
+            <td><strong>REVIEW</strong></td>
+            <td>
+                OCR confidence below threshold.
+                
+            </td>
+        </tr>
+        
+        <tr class="REVIEW">
+            <td>F12</td>
+            <td>Veg/Non-Veg Mark</td>
+            <td>Veg_Mark_Rules</td>
+            <td>major</td>
+            <td><strong>REVIEW</strong></td>
+            <td>
+                CV detection confidence low.
+                
+            </td>
+        </tr>
+        
+        <tr class="PASS">
+            <td>F14</td>
+            <td>FSSAI License No.</td>
+            <td>FSSAI_Licensing</td>
+            <td>blocking</td>
+            <td><strong>PASS</strong></td>
+            <td>
+                Tier 3 (Cache): Verified active for Demo Foods Pvt Ltd
+                
+                <div class="evidence">Evidence: "10012011000168"</div>
+                
+            </td>
+        </tr>
+        
+    </table>
+</body>
+</html>

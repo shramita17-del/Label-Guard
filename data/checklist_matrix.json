@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "categories": {
+    "food_beverage": [
+      {"check_id": "F01", "name": "Exemption Pre-check", "rule_ref": "Rule_18", "severity": "blocking", "requirement": "Not exempt if qty <10g/10ml (non-tobacco), not hotel/restaurant fast food, not farm produce >50kg"},
+      {"check_id": "F02", "name": "Manufacturer/Packer/Importer", "rule_ref": "Rule_6_1_a", "severity": "major", "requirement": "Full name + registered address + 6-digit PIN"},
+      {"check_id": "F03", "name": "Country of Origin", "rule_ref": "Rule_6_1_aa", "severity": "major", "requirement": "Mandatory if imported"},
+      {"check_id": "F04", "name": "Generic/Common Name", "rule_ref": "Rule_6_1_b", "severity": "major", "requirement": "Clear identifiable product name, distinct from brand"},
+      {"check_id": "F05", "name": "Net Quantity", "rule_ref": "Rule_6_1_c", "severity": "major", "requirement": "Standard unit (g/kg/ml/l), accurate declaration"},
+      {"check_id": "F06", "name": "Standard Quantity Compliance", "rule_ref": "Second_Schedule", "severity": "major", "requirement": "If SKU is edible oil/vanaspati/baby food/tea/coffee/salt/etc., must match prescribed pack sizes"},
+      {"check_id": "F07", "name": "MRP", "rule_ref": "Rule_6_1_e", "severity": "blocking", "requirement": "Rs./₹ symbol + 'inclusive of all taxes' phrase present"},
+      {"check_id": "F08", "name": "Unit Sale Price Reconciliation", "rule_ref": "Rule_5", "severity": "minor", "requirement": "MRP ÷ net qty must mathematically reconcile"},
+      {"check_id": "F09", "name": "Date of Mfg/Pack/Import", "rule_ref": "Rule_6_1_d", "severity": "major", "requirement": "Valid format (MM/YYYY, DD-MM-YYYY, or MFD prefix)"},
+      {"check_id": "F10", "name": "Best Before / Use By", "rule_ref": "Rule_6_1_da", "severity": "major", "requirement": "Required where shelf-life is time-sensitive; Best Before alone is NOT a substitute for Expiry/Use By"},
+      {"check_id": "F11", "name": "Consumer Care Details", "rule_ref": "Rule_6_1_f", "severity": "major", "requirement": "Phone (10-digit) + email + postal address, all 3 present"},
+      {"check_id": "F12", "name": "Font-Height-to-Area Ratio", "rule_ref": "Rule_7_Table_1", "severity": "major", "requirement": "Per area-based slab; requires calibrated pixel-to-mm measurement"},
+      {"check_id": "F13", "name": "E-commerce Listing Match", "rule_ref": "Rule_6_10", "severity": "major", "requirement": "All fields except mfg date replicated on digital listing"},
+      {"check_id": "F14", "name": "FSSAI License No.", "rule_ref": "FSSAI_Licensing", "severity": "blocking", "requirement": "14-digit presence + syntax check (Tier 1); live FoSCoS verify (Tier 2/3)"},
+      {"check_id": "F15", "name": "Multi-piece/Combo Declaration", "rule_ref": "Rule_5", "severity": "minor", "requirement": "If sold as combo/multi-unit, main package carries full declaration"}
+    ],
+    "apparel_textile": [
+      {"check_id": "A01", "name": "Loose vs Pre-packed Pre-check", "rule_ref": "2022_Amendment", "severity": "blocking", "requirement": "If sold loose/open (not sealed) → fully exempt, stop pipeline here"},
+      {"check_id": "A02", "name": "Fiber Composition", "rule_ref": "Textile_Standards", "severity": "major", "requirement": "Percentages must sum to exactly 100% (99%/101% flagged as math violation)"},
+      {"check_id": "A03", "name": "Size in Metric", "rule_ref": "Legal_Metrology", "severity": "major", "requirement": "cm/inches mandatory; S/M/L is additional only, not a substitute"},
+      {"check_id": "A04", "name": "Generic/Common Name", "rule_ref": "Rule_6_1_b", "severity": "major", "requirement": "e.g. 'Men's T-Shirt', 'Saree' — matched against apparel taxonomy dictionary"},
+      {"check_id": "A05", "name": "Manufacturer/Packer/Importer", "rule_ref": "Rule_6_1_a", "severity": "major", "requirement": "Name + address + PIN"},
+      {"check_id": "A06", "name": "MRP", "rule_ref": "Rule_6_1_e", "severity": "blocking", "requirement": "Rs./₹ + 'inclusive of all taxes'"},
+      {"check_id": "A07", "name": "Unit Sale Price", "rule_ref": "Rule_5", "severity": "minor", "requirement": "If multi-piece pack, per-piece price reconciliation"},
+      {"check_id": "A08", "name": "Consumer Care Details", "rule_ref": "Rule_6_1_f", "severity": "major", "requirement": "Phone + email + postal address"},
+      {"check_id": "A09", "name": "Date of Mfg/Pack/Import", "rule_ref": "Rule_6_1_d", "severity": "major", "requirement": "Valid format"},
+      {"check_id": "A10", "name": "Country of Origin", "rule_ref": "Rule_6_1_aa", "severity": "major", "requirement": "Mandatory if imported"},
+      {"check_id": "A11", "name": "E-commerce Listing Match", "rule_ref": "Rule_6_10", "severity": "major", "requirement": "Digital listing mirrors physical label (except mfg date)"},
+      {"check_id": "A12", "name": "Font-Height-to-Area Ratio", "rule_ref": "Rule_7_Table_1", "severity": "minor", "requirement": "STATUS: verify exact applicability clause for apparel before hardcoding as full bypass — flagged gap"}
+    ],
+    "general_retail": [
+      {"check_id": "G01", "name": "Exemption Pre-check", "rule_ref": "Rule_18", "severity": "blocking", "requirement": "Not exempt if qty <10g/10ml (non-tobacco) etc."},
+      {"check_id": "G02", "name": "Manufacturer/Packer/Importer", "rule_ref": "Rule_6_1_a", "severity": "major", "requirement": "Full name + address + PIN"},
+      {"check_id": "G03", "name": "Country of Origin", "rule_ref": "Rule_6_1_aa", "severity": "major", "requirement": "Mandatory if imported"},
+      {"check_id": "G04", "name": "Generic/Common Name", "rule_ref": "Rule_6_1_b", "severity": "major", "requirement": "Clear product identity, distinct from brand"},
+      {"check_id": "G05", "name": "Net Quantity", "rule_ref": "Rule_6_1_c", "severity": "major", "requirement": "Standard unit, or 'number' for countable goods"},
+      {"check_id": "G06", "name": "Standard Quantity Compliance", "rule_ref": "Second_Schedule", "severity": "minor", "requirement": "If SKU falls under Second Schedule list (rare in this bucket, e.g. cement in bags)"},
+      {"check_id": "G07", "name": "MRP", "rule_ref": "Rule_6_1_e", "severity": "blocking", "requirement": "Rs./₹ + 'inclusive of all taxes'"},
+      {"check_id": "G08", "name": "Unit Sale Price", "rule_ref": "Rule_5", "severity": "minor", "requirement": "Reconciliation check"},
+      {"check_id": "G09", "name": "Date of Mfg/Pack/Import", "rule_ref": "Rule_6_1_d", "severity": "major", "requirement": "Valid format"},
+      {"check_id": "G10", "name": "Consumer Care Details", "rule_ref": "Rule_6_1_f", "severity": "major", "requirement": "Phone + email + postal address"},
+      {"check_id": "G11", "name": "Font-Height-to-Area Ratio", "rule_ref": "Rule_7_Table_1", "severity": "major", "requirement": "Per area-based slab"},
+      {"check_id": "G12", "name": "E-commerce Listing Match", "rule_ref": "Rule_6_10", "severity": "major", "requirement": "Digital listing consistency"},
+      {"check_id": "G13", "name": "Multi-piece/Combo Declaration", "rule_ref": "Rule_5", "severity": "minor", "requirement": "For bundled electronics/hardware kits"}
+    ]
+  },
+  "category_routing_hints": {
+    "food_beverage": ["nutrition table detected", "FSSAI logo detected", "veg/non-veg mark detected"],
+    "apparel_textile": ["fabric composition text pattern", "size tag pattern (S/M/L/XL)"],
+    "general_retail": ["default/catch-all when no strong signal for above two"]
+  }
+}

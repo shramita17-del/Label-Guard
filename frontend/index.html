@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LabelGuard AI - Scanner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes scan {
+            0% { transform: translateY(-50px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(150px); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-800">
+    <div class="max-w-6xl mx-auto py-10 px-4">
+        <h1 class="text-4xl font-bold text-center text-blue-700 mb-2">LabelGuard AI</h1>
+        <p class="text-center text-gray-600 mb-8 font-medium">Automated Packaging Compliance Verification (SIH 26034)</p>
+        
+        <div class="bg-white p-8 rounded-lg shadow-sm border mb-8">
+            <!-- Tabs for Upload vs Webcam -->
+            <div class="flex border-b mb-6">
+                <button id="tabUpload" class="px-6 py-3 font-semibold text-blue-600 border-b-2 border-blue-600 hover:bg-blue-50 transition">File Upload</button>
+                <button id="tabWebcam" class="px-6 py-3 font-semibold text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition">Live Scanner</button>
+            </div>
+
+            <!-- Upload Section -->
+            <form id="uploadForm" class="flex flex-col items-center">
+                <label class="w-full md:w-2/3 flex flex-col items-center px-4 py-8 bg-gray-50 rounded-lg border-2 border-dashed border-blue-300 cursor-pointer hover:bg-blue-50 hover:border-blue-500 ease-linear transition-all duration-150">
+                    <svg class="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    <span class="mt-4 text-base font-medium text-gray-700" id="fileName">Select a packaging image or drag and drop</span>
+                    <span class="mt-1 text-sm text-gray-400">PNG, JPG up to 10MB</span>
+                    <input type='file' id="fileInput" class="hidden" accept="image/*" />
+                </label>
+                <button type="submit" id="submitBtn" class="mt-6 px-8 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition shadow-md w-full md:w-2/3 disabled:opacity-50">
+                    Scan File & Verify
+                </button>
+            </form>
+
+            <!-- Webcam Section -->
+            <div id="webcamSection" class="hidden flex flex-col items-center">
+                <div class="relative w-full md:w-2/3 bg-black rounded-lg overflow-hidden shadow-inner aspect-video">
+                    <video id="webcamVideo" class="w-full h-full object-cover" autoplay playsinline></video>
+                    
+                    <!-- Targeting Overlay -->
+                    <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+                        <div class="w-3/4 h-3/4 border-2 border-blue-400/50 relative">
+                            <!-- Corners -->
+                            <div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-blue-500"></div>
+                            <div class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-blue-500"></div>
+                            <div class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-blue-500"></div>
+                            <div class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-blue-500"></div>
+                            <!-- Center text -->
+                            <div class="absolute inset-0 flex flex-col items-center justify-center opacity-70">
+                                <span class="text-white font-bold tracking-widest uppercase text-sm bg-black/40 px-3 py-1 rounded">Align Label Here</span>
+                                <!-- Scanning laser animation -->
+                                <div class="w-full h-0.5 bg-red-500/80 shadow-[0_0_8px_2px_rgba(239,68,68,0.6)] animate-[scan_2s_ease-in-out_infinite]"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <canvas id="webcamCanvas" class="hidden"></canvas>
+                </div>
+                <div class="flex gap-4 w-full md:w-2/3 mt-6">
+                    <button id="startCameraBtn" class="flex-1 px-4 py-3 bg-gray-800 text-white font-bold rounded-lg hover:bg-gray-900 transition shadow">
+                        Start Camera
+                    </button>
+                    <button id="captureBtn" class="flex-1 px-4 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition shadow hidden">
+                        Capture & Scan
+                    </button>
+                </div>
+            </div>
+
+            <div id="loading" class="hidden text-center mt-8">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
+                <p class="text-lg text-blue-600 font-medium">Running ML Pipeline & Rule Engine...</p>
+            </div>
+        </div>
+
+        <div id="results" class="hidden bg-white p-8 rounded-lg shadow-sm border">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-4 border-b">
+                <h2 class="text-2xl font-bold">Compliance Report</h2>
+                <div class="mt-4 md:mt-0 flex items-center gap-3">
+                    <span class="text-sm text-gray-500 font-semibold uppercase">Overall Verdict:</span>
+                    <span id="verdictBadge" class="px-4 py-2 rounded-lg font-bold text-white uppercase tracking-wide"></span>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                <div class="bg-gray-50 p-4 rounded-lg border">
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Annotated Image (OpenCV)</h3>
+                    <img id="annotatedImage" class="w-full rounded shadow-sm bg-white" alt="Annotated Label" />
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Scan Metadata</h3>
+                    <div class="bg-gray-50 p-6 rounded-lg border space-y-4">
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-600 font-medium">Scan ID</span>
+                            <span id="scanId" class="font-mono text-gray-900"></span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-600 font-medium">Detected Category</span>
+                            <span id="scanCategory" class="font-semibold text-blue-700 uppercase"></span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-600 font-medium">Scan Timestamp</span>
+                            <span id="scanTime" class="text-gray-900"></span>
+                        </div>
+                        <div class="pt-4">
+                            <a id="downloadPdfBtn" href="#" class="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-800">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                Download WeasyPrint PDF (See Backend output folder)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Rule Engine Verifications</h3>
+            <div class="overflow-x-auto rounded-lg border">
+                <table class="min-w-full bg-white text-left text-sm">
+                    <thead class="bg-gray-50 border-b">
+                        <tr>
+                            <th class="py-3 px-4 font-semibold text-gray-700">Check Definition</th>
+                            <th class="py-3 px-4 font-semibold text-gray-700">Severity</th>
+                            <th class="py-3 px-4 font-semibold text-gray-700">Status</th>
+                            <th class="py-3 px-4 font-semibold text-gray-700">Reasoning & ML Evidence</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rulesTableBody" class="divide-y"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('fileName');
+        
+        // Tab switching logic
+        const tabUpload = document.getElementById('tabUpload');
+        const tabWebcam = document.getElementById('tabWebcam');
+        const uploadForm = document.getElementById('uploadForm');
+        const webcamSection = document.getElementById('webcamSection');
+        
+        tabUpload.addEventListener('click', () => {
+            tabUpload.classList.add('border-b-2', 'text-blue-600');
+            tabUpload.classList.remove('text-gray-500');
+            tabWebcam.classList.remove('border-b-2', 'text-blue-600');
+            tabWebcam.classList.add('text-gray-500');
+            uploadForm.classList.remove('hidden');
+            uploadForm.classList.add('flex');
+            webcamSection.classList.add('hidden');
+            webcamSection.classList.remove('flex');
+            stopCamera();
+        });
+
+        tabWebcam.addEventListener('click', () => {
+            tabWebcam.classList.add('border-b-2', 'text-blue-600');
+            tabWebcam.classList.remove('text-gray-500');
+            tabUpload.classList.remove('border-b-2', 'text-blue-600');
+            tabUpload.classList.add('text-gray-500');
+            webcamSection.classList.remove('hidden');
+            webcamSection.classList.add('flex');
+            uploadForm.classList.add('hidden');
+            uploadForm.classList.remove('flex');
+        });
+
+        // Webcam logic
+        const video = document.getElementById('webcamVideo');
+        const canvas = document.getElementById('webcamCanvas');
+        const startCameraBtn = document.getElementById('startCameraBtn');
+        const captureBtn = document.getElementById('captureBtn');
+        let stream = null;
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                video.srcObject = stream;
+                startCameraBtn.classList.add('hidden');
+                captureBtn.classList.remove('hidden');
+            } catch (err) {
+                alert("Error accessing camera: " + err.message);
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+                startCameraBtn.classList.remove('hidden');
+                captureBtn.classList.add('hidden');
+            }
+        }
+
+        startCameraBtn.addEventListener('click', startCamera);
+
+        // Helper to trigger the backend API
+        async function runScanPipeline(formData) {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+
+            try {
+                const res = await fetch('/scan', { method: 'POST', body: formData });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    displayResults(data);
+                } else {
+                    alert("Error processing scan: " + (data.detail || "Unknown error"));
+                }
+            } catch (err) {
+                alert("Network error: " + err);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        // Handle Webcam Capture
+        captureBtn.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            canvas.toBlob((blob) => {
+                const formData = new FormData();
+                formData.append('file', blob, 'webcam_capture.jpg');
+                runScanPipeline(formData);
+                // Optional: Stop camera after capture
+                // stopCamera();
+            }, 'image/jpeg');
+        });
+
+        // Handle File Upload
+        fileInput.addEventListener('change', (e) => {
+            if(e.target.files.length > 0) {
+                fileNameDisplay.textContent = e.target.files[0].name;
+            } else {
+                fileNameDisplay.textContent = 'Select a packaging image or drag and drop';
+            }
+        });
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!fileInput.files[0]) return;
+            document.getElementById('submitBtn').disabled = true;
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            await runScanPipeline(formData);
+            
+            document.getElementById('submitBtn').disabled = false;
+        });
+
+        function displayResults(data) {
+            document.getElementById('results').classList.remove('hidden');
+            
+            // Verdict Badge
+            const badge = document.getElementById('verdictBadge');
+            badge.textContent = data.overall_verdict;
+            badge.className = 'px-4 py-2 rounded-lg font-bold text-white uppercase tracking-wide ' + 
+                (data.overall_verdict === 'PASS' ? 'bg-green-500' : 
+                 data.overall_verdict === 'FAIL' ? 'bg-red-500' : 'bg-yellow-500');
+
+            // Details
+            document.getElementById('scanId').textContent = data.scan_id;
+            document.getElementById('scanCategory').textContent = data.category.replace('_', ' ');
+            document.getElementById('scanTime').textContent = new Date(data.generated_at).toLocaleString();
+
+            // Image
+            if (data.annotated_image_base64) {
+                document.getElementById('annotatedImage').src = data.annotated_image_base64;
+            }
+
+            // Table
+            const tbody = document.getElementById('rulesTableBody');
+            tbody.innerHTML = '';
+            
+            data.check_results.forEach(check => {
+                const tr = document.createElement('tr');
+                
+                const statusBg = check.status === 'PASS' ? 'bg-green-100 text-green-800' : 
+                                 check.status === 'FAIL' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800';
+                
+                let reasonHtml = `<p class="text-gray-800">${check.reason || 'No specific reason logged.'}</p>`;
+                if (check.evidence_text) {
+                    reasonHtml += `<p class="text-xs text-gray-500 italic mt-1 bg-gray-50 p-2 rounded border border-gray-100">OCR Evidence: "${check.evidence_text}"</p>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 align-top">
+                        <div class="font-bold text-gray-800">${check.check_name}</div>
+                        <div class="text-xs text-gray-400 mt-1 uppercase tracking-wider">${check.check_id} &bull; ${check.rule_ref}</div>
+                    </td>
+                    <td class="py-3 px-4 align-top">
+                        <span class="text-xs font-semibold uppercase text-gray-600">${check.severity}</span>
+                    </td>
+                    <td class="py-3 px-4 align-top">
+                        <span class="px-2 py-1 rounded text-xs font-bold ${statusBg}">${check.status}</span>
+                    </td>
+                    <td class="py-3 px-4 align-top">${reasonHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
