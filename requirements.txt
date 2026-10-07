@@ -1,0 +1,34 @@
+# ===================================================
+# LabelGuard AI — Python Dependencies (SIH 26034)
+# ===================================================
+
+# Core Backend & Server
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.12
+pydantic>=2.9.0
+jinja2>=3.1.0
+sqlalchemy>=2.0.0
+
+# Image Processing & Text Matching
+opencv-python-headless>=4.10.0
+numpy>=1.26.0
+pillow>=10.0.0
+rapidfuzz>=3.9.0
+
+# Report & PDF Generation
+reportlab>=4.2.0
+weasyprint>=62.0.0
+
+# Machine Learning & OCR (Live inference)
+ultralytics>=8.3.0
+# Note: For PaddlePaddle / PaddleOCR on Windows, Python <= 3.12 is recommended
+# paddlepaddle
+# paddleocr
+
+# Web Scraping & HTTP Client
+httpx>=0.27.0
+# playwright>=1.47.0
+
+# Testing
+pytest>=8.0.0

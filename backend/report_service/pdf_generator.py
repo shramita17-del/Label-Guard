@@ -4,8 +4,8 @@ from backend.schemas import ComplianceReport
 
 try:
     from weasyprint import HTML
-except ImportError:
-    HTML = None # Handled gracefully for dev/hackathon environments without GTK+ dependencies
+except (ImportError, OSError, Exception):
+    HTML = None # Handled gracefully for dev/hackathon environments without GTK+/Pango dependencies
 
 def generate_pdf_report(report: ComplianceReport, template_dir: str, output_path: str) -> str:
     """

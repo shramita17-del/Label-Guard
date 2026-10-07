@@ -49,13 +49,14 @@ class TestOCRService(unittest.TestCase):
         self.assertEqual(regions[0].bbox.x_min, 10)
         self.assertEqual(regions[0].bbox.y_max, 200)
 
-    def test_paddle_extractor(self):
+    @patch('backend.ocr_service.extractor.cv2.imread')
+    def test_paddle_extractor(self, mock_imread):
         extractor = OCRExtractor()
         
         # Mock image dimensions to prevent out-of-bounds crop errors in logic
         mock_img = MagicMock()
         mock_img.shape = (1000, 1000, 3)
-        sys.modules['cv2'].imread.return_value = mock_img
+        mock_imread.return_value = mock_img
         
         # Mock PaddleOCR return format: [[ [box], ('text', conf) ]]
         extractor.ocr.ocr.return_value = [[

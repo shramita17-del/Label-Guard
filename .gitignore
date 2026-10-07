@@ -21,3 +21,8 @@ node_modules/
 # OS
 .DS_Store
 Thumbs.db
+
+# App outputs & scratch
+scratch/
+reports/generated/
+*.pt

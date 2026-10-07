@@ -3,24 +3,25 @@ echo ===================================================
 echo   LabelGuard AI - Machine Learning Setup Script
 echo ===================================================
 echo.
-echo This script will install the heavy ML dependencies required 
-echo for Real-Time YOLOv8 Object Detection and PaddleOCR Text Extraction.
+echo This script will install the ML dependencies required 
+echo for YOLOv8 Object Detection and PaddleOCR Text Extraction.
 echo.
-echo Installing Ultralytics (YOLOv8)...
+
+echo [1/3] Installing Ultralytics (YOLOv8)...
 pip install ultralytics
 
 echo.
-echo Installing PaddleOCR and its dependencies...
-pip install paddlepaddle paddleocr
+echo [2/3] Downloading YOLOv8 Nano weights (yolov8n.pt)...
+python -c "from ultralytics import YOLO; model = YOLO('yolov8n.pt'); print('YOLOv8 weights ready!')"
 
 echo.
-echo Downloading YOLOv8 Nano weights (yolov8n.pt)...
-python -c "from ultralytics import YOLO; model = YOLO('yolov8n.pt'); print('Weights downloaded successfully!')"
+echo [3/3] Attempting PaddleOCR installation...
+echo Note: On Windows + Python 3.13, pre-built PaddlePaddle wheels may not be available on PyPI yet.
+pip install paddlepaddle paddleocr || echo (PaddleOCR optional install skipped or needs Python 3.10-3.12 wheel)
 
 echo.
 echo ===================================================
-echo Setup Complete! 
-echo The FastAPI server will now use live models instead of mocks.
-echo You can run the server using: uvicorn backend.main:app --reload
+echo Setup Complete!
+echo Start the server with: uvicorn backend.main:app
 echo ===================================================
 pause
