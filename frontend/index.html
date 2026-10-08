@@ -3,154 +3,1015 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LabelGuard AI - Scanner</title>
+    <title>LabelGuard AI - Automated Packaging Compliance Verification</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        gov: {
+                            50: '#f0f5ff',
+                            100: '#e0ecff',
+                            200: '#c7dcfe',
+                            600: '#1e40af',
+                            700: '#1d3557',
+                            800: '#0f172a',
+                            900: '#0b132b',
+                            gold: '#d97706',
+                            goldlight: '#fef3c7'
+                        },
+                        consumer: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         @keyframes scan {
             0% { transform: translateY(-50px); opacity: 0; }
             10% { opacity: 1; }
             90% { opacity: 1; }
-            100% { transform: translateY(150px); opacity: 0; }
+            100% { transform: translateY(160px); opacity: 0; }
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .animate-scan-line {
+            animation: scan 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen text-gray-800">
-    <div class="max-w-6xl mx-auto py-10 px-4">
-        <h1 class="text-4xl font-bold text-center text-blue-700 mb-2">LabelGuard AI</h1>
-        <p class="text-center text-gray-600 mb-8 font-medium">Automated Packaging Compliance Verification (SIH 26034)</p>
-        
-        <div class="bg-white p-8 rounded-lg shadow-sm border mb-8">
-            <!-- Tabs for Upload vs Webcam -->
-            <div class="flex border-b mb-6">
-                <button id="tabUpload" class="px-6 py-3 font-semibold text-blue-600 border-b-2 border-blue-600 hover:bg-blue-50 transition">File Upload</button>
-                <button id="tabWebcam" class="px-6 py-3 font-semibold text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition">Live Scanner</button>
-            </div>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
 
-            <!-- Upload Section -->
-            <form id="uploadForm" class="flex flex-col items-center">
-                <label class="w-full md:w-2/3 flex flex-col items-center px-4 py-8 bg-gray-50 rounded-lg border-2 border-dashed border-blue-300 cursor-pointer hover:bg-blue-50 hover:border-blue-500 ease-linear transition-all duration-150">
-                    <svg class="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- GLOBAL TOP NAVIGATION -->
+    <header class="sticky top-0 z-40 glass-header border-b border-slate-200/80 transition-all duration-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3 flex items-center justify-between">
+            <!-- Brand Logo & Title -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-indigo-600 to-sky-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                    <span class="mt-4 text-base font-medium text-gray-700" id="fileName">Select a packaging image or drag and drop</span>
-                    <span class="mt-1 text-sm text-gray-400">PNG, JPG up to 10MB</span>
-                    <input type='file' id="fileInput" class="hidden" accept="image/*" />
-                </label>
-                <button type="submit" id="submitBtn" class="mt-6 px-8 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition shadow-md w-full md:w-2/3 disabled:opacity-50">
-                    Scan File & Verify
-                </button>
-            </form>
-
-            <!-- Webcam Section -->
-            <div id="webcamSection" class="hidden flex flex-col items-center">
-                <div class="relative w-full md:w-2/3 bg-black rounded-lg overflow-hidden shadow-inner aspect-video">
-                    <video id="webcamVideo" class="w-full h-full object-cover" autoplay playsinline></video>
-                    
-                    <!-- Targeting Overlay -->
-                    <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
-                        <div class="w-3/4 h-3/4 border-2 border-blue-400/50 relative">
-                            <!-- Corners -->
-                            <div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-blue-500"></div>
-                            <div class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-blue-500"></div>
-                            <div class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-blue-500"></div>
-                            <div class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-blue-500"></div>
-                            <!-- Center text -->
-                            <div class="absolute inset-0 flex flex-col items-center justify-center opacity-70">
-                                <span class="text-white font-bold tracking-widest uppercase text-sm bg-black/40 px-3 py-1 rounded">Align Label Here</span>
-                                <!-- Scanning laser animation -->
-                                <div class="w-full h-0.5 bg-red-500/80 shadow-[0_0_8px_2px_rgba(239,68,68,0.6)] animate-[scan_2s_ease-in-out_infinite]"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <canvas id="webcamCanvas" class="hidden"></canvas>
-                </div>
-                <div class="flex gap-4 w-full md:w-2/3 mt-6">
-                    <button id="startCameraBtn" class="flex-1 px-4 py-3 bg-gray-800 text-white font-bold rounded-lg hover:bg-gray-900 transition shadow">
-                        Start Camera
-                    </button>
-                    <button id="captureBtn" class="flex-1 px-4 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition shadow hidden">
-                        Capture & Scan
-                    </button>
-                </div>
-            </div>
-
-            <div id="loading" class="hidden text-center mt-8">
-                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
-                <p class="text-lg text-blue-600 font-medium">Running ML Pipeline & Rule Engine...</p>
-            </div>
-        </div>
-
-        <div id="results" class="hidden bg-white p-8 rounded-lg shadow-sm border">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-4 border-b">
-                <h2 class="text-2xl font-bold">Compliance Report</h2>
-                <div class="mt-4 md:mt-0 flex items-center gap-3">
-                    <span class="text-sm text-gray-500 font-semibold uppercase">Overall Verdict:</span>
-                    <span id="verdictBadge" class="px-4 py-2 rounded-lg font-bold text-white uppercase tracking-wide"></span>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-                <div class="bg-gray-50 p-4 rounded-lg border">
-                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Annotated Image (OpenCV)</h3>
-                    <img id="annotatedImage" class="w-full rounded shadow-sm bg-white" alt="Annotated Label" />
                 </div>
                 <div>
-                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Scan Metadata</h3>
-                    <div class="bg-gray-50 p-6 rounded-lg border space-y-4">
-                        <div class="flex justify-between border-b pb-2">
-                            <span class="text-gray-600 font-medium">Scan ID</span>
-                            <span id="scanId" class="font-mono text-gray-900"></span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">LabelGuard AI</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 uppercase tracking-wider">SIH 26034</span>
+                    </div>
+                    <p class="text-xs text-slate-500 font-medium hidden sm:block">Automated Packaging Compliance Verification Engine</p>
+                </div>
+            </div>
+
+            <!-- Auth Status & Controls -->
+            <div id="navUserBar" class="flex items-center gap-3">
+                <!-- Logged Out State View -->
+                <div id="navLoggedOutState" class="flex items-center gap-2">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                        Login Required
+                    </span>
+                </div>
+
+                <!-- Logged In State View (Hidden by default) -->
+                <div id="navLoggedInState" class="hidden flex items-center gap-3">
+                    <!-- Role Pill -->
+                    <div id="navRoleBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium shadow-sm transition">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- User Actions -->
+                    <div class="flex items-center gap-2">
+                        <button id="switchRoleBtn" title="Switch between Customer and Inspector" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                            </svg>
+                            Switch Role
+                        </button>
+                        <button id="logoutBtn" title="Sign Out" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 text-xs font-semibold transition flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BODY WRAPPER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ========================================================================= -->
+        <!-- VIEW 1: AUTHENTICATION GATEWAY (2-WAY LOGIN: CUSTOMER VS GOVT INSPECTOR) -->
+        <!-- ========================================================================= -->
+        <section id="authSection" class="transition-all duration-300">
+            <!-- Hero Title -->
+            <div class="text-center max-w-3xl mx-auto mb-10 pt-4">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-semibold mb-4 shadow-sm">
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    Official Portal Authentication Gateway
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-4">
+                    Choose Your Access Mode
+                </h1>
+                <p class="text-base sm:text-lg text-slate-600 font-normal leading-relaxed">
+                    Select your credentials below to enter the LabelGuard compliance workspace. 
+                    Consumers verify product safety & pricing, while Government Inspectors access legal enforcement audit features.
+                </p>
+            </div>
+
+            <!-- Role Selector Tabs -->
+            <div class="max-w-xl mx-auto mb-8 bg-slate-200/70 p-1.5 rounded-2xl flex gap-1 shadow-inner">
+                <button id="tabRoleConsumer" type="button" class="flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2.5 transition-all duration-200 bg-white text-emerald-700 shadow-sm">
+                    <span class="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7 7z"></path>
+                        </svg>
+                    </span>
+                    <span>Normal Customer</span>
+                </button>
+                <button id="tabRoleInspector" type="button" class="flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2.5 transition-all duration-200 text-slate-600 hover:text-slate-900">
+                    <span class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </span>
+                    <span>Government Inspector</span>
+                </button>
+            </div>
+
+            <!-- CARD CONTAINER -->
+            <div class="max-w-2xl mx-auto">
+                
+                <!-- CARD 1: CUSTOMER LOGIN -->
+                <div id="cardConsumerLogin" class="glass-panel border border-emerald-200/80 rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden transition-all duration-300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <!-- Header -->
+                    <div class="flex items-start justify-between pb-6 border-b border-emerald-100 mb-6">
+                        <div>
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                Citizen & Consumer Portal
+                            </div>
+                            <h2 class="text-2xl font-bold text-slate-900">Sign In as Customer</h2>
+                            <p class="text-sm text-slate-500 mt-1">Scan retail packages to verify MRP, expiry date, allergen notices, and fair packaging standards.</p>
                         </div>
-                        <div class="flex justify-between border-b pb-2">
-                            <span class="text-gray-600 font-medium">Detected Category</span>
-                            <span id="scanCategory" class="font-semibold text-blue-700 uppercase"></span>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-100/80 text-emerald-700 flex items-center justify-center shrink-0 shadow-sm">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
                         </div>
-                        <div class="flex justify-between border-b pb-2">
-                            <span class="text-gray-600 font-medium">Scan Timestamp</span>
-                            <span id="scanTime" class="text-gray-900"></span>
+                    </div>
+
+                    <!-- Customer Form -->
+                    <form id="formConsumerAuth" class="space-y-4">
+                        <!-- Inline Error Alert -->
+                        <div id="consumerAuthError" class="hidden p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5">
+                            <svg class="w-4 h-4 text-red-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span id="consumerErrorText">Invalid credentials. Please use the authorized dummy login.</span>
                         </div>
-                        <div class="pt-4">
-                            <a id="downloadPdfBtn" href="#" class="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-800">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                Download WeasyPrint PDF (See Backend output folder)
-                            </a>
+
+                        <!-- Dummy Credentials Reference Box -->
+                        <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 text-emerald-900 text-xs">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-bold flex items-center gap-1.5 text-emerald-800">
+                                    <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                                    Authorized Dummy Credentials:
+                                </span>
+                                <span class="text-[10px] uppercase font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Required for Login</span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 font-mono text-[11px] text-emerald-800 mt-1.5">
+                                <div class="bg-white/80 px-2 py-1 rounded border border-emerald-100">Email: <span class="font-bold text-slate-800">customer@labelguard.com</span></div>
+                                <div class="bg-white/80 px-2 py-1 rounded border border-emerald-100">Password: <span class="font-bold text-slate-800">Customer@123</span></div>
+                            </div>
                         </div>
+
+                        <div>
+                            <label for="consumerEmail" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email or Mobile Number</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                                    </svg>
+                                </div>
+                                <input type="text" id="consumerEmail" required placeholder="customer@labelguard.com" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-medium transition" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label for="consumerPassword" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Access Password / PIN</label>
+                                <span class="text-xs text-emerald-600 font-semibold cursor-pointer hover:underline">Forgot?</span>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                    </svg>
+                                </div>
+                                <input type="password" id="consumerPassword" required placeholder="••••••••" class="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-medium transition" />
+                                <button type="button" onclick="togglePasswordVisibility('consumerPassword')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-xs pt-1 text-slate-600">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="consumerRemember" checked class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4" />
+                                <span>Remember my login</span>
+                            </label>
+                            <span class="text-slate-400">Citizen Protection Act 2019</span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="pt-2">
+                            <button type="submit" id="btnConsumerSubmit" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-sm hover:from-emerald-700 hover:to-teal-700 active:scale-[0.99] transition shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
+                                <span>Sign In to Consumer Workspace</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Feature Badges -->
+                    <div class="mt-6 pt-5 border-t border-slate-100 grid grid-cols-3 gap-2 text-center">
+                        <div class="p-2 rounded-lg bg-slate-50 border border-slate-100">
+                            <span class="block text-[11px] font-bold text-slate-700">MRP Checker</span>
+                            <span class="text-[10px] text-slate-400">Fair Price Check</span>
+                        </div>
+                        <div class="p-2 rounded-lg bg-slate-50 border border-slate-100">
+                            <span class="block text-[11px] font-bold text-slate-700">Expiry Alert</span>
+                            <span class="text-[10px] text-slate-400">Freshness Safety</span>
+                        </div>
+                        <div class="p-2 rounded-lg bg-slate-50 border border-slate-100">
+                            <span class="block text-[11px] font-bold text-slate-700">Helpline 1915</span>
+                            <span class="text-[10px] text-slate-400">Grievance Support</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 2: GOVERNMENT INSPECTOR LOGIN -->
+                <div id="cardInspectorLogin" class="hidden glass-panel border border-blue-300/80 rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden transition-all duration-300">
+                    <div class="absolute top-0 right-0 w-36 h-36 bg-blue-600/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <!-- Header -->
+                    <div class="flex items-start justify-between pb-6 border-b border-blue-100 mb-6">
+                        <div>
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-900 text-xs font-bold uppercase tracking-wider mb-2">
+                                <span class="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span>
+                                Regulatory & Enforcement Wing
+                            </div>
+                            <h2 class="text-2xl font-bold text-slate-900">Government Inspector Login</h2>
+                            <p class="text-sm text-slate-500 mt-1">Authorized for Legal Metrology Officers, FSSAI Food Safety Officers, and State Enforcement Wings.</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-blue-900 text-amber-400 flex items-center justify-center shrink-0 shadow-sm">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Inspector Form -->
+                    <form id="formInspectorAuth" class="space-y-4">
+                        <!-- Inline Error Alert -->
+                        <div id="inspectorAuthError" class="hidden p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5">
+                            <svg class="w-4 h-4 text-red-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span id="inspectorErrorText">Access Denied: Invalid Officer ID or Security Key.</span>
+                        </div>
+
+                        <!-- Dummy Credentials Reference Box -->
+                        <div class="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200/80 text-blue-950 text-xs">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-bold flex items-center gap-1.5 text-blue-900">
+                                    <svg class="w-3.5 h-3.5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                    Authorized Official Dummy Credentials:
+                                </span>
+                                <span class="text-[10px] uppercase font-bold text-blue-800 bg-blue-100 px-2 py-0.5 rounded">Enforcement Only</span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 font-mono text-[11px] text-blue-950 mt-1.5">
+                                <div class="bg-white/80 px-2 py-1 rounded border border-blue-100">Officer ID: <span class="font-bold text-slate-800">GOV-LM-4821</span></div>
+                                <div class="bg-white/80 px-2 py-1 rounded border border-blue-100">Security Key: <span class="font-bold text-slate-800">Inspector@2026</span></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="inspectorId" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Official Officer ID</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="inspectorId" required placeholder="GOV-LM-4821" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-mono font-medium transition" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="inspectorDept" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Department / Wing</label>
+                                <select id="inspectorDept" class="w-full px-3.5 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium transition bg-white">
+                                    <option value="Legal Metrology (Dept of Consumer Affairs)">Legal Metrology (Dept of Consumer Affairs)</option>
+                                    <option value="FSSAI Food Safety Wing">FSSAI Enforcement Directorate</option>
+                                    <option value="State Weights & Measures">State Weights & Measures Division</option>
+                                    <option value="Central Customs & Packaging Cell">Customs & Import Packaging Cell</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label for="inspectorPasscode" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Official Security Key / Token</label>
+                                <span class="text-xs text-blue-700 font-semibold cursor-pointer hover:underline">Verify Token</span>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                    </svg>
+                                </div>
+                                <input type="password" id="inspectorPasscode" required placeholder="••••••••••••" class="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium transition" />
+                                <button type="button" onclick="togglePasswordVisibility('inspectorPasscode')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="inspectorJurisdiction" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Enforcement Circle / District</label>
+                            <input type="text" id="inspectorJurisdiction" value="Northern Circle - Zone 4 (Delhi NCR)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 text-xs text-slate-700" />
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="pt-2">
+                            <button type="submit" id="btnInspectorSubmit" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 text-white font-bold text-sm hover:opacity-95 active:scale-[0.99] transition shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                                <span>Authorize Official Inspector Terminal</span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Legal Framework Disclaimer -->
+                    <div class="mt-6 pt-4 border-t border-slate-100 text-center">
+                        <p class="text-[11px] text-slate-500 font-medium">
+                            Authorized under Rule 6(1) of Legal Metrology (Packaged Commodities) Rules, 2011 and Section 18 of the Legal Metrology Act, 2009.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- VIEW 2: UNIFIED APP WORKSPACE (SAME PAGE - DYNAMICALLY ROLE-AWARE)       -->
+        <!-- ========================================================================= -->
+        <section id="appSection" class="hidden transition-all duration-300">
+
+            <!-- ROLE-SPECIFIC WELCOME & STATUS BANNER -->
+            <div id="roleContextBanner" class="mb-8 p-4 sm:p-5 rounded-2xl border shadow-sm transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <!-- Dynamically filled by JS -->
+            </div>
+
+            <!-- CORE SCANNER CONTAINER -->
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200/90 mb-8">
+                <!-- Tabs for Upload vs Webcam -->
+                <div class="flex border-b border-slate-200 mb-8">
+                    <button id="tabUpload" class="px-6 py-3 font-bold text-sm text-blue-600 border-b-2 border-blue-600 hover:bg-blue-50/50 rounded-t-lg transition flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        </svg>
+                        <span>Package File Upload</span>
+                    </button>
+                    <button id="tabWebcam" class="px-6 py-3 font-bold text-sm text-slate-500 hover:text-blue-600 hover:bg-blue-50/50 rounded-t-lg transition flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        <span>Live Camera Scanner</span>
+                    </button>
+                </div>
+
+                <!-- 1. Upload Section -->
+                <form id="uploadForm" class="flex flex-col items-center">
+                    <label class="w-full md:w-3/4 flex flex-col items-center px-6 py-12 bg-slate-50/70 rounded-2xl border-2 border-dashed border-blue-200 cursor-pointer hover:bg-blue-50/60 hover:border-blue-500 transition-all duration-200 group">
+                        <div class="w-16 h-16 rounded-2xl bg-blue-100/70 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                            </svg>
+                        </div>
+                        <span class="mt-4 text-base font-bold text-slate-800" id="fileName">Select a packaging image or drag and drop</span>
+                        <span class="mt-1 text-xs text-slate-400">Supported formats: PNG, JPG, JPEG, WEBP up to 10MB</span>
+                        <span class="mt-3 px-3 py-1 rounded-full bg-slate-200/60 text-slate-600 text-xs font-semibold">Browse Device Files</span>
+                        <input type="file" id="fileInput" class="hidden" accept="image/*" />
+                    </label>
+
+                    <button type="submit" id="submitBtn" class="mt-6 px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] transition shadow-md shadow-blue-500/20 w-full md:w-3/4 disabled:opacity-50 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Run Packaging Compliance Verification</span>
+                    </button>
+                </form>
+
+                <!-- 2. Webcam Section -->
+                <div id="webcamSection" class="hidden flex flex-col items-center">
+                    <div class="relative w-full md:w-3/4 bg-slate-950 rounded-2xl overflow-hidden shadow-2xl aspect-video border border-slate-800">
+                        <video id="webcamVideo" class="w-full h-full object-cover" autoplay playsinline></video>
+                        
+                        <!-- Targeting Overlay -->
+                        <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+                            <div class="w-4/5 h-4/5 border-2 border-sky-400/30 rounded-xl relative">
+                                <!-- Corner Brackets -->
+                                <div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-sky-400 rounded-tl"></div>
+                                <div class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-sky-400 rounded-tr"></div>
+                                <div class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-sky-400 rounded-bl"></div>
+                                <div class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-sky-400 rounded-br"></div>
+                                
+                                <!-- Center Targeting Reticle -->
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span class="text-white font-bold tracking-widest uppercase text-xs bg-slate-900/80 px-3.5 py-1.5 rounded-full border border-sky-400/40 shadow-lg">
+                                        Align Product Label Inside Frame
+                                    </span>
+                                    <!-- Animated Scan Laser -->
+                                    <div class="w-full h-0.5 bg-red-500 shadow-[0_0_12px_3px_rgba(239,68,68,0.7)] animate-scan-line mt-4"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <canvas id="webcamCanvas" class="hidden"></canvas>
+                    </div>
+
+                    <div class="flex gap-4 w-full md:w-3/4 mt-6">
+                        <button id="startCameraBtn" class="flex-1 px-4 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition shadow flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Activate Live Camera</span>
+                        </button>
+                        <button id="captureBtn" class="flex-1 px-4 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition shadow hidden flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                            </svg>
+                            <span>Capture Frame & Verify</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. Loading Pipeline State -->
+                <div id="loading" class="hidden text-center mt-10 py-8 px-4 bg-blue-50/50 rounded-2xl border border-blue-100">
+                    <div class="inline-block relative">
+                        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600 mb-4"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-3 h-3 rounded-full bg-blue-600"></div>
+                        </div>
+                    </div>
+                    <h3 class="text-lg text-slate-800 font-bold">Executing ML Pipeline & Legal Rule Engine</h3>
+                    <p class="text-sm text-slate-500 mt-1 max-w-md mx-auto">Running YOLOv8 layout region detector, OCR extraction, Legal Metrology (PCR 2011) & FSSAI cross-validation...</p>
+                </div>
+            </div>
+
+            <!-- RESULTS & REPORT SECTION -->
+            <div id="results" class="hidden bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200/90 transition-all duration-300">
+                <!-- Header with overall verdict -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 mb-8 border-b border-slate-200 gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <h2 class="text-2xl font-bold text-slate-900">Packaging Compliance Audit Report</h2>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Official Evaluation</span>
+                        </div>
+                        <p class="text-xs text-slate-500">Automated regulatory analysis against mandatory packaging disclosures.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Overall Verdict:</span>
+                        <span id="verdictBadge" class="px-5 py-2.5 rounded-xl font-extrabold text-white uppercase tracking-wider text-sm shadow-sm"></span>
+                    </div>
+                </div>
+
+                <!-- ROLE-SPECIFIC TOOLBOX & VALUE-ADD PANEL -->
+                <div id="roleActionPanel" class="mb-8">
+                    <!-- Populated dynamically based on whether logged in as Inspector or Customer -->
+                </div>
+                
+                <!-- Main Visuals & Scan Metadata Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+                    <!-- Annotated OpenCV Image -->
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/80">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-2">
+                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                Computer Vision Annotated Label (OpenCV)
+                            </h3>
+                            <span class="text-[11px] font-semibold text-slate-400">Bounding Box Detection</span>
+                        </div>
+                        <div class="bg-white rounded-xl overflow-hidden border border-slate-200/80 shadow-inner flex items-center justify-center min-h-[260px]">
+                            <img id="annotatedImage" class="w-full object-contain max-h-[420px]" alt="Annotated Label" />
+                        </div>
+                    </div>
+
+                    <!-- Metadata Card -->
+                    <div class="flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                    </svg>
+                                    Audit Record & Scan Metadata
+                                </h3>
+                                <span class="text-[11px] font-semibold text-slate-400">Audit Trail Active</span>
+                            </div>
+
+                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200/80 space-y-3.5">
+                                <div class="flex justify-between items-center border-b border-slate-200/80 pb-3">
+                                    <span class="text-xs font-semibold text-slate-500 uppercase">Scan Audit ID</span>
+                                    <span id="scanId" class="font-mono text-xs font-bold bg-white px-3 py-1 rounded-lg border border-slate-200 text-slate-900"></span>
+                                </div>
+                                <div class="flex justify-between items-center border-b border-slate-200/80 pb-3">
+                                    <span class="text-xs font-semibold text-slate-500 uppercase">Detected Category</span>
+                                    <span id="scanCategory" class="font-bold text-xs px-3 py-1 rounded-lg bg-blue-100 text-blue-800 uppercase"></span>
+                                </div>
+                                <div class="flex justify-between items-center border-b border-slate-200/80 pb-3">
+                                    <span class="text-xs font-semibold text-slate-500 uppercase">Timestamp</span>
+                                    <span id="scanTime" class="text-xs font-medium text-slate-700"></span>
+                                </div>
+                                <div class="flex justify-between items-center border-b border-slate-200/80 pb-3">
+                                    <span class="text-xs font-semibold text-slate-500 uppercase">Audited By (Active Role)</span>
+                                    <span id="scanAuditorTag" class="text-xs font-bold text-slate-900"></span>
+                                </div>
+                                <div class="pt-2">
+                                    <a id="downloadPdfBtn" href="#" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition gap-2 shadow-sm">
+                                        <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        <span>Download WeasyPrint Compliance PDF (Backend generated)</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Inspector Digital Stamp Notice Box -->
+                        <div id="inspectorStampNotice" class="hidden mt-4 p-4 rounded-xl bg-amber-50/70 border border-amber-200 text-amber-900 text-xs">
+                            <div class="flex items-center gap-2 font-bold mb-1">
+                                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                <span>Official Officer Endorsement Available</span>
+                            </div>
+                            <p class="text-[11px] text-amber-800">This audit report carries evidentiary standing under Section 65B of Indian Evidence Act when signed by an active Legal Metrology officer.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rule Engine Verifications Table -->
+                <div class="mt-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-2">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                            </svg>
+                            Rule Engine Verifications & Legal Checks
+                        </h3>
+                        <span class="text-xs text-slate-400 font-medium">Verified under PCR 2011 & FSSAI Standards</span>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-2xl border border-slate-200">
+                        <table class="min-w-full bg-white text-left text-sm">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider">
+                                <tr>
+                                    <th class="py-3.5 px-4">Check Definition & Rule Reference</th>
+                                    <th class="py-3.5 px-4">Severity Tier</th>
+                                    <th class="py-3.5 px-4">Status</th>
+                                    <th class="py-3.5 px-4">Reasoning & OCR Evidence</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rulesTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Rule Engine Verifications</h3>
-            <div class="overflow-x-auto rounded-lg border">
-                <table class="min-w-full bg-white text-left text-sm">
-                    <thead class="bg-gray-50 border-b">
-                        <tr>
-                            <th class="py-3 px-4 font-semibold text-gray-700">Check Definition</th>
-                            <th class="py-3 px-4 font-semibold text-gray-700">Severity</th>
-                            <th class="py-3 px-4 font-semibold text-gray-700">Status</th>
-                            <th class="py-3 px-4 font-semibold text-gray-700">Reasoning & ML Evidence</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rulesTableBody" class="divide-y"></tbody>
-                </table>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto border-t border-slate-200 bg-white py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-700">LabelGuard AI</span>
+                <span>&bull;</span>
+                <span>Smart India Hackathon (SIH 26034)</span>
+                <span>&bull;</span>
+                <span id="footerRoleIndicator" class="font-medium text-slate-600">Mode: Not Authenticated</span>
+            </div>
+            <div class="flex items-center gap-4 text-slate-400">
+                <span>Legal Metrology Act, 2009</span>
+                <span>&bull;</span>
+                <span>FSSAI Packaging Regulations</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL: INSPECTOR VIOLATION NOTICE PREVIEW -->
+    <div id="inspectorNoticeModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative animate-in fade-in duration-200">
+            <div class="flex items-start justify-between pb-4 border-b border-slate-100 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Form IV: Inspection & Violation Notice</h3>
+                        <p class="text-xs text-slate-500">Drafted under Section 18 of the Legal Metrology Act, 2009</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeNoticeModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div id="inspectorNoticeBody" class="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-xs text-slate-800 space-y-3 font-mono leading-relaxed max-h-[360px] overflow-y-auto">
+                <!-- Filled dynamically by JS -->
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" onclick="closeNoticeModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50">Close</button>
+                <button type="button" onclick="copyNoticeText()" class="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                    <span>Copy Notice Text</span>
+                </button>
             </div>
         </div>
     </div>
 
+
+    <!-- JAVASCRIPT LOGIC -->
     <script>
+        // ==========================================
+        // STATE MANAGEMENT & AUTH STORAGE
+        // ==========================================
+        const SESSION_STORAGE_KEY = 'labelguard_user_session';
+        let currentSession = null;
+        let latestScanData = null;
+
+        // Elements
+        const authSection = document.getElementById('authSection');
+        const appSection = document.getElementById('appSection');
+        const navLoggedOutState = document.getElementById('navLoggedOutState');
+        const navLoggedInState = document.getElementById('navLoggedInState');
+        const navRoleBadge = document.getElementById('navRoleBadge');
+        const roleContextBanner = document.getElementById('roleContextBanner');
+        const roleActionPanel = document.getElementById('roleActionPanel');
+        const footerRoleIndicator = document.getElementById('footerRoleIndicator');
+
+        // Role Tabs
+        const tabRoleConsumer = document.getElementById('tabRoleConsumer');
+        const tabRoleInspector = document.getElementById('tabRoleInspector');
+        const cardConsumerLogin = document.getElementById('cardConsumerLogin');
+        const cardInspectorLogin = document.getElementById('cardInspectorLogin');
+
+        // Notification Helper
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-emerald-600 text-white' :
+                            type === 'error' ? 'bg-red-600 text-white' :
+                            type === 'inspector' ? 'bg-slate-900 border border-amber-400/50 text-white' :
+                            'bg-slate-900 text-white';
+            
+            toast.className = `px-4 py-3 rounded-xl shadow-xl text-xs font-semibold flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 ${bgClass}`;
+            toast.innerHTML = `
+                <span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // Toggle Password visibility helper
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.type = input.type === 'password' ? 'text' : 'password';
+            }
+        }
+
+        // Switch Tabs between Customer and Inspector
+        tabRoleConsumer.addEventListener('click', () => {
+            tabRoleConsumer.className = 'flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2.5 transition-all duration-200 bg-white text-emerald-700 shadow-sm';
+            tabRoleInspector.className = 'flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2.5 transition-all duration-200 text-slate-600 hover:text-slate-900';
+            cardConsumerLogin.classList.remove('hidden');
+            cardInspectorLogin.classList.add('hidden');
+            document.getElementById('consumerAuthError')?.classList.add('hidden');
+            document.getElementById('inspectorAuthError')?.classList.add('hidden');
+        });
+
+        tabRoleInspector.addEventListener('click', () => {
+            tabRoleInspector.className = 'flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2.5 transition-all duration-200 bg-white text-blue-900 shadow-sm';
+            tabRoleConsumer.className = 'flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2.5 transition-all duration-200 text-slate-600 hover:text-slate-900';
+            cardInspectorLogin.classList.remove('hidden');
+            cardConsumerLogin.classList.add('hidden');
+            document.getElementById('consumerAuthError')?.classList.add('hidden');
+            document.getElementById('inspectorAuthError')?.classList.add('hidden');
+        });
+
+        // Initialize Session on Page Load
+        function checkExistingSession() {
+            try {
+                const stored = localStorage.getItem(SESSION_STORAGE_KEY);
+                if (stored) {
+                    currentSession = JSON.parse(stored);
+                    applyUserSession(currentSession, false);
+                } else {
+                    renderLoggedOutUI();
+                }
+            } catch (e) {
+                console.error("Session restore error:", e);
+                renderLoggedOutUI();
+            }
+        }
+
+        // Apply Session & Render App View (Same Page)
+        function applyUserSession(session, showWelcomeToast = true) {
+            currentSession = session;
+            localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+
+            // Hide Auth Gateway, Reveal App Workspace
+            authSection.classList.add('hidden');
+            appSection.classList.remove('hidden');
+
+            // Header state updates
+            navLoggedOutState.classList.add('hidden');
+            navLoggedInState.classList.remove('hidden');
+
+            // Render Role-specific details in Header & Banner
+            if (session.role === 'inspector') {
+                navRoleBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-lg border border-amber-300 bg-slate-900 text-white text-xs font-medium shadow-sm';
+                navRoleBadge.innerHTML = `
+                    <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                    <span class="font-bold text-amber-300">Govt. Inspector</span>
+                    <span class="text-slate-400 text-[10px] hidden sm:inline">&bull; ${session.name} (${session.id})</span>
+                `;
+
+                // Role Context Banner on App View
+                roleContextBanner.className = 'mb-8 p-5 rounded-2xl border border-blue-900/40 bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 text-white shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4';
+                roleContextBanner.innerHTML = `
+                    <div class="flex items-start sm:items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-amber-400/20 border border-amber-400/40 text-amber-400 flex items-center justify-center shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-sm font-extrabold text-white">Official Legal Metrology & Standards Enforcement Session</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-400 text-slate-950 uppercase tracking-wider">Officer Terminal</span>
+                            </div>
+                            <p class="text-xs text-slate-300 mt-0.5">
+                                Officer: <span class="font-semibold text-white">${session.name}</span> (${session.id}) &bull; Dept: <span class="text-amber-200">${session.department}</span> &bull; Jurisdiction: <span class="text-slate-300">${session.jurisdiction || 'All Zones'}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 text-xs text-amber-300 font-semibold border border-white/10">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            Evidentiary Audit Active
+                        </span>
+                    </div>
+                `;
+
+                // Stamp notice on report
+                document.getElementById('inspectorStampNotice').classList.remove('hidden');
+                footerRoleIndicator.textContent = `Mode: Official Inspector [${session.id}]`;
+
+                if (showWelcomeToast) {
+                    showToast(`Authenticated as Official Inspector: ${session.name}`, 'inspector');
+                }
+            } else {
+                // Consumer Role
+                navRoleBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-900 text-xs font-medium shadow-sm';
+                navRoleBadge.innerHTML = `
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span class="font-bold text-emerald-800">Customer / Citizen</span>
+                    <span class="text-emerald-600 text-[10px] hidden sm:inline">&bull; ${session.name}</span>
+                `;
+
+                // Role Context Banner on App View
+                roleContextBanner.className = 'mb-8 p-5 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 via-teal-50 to-sky-50 text-slate-800 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4';
+                roleContextBanner.innerHTML = `
+                    <div class="flex items-start sm:items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7 7z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-sm font-extrabold text-slate-900">Citizen Protection & Product Safety Scanner</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase tracking-wider">Consumer Mode</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-0.5">
+                                Welcome, <span class="font-bold text-slate-900">${session.name}</span>! Scan any retail product label to verify MRP tampering, missing manufacturer details, and vegetarian/allergen marks.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <a href="https://consumerhelpline.gov.in" target="_blank" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                            <span>NCH Helpline: 1915</span>
+                        </a>
+                    </div>
+                `;
+
+                document.getElementById('inspectorStampNotice').classList.add('hidden');
+                footerRoleIndicator.textContent = `Mode: Citizen / Consumer [${session.email || session.name}]`;
+
+                if (showWelcomeToast) {
+                    showToast(`Welcome back, ${session.name}!`, 'success');
+                }
+            }
+
+            // If there's an existing scan result, refresh role-specific tools
+            if (latestScanData) {
+                renderRoleActionPanel(latestScanData);
+                document.getElementById('scanAuditorTag').textContent = `${session.name} (${session.role === 'inspector' ? 'Inspector ID: ' + session.id : 'Consumer'})`;
+            }
+        }
+
+        // Render Logged Out State
+        function renderLoggedOutUI() {
+            currentSession = null;
+            localStorage.removeItem(SESSION_STORAGE_KEY);
+            authSection.classList.remove('hidden');
+            appSection.classList.add('hidden');
+            navLoggedOutState.classList.remove('hidden');
+            navLoggedInState.classList.add('hidden');
+            footerRoleIndicator.textContent = 'Mode: Not Authenticated';
+            document.getElementById('consumerAuthError')?.classList.add('hidden');
+            document.getElementById('inspectorAuthError')?.classList.add('hidden');
+            const cPass = document.getElementById('consumerPassword');
+            if (cPass) cPass.value = '';
+            const iPass = document.getElementById('inspectorPasscode');
+            if (iPass) iPass.value = '';
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            renderLoggedOutUI();
+            showToast('You have been logged out.', 'info');
+        });
+
+        // Switch Role Button
+        document.getElementById('switchRoleBtn').addEventListener('click', () => {
+            renderLoggedOutUI();
+            showToast('Select a role to re-enter the workspace.', 'info');
+        });
+
+        // ==========================================
+        // AUTHORIZED DUMMY CREDENTIALS
+        // ==========================================
+        const AUTHORIZED_CONSUMER_USERS = [
+            {
+                email: 'customer@labelguard.com',
+                password: 'Customer@123',
+                name: 'Priya Sharma',
+                role: 'customer'
+            }
+        ];
+
+        const AUTHORIZED_INSPECTOR_USERS = [
+            {
+                id: 'GOV-LM-4821',
+                passcode: 'Inspector@2026',
+                name: 'Insp. Rajesh Kumar',
+                department: 'Legal Metrology (Dept of Consumer Affairs)',
+                jurisdiction: 'Northern Circle - Zone 4 (Delhi NCR)',
+                role: 'inspector'
+            }
+        ];
+
+        // Form Handlers: Consumer Login (Strict Dummy Credential Check)
+        document.getElementById('formConsumerAuth').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const errorBox = document.getElementById('consumerAuthError');
+            const errorText = document.getElementById('consumerErrorText');
+            const email = document.getElementById('consumerEmail').value.trim();
+            const password = document.getElementById('consumerPassword').value;
+
+            errorBox.classList.add('hidden');
+
+            const matchedUser = AUTHORIZED_CONSUMER_USERS.find(
+                u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+            );
+
+            if (matchedUser) {
+                const session = {
+                    role: 'customer',
+                    name: matchedUser.name,
+                    email: matchedUser.email,
+                    loginTime: new Date().toISOString()
+                };
+                applyUserSession(session, true);
+            } else {
+                errorText.textContent = 'Invalid credentials. Only authorized dummy account (customer@labelguard.com / Customer@123) is permitted.';
+                errorBox.classList.remove('hidden');
+                showToast('Login failed: Invalid Consumer credentials', 'error');
+            }
+        });
+
+        // Form Handlers: Inspector Login (Strict Dummy Credential Check)
+        document.getElementById('formInspectorAuth').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const errorBox = document.getElementById('inspectorAuthError');
+            const errorText = document.getElementById('inspectorErrorText');
+            const officerId = document.getElementById('inspectorId').value.trim();
+            const passcode = document.getElementById('inspectorPasscode').value;
+            const dept = document.getElementById('inspectorDept').value;
+            const jurisdiction = document.getElementById('inspectorJurisdiction').value.trim();
+
+            errorBox.classList.add('hidden');
+
+            const matchedOfficer = AUTHORIZED_INSPECTOR_USERS.find(
+                o => o.id.toUpperCase() === officerId.toUpperCase() && o.passcode === passcode
+            );
+
+            if (matchedOfficer) {
+                const session = {
+                    role: 'inspector',
+                    name: matchedOfficer.name,
+                    id: matchedOfficer.id,
+                    department: dept || matchedOfficer.department,
+                    jurisdiction: jurisdiction || matchedOfficer.jurisdiction,
+                    loginTime: new Date().toISOString()
+                };
+                applyUserSession(session, true);
+            } else {
+                errorText.textContent = 'Access Denied: Invalid Officer ID or Security Key. Use authorized dummy credentials (GOV-LM-4821 / Inspector@2026).';
+                errorBox.classList.remove('hidden');
+                showToast('Authorization Failed: Invalid Officer credentials', 'error');
+            }
+        });
+
+        // ==========================================
+        // SCANNER LOGIC (PRESERVED & ENHANCED)
+        // ==========================================
         const fileInput = document.getElementById('fileInput');
         const fileNameDisplay = document.getElementById('fileName');
-        
-        // Tab switching logic
         const tabUpload = document.getElementById('tabUpload');
         const tabWebcam = document.getElementById('tabWebcam');
         const uploadForm = document.getElementById('uploadForm');
         const webcamSection = document.getElementById('webcamSection');
         
         tabUpload.addEventListener('click', () => {
-            tabUpload.classList.add('border-b-2', 'text-blue-600');
-            tabUpload.classList.remove('text-gray-500');
-            tabWebcam.classList.remove('border-b-2', 'text-blue-600');
-            tabWebcam.classList.add('text-gray-500');
+            tabUpload.className = 'px-6 py-3 font-bold text-sm text-blue-600 border-b-2 border-blue-600 hover:bg-blue-50/50 rounded-t-lg transition flex items-center gap-2';
+            tabWebcam.className = 'px-6 py-3 font-bold text-sm text-slate-500 hover:text-blue-600 hover:bg-blue-50/50 rounded-t-lg transition flex items-center gap-2';
             uploadForm.classList.remove('hidden');
             uploadForm.classList.add('flex');
             webcamSection.classList.add('hidden');
@@ -159,10 +1020,8 @@
         });
 
         tabWebcam.addEventListener('click', () => {
-            tabWebcam.classList.add('border-b-2', 'text-blue-600');
-            tabWebcam.classList.remove('text-gray-500');
-            tabUpload.classList.remove('border-b-2', 'text-blue-600');
-            tabUpload.classList.add('text-gray-500');
+            tabWebcam.className = 'px-6 py-3 font-bold text-sm text-blue-600 border-b-2 border-blue-600 hover:bg-blue-50/50 rounded-t-lg transition flex items-center gap-2';
+            tabUpload.className = 'px-6 py-3 font-bold text-sm text-slate-500 hover:text-blue-600 hover:bg-blue-50/50 rounded-t-lg transition flex items-center gap-2';
             webcamSection.classList.remove('hidden');
             webcamSection.classList.add('flex');
             uploadForm.classList.add('hidden');
@@ -182,6 +1041,7 @@
                 video.srcObject = stream;
                 startCameraBtn.classList.add('hidden');
                 captureBtn.classList.remove('hidden');
+                showToast('Camera stream activated.', 'info');
             } catch (err) {
                 alert("Error accessing camera: " + err.message);
             }
@@ -208,7 +1068,9 @@
                 const data = await res.json();
                 
                 if (res.ok) {
+                    latestScanData = data;
                     displayResults(data);
+                    showToast('Compliance verification completed!', 'success');
                 } else {
                     alert("Error processing scan: " + (data.detail || "Unknown error"));
                 }
@@ -229,14 +1091,12 @@
                 const formData = new FormData();
                 formData.append('file', blob, 'webcam_capture.jpg');
                 runScanPipeline(formData);
-                // Optional: Stop camera after capture
-                // stopCamera();
             }, 'image/jpeg');
         });
 
         // Handle File Upload
         fileInput.addEventListener('change', (e) => {
-            if(e.target.files.length > 0) {
+            if (e.target.files.length > 0) {
                 fileNameDisplay.textContent = e.target.files[0].name;
             } else {
                 fileNameDisplay.textContent = 'Select a packaging image or drag and drop';
@@ -245,7 +1105,10 @@
 
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!fileInput.files[0]) return;
+            if (!fileInput.files[0]) {
+                alert("Please select a packaging image first.");
+                return;
+            }
             document.getElementById('submitBtn').disabled = true;
             
             const formData = new FormData();
@@ -256,57 +1119,206 @@
             document.getElementById('submitBtn').disabled = false;
         });
 
+        // ==========================================
+        // RENDER RESULTS & ROLE-SPECIFIC TOOLBOX
+        // ==========================================
         function displayResults(data) {
             document.getElementById('results').classList.remove('hidden');
             
             // Verdict Badge
             const badge = document.getElementById('verdictBadge');
             badge.textContent = data.overall_verdict;
-            badge.className = 'px-4 py-2 rounded-lg font-bold text-white uppercase tracking-wide ' + 
-                (data.overall_verdict === 'PASS' ? 'bg-green-500' : 
-                 data.overall_verdict === 'FAIL' ? 'bg-red-500' : 'bg-yellow-500');
+            badge.className = 'px-5 py-2 rounded-xl font-extrabold text-white uppercase tracking-wider text-sm shadow-md ' + 
+                (data.overall_verdict === 'PASS' ? 'bg-emerald-600 shadow-emerald-500/20' : 
+                 data.overall_verdict === 'FAIL' ? 'bg-red-600 shadow-red-500/20' : 'bg-amber-500 shadow-amber-500/20');
 
-            // Details
+            // Metadata
             document.getElementById('scanId').textContent = data.scan_id;
-            document.getElementById('scanCategory').textContent = data.category.replace('_', ' ');
+            document.getElementById('scanCategory').textContent = data.category ? data.category.replace('_', ' ') : 'GENERAL RETAIL';
             document.getElementById('scanTime').textContent = new Date(data.generated_at).toLocaleString();
+            
+            const auditorText = currentSession ? 
+                `${currentSession.name} (${currentSession.role === 'inspector' ? 'Officer ID: ' + currentSession.id : 'Consumer'})` :
+                'Anonymous Consumer';
+            document.getElementById('scanAuditorTag').textContent = auditorText;
 
             // Image
             if (data.annotated_image_base64) {
                 document.getElementById('annotatedImage').src = data.annotated_image_base64;
             }
 
-            // Table
+            // Render Role-Specific Action Panel
+            renderRoleActionPanel(data);
+
+            // Table of Checks
             const tbody = document.getElementById('rulesTableBody');
             tbody.innerHTML = '';
             
-            data.check_results.forEach(check => {
-                const tr = document.createElement('tr');
-                
-                const statusBg = check.status === 'PASS' ? 'bg-green-100 text-green-800' : 
-                                 check.status === 'FAIL' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800';
-                
-                let reasonHtml = `<p class="text-gray-800">${check.reason || 'No specific reason logged.'}</p>`;
-                if (check.evidence_text) {
-                    reasonHtml += `<p class="text-xs text-gray-500 italic mt-1 bg-gray-50 p-2 rounded border border-gray-100">OCR Evidence: "${check.evidence_text}"</p>`;
-                }
+            if (data.check_results && data.check_results.length > 0) {
+                data.check_results.forEach(check => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-50/80 transition';
+                    
+                    const statusBg = check.status === 'PASS' ? 'bg-emerald-100 text-emerald-800' : 
+                                     check.status === 'FAIL' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800';
+                    
+                    let reasonHtml = `<p class="text-slate-800 text-xs">${check.reason || 'No specific reason logged.'}</p>`;
+                    if (check.evidence_text) {
+                        reasonHtml += `<p class="text-[11px] text-slate-500 font-mono mt-1 bg-slate-50 p-2 rounded-lg border border-slate-200">OCR Evidence: "${check.evidence_text}"</p>`;
+                    }
 
-                tr.innerHTML = `
-                    <td class="py-3 px-4 align-top">
-                        <div class="font-bold text-gray-800">${check.check_name}</div>
-                        <div class="text-xs text-gray-400 mt-1 uppercase tracking-wider">${check.check_id} &bull; ${check.rule_ref}</div>
-                    </td>
-                    <td class="py-3 px-4 align-top">
-                        <span class="text-xs font-semibold uppercase text-gray-600">${check.severity}</span>
-                    </td>
-                    <td class="py-3 px-4 align-top">
-                        <span class="px-2 py-1 rounded text-xs font-bold ${statusBg}">${check.status}</span>
-                    </td>
-                    <td class="py-3 px-4 align-top">${reasonHtml}</td>
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 align-top">
+                            <div class="font-bold text-slate-900 text-xs">${check.check_name}</div>
+                            <div class="text-[10px] text-slate-400 mt-1 uppercase font-mono tracking-wider">${check.check_id} &bull; ${check.rule_ref}</div>
+                        </td>
+                        <td class="py-3 px-4 align-top">
+                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded ${check.severity === 'blocking' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-slate-100 text-slate-600'}">${check.severity}</span>
+                        </td>
+                        <td class="py-3 px-4 align-top">
+                            <span class="px-2.5 py-1 rounded-md text-xs font-extrabold ${statusBg}">${check.status}</span>
+                        </td>
+                        <td class="py-3 px-4 align-top">${reasonHtml}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        // Render Role-Tailored Value Add Sections on the Results Card
+        function renderRoleActionPanel(data) {
+            const isInspector = currentSession && currentSession.role === 'inspector';
+            const panel = document.getElementById('roleActionPanel');
+
+            if (isInspector) {
+                // GOVERNMENT INSPECTOR ENFORCEMENT DESK
+                panel.innerHTML = `
+                    <div class="p-5 rounded-2xl bg-slate-900 text-white border border-slate-800 shadow-lg">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-slate-800 gap-3">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></span>
+                                <span class="text-xs font-bold text-amber-300 uppercase tracking-wider">Inspector Enforcement Actions</span>
+                                <span class="text-xs text-slate-400 font-mono">&bull; Officer: ${currentSession.name} (${currentSession.id})</span>
+                            </div>
+                            <span class="text-[11px] text-slate-400 font-semibold">Powers under Sec 18, Legal Metrology Act 2009</span>
+                        </div>
+                        <div class="pt-4 flex flex-wrap gap-3 items-center justify-between">
+                            <p class="text-xs text-slate-300 max-w-xl">
+                                ${data.overall_verdict === 'FAIL' 
+                                    ? '⚠️ Non-compliance detected under Legal Metrology Rules. You can draft an official Form IV Notice of Violation.' 
+                                    : '✅ Scan meets packaging standard declarations. You may affix your official verification seal.'}
+                            </p>
+                            <div class="flex items-center gap-2">
+                                ${data.overall_verdict === 'FAIL' ? `
+                                    <button type="button" onclick="openNoticeModal()" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                        <span>Draft Violation Notice (Form IV)</span>
+                                    </button>
+                                ` : ''}
+                                <button type="button" onclick="affixInspectorSeal()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                    <span>Affix Digital Officer Seal</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 `;
-                tbody.appendChild(tr);
+            } else {
+                // NORMAL CUSTOMER CONSUMER GUIDE
+                panel.innerHTML = `
+                    <div class="p-5 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-slate-800">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-emerald-200/80 gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                <span class="text-xs font-bold text-emerald-900 uppercase tracking-wider">Citizen Buying Summary</span>
+                            </div>
+                            <span class="text-xs text-emerald-700 font-semibold">Fair Price & Safety Advice</span>
+                        </div>
+                        <div class="pt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="p-3 bg-white rounded-xl border border-emerald-100">
+                                <span class="text-[11px] font-bold text-slate-500 uppercase">Purchase Safety</span>
+                                <p class="text-xs font-bold mt-1 ${data.overall_verdict === 'PASS' ? 'text-emerald-700' : 'text-red-600'}">
+                                    ${data.overall_verdict === 'PASS' ? 'Safe to Purchase - Standard Declarations Present' : 'Caution: Discrepancy Found on Label'}
+                                </p>
+                            </div>
+                            <div class="p-3 bg-white rounded-xl border border-emerald-100">
+                                <span class="text-[11px] font-bold text-slate-500 uppercase">Fair Pricing Rule</span>
+                                <p class="text-xs font-medium text-slate-700 mt-1">Never pay above the printed MRP inclusive of all taxes.</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-xl border border-emerald-100 flex flex-col justify-between">
+                                <span class="text-[11px] font-bold text-slate-500 uppercase">Report Grievance</span>
+                                <a href="tel:1915" class="text-xs font-bold text-blue-600 hover:underline mt-1 flex items-center gap-1">
+                                    <span>Call National Consumer Helpline 1915</span>
+                                    <span>&rarr;</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Inspector Affix Digital Seal
+        function affixInspectorSeal() {
+            if (!latestScanData || !currentSession) return;
+            showToast(`Officer digital seal affixed by ${currentSession.name} (${currentSession.id})`, 'inspector');
+        }
+
+        // Inspector Form IV Notice Modal
+        function openNoticeModal() {
+            if (!latestScanData || !currentSession) return;
+            const modal = document.getElementById('inspectorNoticeModal');
+            const body = document.getElementById('inspectorNoticeBody');
+
+            const fails = (latestScanData.check_results || []).filter(c => c.status === 'FAIL');
+            const failDescriptions = fails.map((f, i) => `${i + 1}. ${f.check_name} (${f.rule_ref}): ${f.reason || 'Missing mandatory disclosure'}`).join('\n');
+
+            body.textContent = 
+`GOVERNMENT OF INDIA / STATE ENFORCEMENT WING
+OFFICE OF THE INSPECTOR OF LEGAL METROLOGY
+
+NOTICE OF NON-COMPLIANCE (FORM IV)
+Issued under Section 18 / Section 36 of Legal Metrology Act, 2009
+
+Scan Audit Reference : ${latestScanData.scan_id}
+Date & Time          : ${new Date().toLocaleString()}
+Inspection Officer   : ${currentSession.name}
+Officer Service ID   : ${currentSession.id}
+Department           : ${currentSession.department}
+Jurisdiction         : ${currentSession.jurisdiction}
+
+TO: MANUFACTURER / PACKER / IMPORTER / RETAILER
+
+SUBJECT: Notice of violation of Legal Metrology (Packaged Commodities) Rules, 2011.
+
+During computer-vision automated inspection of package label under reference ${latestScanData.scan_id}, the following prima facie infractions were detected:
+
+${failDescriptions || '1. Package does not comply with mandatory declaration rules under Rule 6(1).'}
+
+ACTION REQUIRED:
+You are hereby instructed to explain why punitive action should not be initiated under the Legal Metrology Act, 2009.
+
+Digitally Sealed by Authorized Officer:
+[ ${currentSession.name} - ${currentSession.id} ]`;
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeNoticeModal() {
+            document.getElementById('inspectorNoticeModal').classList.add('hidden');
+        }
+
+        function copyNoticeText() {
+            const bodyText = document.getElementById('inspectorNoticeBody').textContent;
+            navigator.clipboard.writeText(bodyText).then(() => {
+                showToast('Notice text copied to clipboard.', 'success');
+            }).catch(() => {
+                showToast('Failed to copy text.', 'error');
             });
         }
+
+        // Run session check on load
+        window.addEventListener('DOMContentLoaded', checkExistingSession);
     </script>
 </body>
 </html>
