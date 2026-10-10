@@ -130,6 +130,7 @@ class ComplianceReport(BaseModel):
     check_results: List[CheckResult]
     annotated_image_base64: Optional[str] = None
     generated_at: str
+    report_url: Optional[str] = None
 
 # ─────────────────────────────────────────────────────────────
 # E-COMMERCE MISMATCH CHECK — dual input comparison

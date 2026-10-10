@@ -2,8 +2,10 @@ import os
 import shutil
 import uuid
 from datetime import datetime
+import re
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from typing import Optional
 
 from backend.schemas import ProductCategory, NormalizedScan, ComplianceReport, CheckStatus
@@ -87,8 +89,21 @@ async def process_scan(file: UploadFile = File(...)):
     
     mrp_text = text_map.get("mrp_region", all_text)
     net_qty_text = text_map.get("net_quantity_region", all_text)
-    fssai_text = text_map.get("fssai_region", all_text)
-    coo_text = text_map.get("coo_region", all_text)
+    
+    fssai_val = text_map.get("fssai_region")
+    if not fssai_val:
+        f_match = re.search(r'\b([12]\d{13})\b', all_text)
+        if f_match:
+            fssai_val = f_match.group(1)
+            
+    coo_val = text_map.get("coo_region")
+    if not coo_val:
+        c_match = re.search(r'(?:country of origin|made in|origin)\s*[:\-]?\s*([a-zA-Z\s]+)', all_text, re.IGNORECASE)
+        if c_match:
+            coo_val = c_match.group(1).strip()
+        elif "india" in all_text.lower():
+            coo_val = "India"
+            
     fiber_text = text_map.get("fiber_region", all_text)
     date_text = text_map.get("date_region", all_text)
     
@@ -97,8 +112,8 @@ async def process_scan(file: UploadFile = File(...)):
         category=category,
         mrp=normalize_mrp(mrp_text),
         net_quantity=normalize_net_quantity(net_qty_text),
-        fssai_license_number=fssai_text if fssai_text != all_text else None,
-        country_of_origin=coo_text if coo_text != all_text else None,
+        fssai_license_number=fssai_val,
+        country_of_origin=coo_val,
         fiber_composition=normalize_fiber_composition(fiber_text) if category == ProductCategory.APPAREL_TEXTILE else None
     )
     
@@ -112,6 +127,8 @@ async def process_scan(file: UploadFile = File(...)):
         if veg_region:
             b = veg_region.bbox
             scan.veg_nonveg_mark = analyze_veg_mark(img_path, {"x_min": b.x_min, "y_min": b.y_min, "x_max": b.x_max, "y_max": b.y_max})
+        else:
+            scan.veg_nonveg_mark = analyze_veg_mark(img_path)
             
     # 4. Rule Engine Execution (Phase 2, Step 4 + Phase 4 FSSAI)
     results = []
@@ -154,7 +171,9 @@ async def process_scan(file: UploadFile = File(...)):
     pdf_dir = os.path.join(os.getcwd(), "reports", "generated")
     os.makedirs(pdf_dir, exist_ok=True)
     report_out_path = os.path.join(pdf_dir, f"{scan_id}.pdf")
-    generate_pdf_report(report, os.path.join(os.getcwd(), "reports"), report_out_path)
+    final_report_path = generate_pdf_report(report, os.path.join(os.getcwd(), "reports"), report_out_path)
+    if final_report_path and os.path.exists(final_report_path):
+        report.report_url = f"/reports/generated/{os.path.basename(final_report_path)}"
     
     # Clean up upload
     if os.path.exists(img_path):
@@ -164,6 +183,14 @@ async def process_scan(file: UploadFile = File(...)):
             pass
             
     return report
+
+@app.get("/reports/generated/{filename}")
+async def get_generated_report(filename: str):
+    file_path = os.path.join(os.getcwd(), "reports", "generated", filename)
+    if os.path.exists(file_path):
+        media_type = "application/pdf" if filename.endswith(".pdf") else "text/html"
+        return FileResponse(file_path, media_type=media_type)
+    raise HTTPException(status_code=404, detail="Report not found")
 
 # Mount the frontend directory to serve the UI at the root url
 app.mount("/", StaticFiles(directory=os.path.join(os.getcwd(), "frontend"), html=True), name="frontend")

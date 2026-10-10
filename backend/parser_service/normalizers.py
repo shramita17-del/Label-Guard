@@ -34,7 +34,7 @@ def normalize_net_quantity(raw_text: str) -> Optional[NetQuantity]:
     text_lower = raw_text.lower()
     
     # Regex to find number and standard units
-    match = re.search(r'([\d\.]+)\s*(g|kg|ml|l|litre|litres|grams|gram|pieces|pcs|number|no|u)\b', text_lower)
+    match = re.search(r'\b(\d+(?:\.\d+)?)\s*(g|kg|ml|mi|m1|l|litre|litres|grams|gram|pieces|pcs|number|no|u)\b', text_lower)
     if not match:
         return None
         
@@ -48,6 +48,7 @@ def normalize_net_quantity(raw_text: str) -> Optional[NetQuantity]:
     unit = unit_raw
     if unit in ['grams', 'gram']: unit = 'g'
     elif unit in ['litre', 'litres']: unit = 'l'
+    elif unit in ['ml', 'mi', 'm1']: unit = 'ml'
     elif unit in ['pieces', 'pcs', 'no', 'u']: unit = 'number'
     
     return NetQuantity(

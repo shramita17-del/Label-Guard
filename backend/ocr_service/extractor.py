@@ -9,6 +9,7 @@ class OCRExtractor:
         Initializes PaddleOCR with backward-compatible parameter handling across versions.
         """
         self.ocr = None
+        self.winocr = None
         try:
             from paddleocr import PaddleOCR
             try:
@@ -19,6 +20,13 @@ class OCRExtractor:
                 self.ocr = PaddleOCR()
         except Exception as e:
             print(f"PaddleOCR load notice: {e}")
+
+        if self.ocr is None:
+            try:
+                import winocr
+                self.winocr = winocr
+            except Exception:
+                self.winocr = None
         
     def extract_text(self, image_path: str, regions: List[DetectedRegion]) -> List[OCRResult]:
         """
@@ -87,6 +95,17 @@ class OCRExtractor:
                                         confidences.extend([float(s) for s in scores])
                 except Exception as err:
                     print(f"OCR region extraction notice: {err}")
+            elif self.winocr is not None:
+                try:
+                    import concurrent.futures
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+                        res = pool.submit(self.winocr.recognize_cv2_sync, crop, "en").result()
+                    detected_txt = res.get("text", "").strip()
+                    if detected_txt:
+                        combined_text.append(detected_txt)
+                        confidences.append(0.95)
+                except Exception as err:
+                    print(f"WinOCR region extraction notice: {err}")
                     
             if combined_text:
                 avg_conf = sum(confidences) / len(confidences) if confidences else 0.90
