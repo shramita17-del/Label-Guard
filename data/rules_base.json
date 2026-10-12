@@ -1,0 +1,1358 @@
+{
+  "source": {
+    "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+    "notification": "G.S.R. 202(E)",
+    "notified_date": "2011-03-07",
+    "effective_from": "2011-04-01",
+    "gazette": "The Gazette of India, Extraordinary, Part II - Section 3(i), No. 124, dated 9 March 2011",
+    "last_amendment_applied": "GSR 784(E), effective 2012-07-01",
+    "note": "Base 2011 text + amendments applied and dated inline as GSR 784(E) processed so far. Remaining amendments (2012-2026) to be layered as they are processed - each carries its own effective_from date.",
+    "commencement_date_correction": {
+      "amended_by": "GSR 226(E)",
+      "amendment_notified_date": "2022-03-28",
+      "note": "GSR 779(E) (02.11.2021) originally set its own commencement (via principal Rule 1(2)) as 01.04.2022. GSR 226(E) SUBSTITUTED that date to 01.10.2022 - so all GSR 779(E) changes took legal effect on 01.10.2022, not 01.04.2022 as originally notified. All effective_from dates in this JSON that trace to GSR 779(E) have been corrected to 2022-10-01 accordingly. FURTHER PUSHED by GSR 747(E), 30.09.2022: GSR 226(E)'s own commencement date (which it had set as 01.10.2022) was itself substituted again to 01.12.2022. So the FINAL, current effective date for all GSR 226(E) changes (Rule 6(11) resubstitution, Rule 33(2) omission, Second Schedule omission) AND all GSR 779(E) changes that GSR 226(E) had already re-dated, is 01.12.2022 - not 01.10.2022. All such dates in this JSON have been corrected accordingly. FURTHER PUSHED AGAIN by GSR 859(E), 30.11.2022: GSR 226(E)'s commencement date (which GSR 747(E) had already moved to 01.12.2022) was substituted once more, to 01.01.2023. So the FINAL, current effective date for all GSR 226(E) changes (and the GSR 779(E) changes GSR 226(E) had re-dated) is 01.01.2023, not 01.12.2022. Note this now coincides with GSR 648(E)'s own effective date (Rule 26(f) loose garment exemption), also 01.01.2023 - both landed on the same commencement date. FURTHER PUSHED (4th and 5th time) by GSR 910(E), dated 29.12.2022 (NOT YET SEEN/PROCESSED - see known_gaps GAP_3) and then GSR 60(E), dated 27.01.2023: the commencement date progressed 01.01.2023 -> 01.02.2023 (per GSR 910(E), inferred) -> 01.04.2023 (per GSR 60(E), confirmed). FINAL current effective date for the GSR 226(E)/779(E) chain is now 01.04.2023. This does NOT affect GSR 648(E)'s Rule 26(f) garment exemption, which remains its own separate notification effective 01.01.2023. FURTHER PUSHED (6th time) by GSR 214(E), dated 24.03.2023: commencement date moved from 01.04.2023 to 01.06.2023. FINAL current effective date for the GSR 226(E)/779(E) chain is now 01.06.2023. GSR 648(E)'s separate Rule 26(f) garment exemption remains unaffected (01.01.2023). FURTHER PUSHED (7th time) by GSR 412(E), dated 05.06.2023: commencement date moved from 01.06.2023 to 01.07.2023. Current effective date for the GSR 226(E)/779(E) chain is now 01.07.2023 - still subject to further pushes if more amendments in this chain are found. FURTHER PUSHED (8th time) by GSR 463(E), dated 28.06.2023: commencement date moved from 01.07.2023 to 01.09.2023. Current effective date for the GSR 226(E)/779(E) chain is now 01.09.2023. FURTHER PUSHED (9th time) by GSR 640(E), dated 30.08.2023: commencement date moved from 01.09.2023 to 01.10.2023. Current effective date for the GSR 226(E)/779(E) chain is now 01.10.2023. FURTHER PUSHED (10th time) by GSR 714(E), dated 30.09.2023: commencement date moved from 01.10.2023 to 01.01.2024 (a bigger jump than prior monthly pushes). Current effective date for the GSR 226(E)/779(E) chain is now 01.01.2024.",
+      "prosecution_moratorium": "GSR 226(E) clause 6 also provides: no prosecution shall be initiated against manufacturers/packers/importers who made declarations in accordance with GSR 779(E) rules starting from the ORIGINAL 01.04.2022 date - i.e., early/good-faith compliance during Apr-Sep 2022 is protected, not penalized, despite the date push-back"
+    }
+  },
+  "definitions": {
+    "source_rule": "Rule 2",
+    "terms": {
+      "consumer": "INSERTED by GSR 629(E), 23.06.2017 as Rule 2(aa): same meaning as clause (d) of sub-section (1) of section 2 of the Consumer Protection Act, 1986. AMENDED by GSR 779(E), 02.11.2021, effective 01.04.2022: reference updated to clause (7) of section 2 of the Consumer Protection Act, 2019 (the 1986 Act was repealed and replaced)",
+      "e_commerce": "INSERTED by GSR 629(E), 23.06.2017 as Rule 2(bd): buying and selling of goods and services, including digital products, over digital and electronic network",
+      "e_commerce_entity": "INSERTED by GSR 629(E), 23.06.2017 as Rule 2(be): a company incorporated under the Companies Act 1956/2013, or a foreign company/office/branch/agency in India (per FEMA 1999) owned/controlled by a person resident outside India, conducting e-commerce business",
+      "marketplace_based_model_of_ecommerce": "INSERTED by GSR 629(E), 23.06.2017 as Rule 2(bf): an IT platform provided by an e-commerce entity on a digital/electronic network to act as facilitator between buyer and seller",
+      "dealer": "Person/firm carrying on business of buying, selling, supplying or distributing packaged commodity (cash, deferred payment, or commission); includes commission agents; EXCLUDES manufacturers (unless manufacturer sells to a non-dealer)",
+      "industrial_consumer": "SUBSTITUTED by GSR 385(E), 14.05.2015 (originally inserted by GSR 359(E), 06.06.2013): consumer who buys packaged commodities directly from the manufacturer OR from an importer OR from a wholesale dealer, for use by that industry - AND the package MUST carry the declaration 'not for retail sale'. CHANGE: broadened sourcing beyond just manufacturer; NEW requirement of 'not for retail sale' label on the package itself",
+      "institutional_consumer": "SUBSTITUTED by GSR 629(E), 23.06.2017 (Rule 2(bc)): institution which buys packaged commodities BEARING A DECLARATION 'not for retail sale', directly from manufacturer/importer/wholesale dealer, for use by that institution AND NOT for commercial or trade purposes. CHANGE from 385(E) version: adds explicit requirement that the package itself must bear the 'not for retail sale' declaration, and adds 'not for commercial or trade purposes' restriction (tightens the definition to prevent institutional-exemption misuse for resale)",
+      "lot": "(i) For stored packages: total number stored; (ii) For packages on/at end of packing line: maximum hourly output",
+      "manufacturer": "Person/firm who produces/makes/manufactures the commodity; includes anyone who marks a package claiming it as their own product even if not actually made by them",
+      "maximum_permissible_error": "Error in deficiency in quantity of an individual package, per limits in First Schedule",
+      "net_quantity": "Quantity by weight/measure/number of commodity in a package, EXCLUDING packaging/wrappers",
+      "packer": "Person/firm who pre-packs any commodity into units suitable for wholesale or retail sale",
+      "principal_display_panel": "Total surface area of package where required info is given - either (i) all info grouped at one place, or (ii) pre-printed info grouped at one place + online/variable info grouped at another NEW PROVISO inserted by GSR 778(E), 23.10.2025: for packages containing MEDICAL DEVICES, the Medical Devices Rules 2017 apply instead to make declarations - LM(PC) Rules' PDP definition does not govern medical device packaging.",
+      "retail_dealer": "Dealer who sells directly to consumer; includes a wholesale dealer making a direct sale to consumer",
+      "retail_package": "Package intended for retail sale to ultimate consumer for consumption; includes imported packages. ORIGINAL proviso ('ultimate consumer excludes industrial/institutional consumers') OMITTED by GSR 359(E), 06.06.2013 - structural cleanup, substance unchanged. NEW proviso INSERTED by GSR 385(E), 14.05.2015: for 'retail food package', the definition under Food Safety and Standards Act 2006 rules/regulations applies instead",
+      "retail_sale_price_MRP": "SUBSTITUTED by GSR 629(E), 23.06.2017 (Rule 2(m)): maximum price at which the commodity in packaged form may be sold to the CONSUMER, inclusive of all taxes. CHANGE: simplified definition (dropped 'ultimate' consumer wording and the detailed printed-format/rounding text from the definition itself - printed format is now separately governed by Rule 6(1)(e), see R6_1_e)",
+      "standard_package": "A package containing the specified quantity of a commodity (i.e., matches Second Schedule quantities where applicable)",
+      "wholesale_dealer": "Dealer who does NOT sell directly to consumer, but distributes/sells via intermediaries",
+      "wholesale_package": "Package containing: (i) multiple retail packages not intended for direct single-consumer sale, or (ii) bulk commodity sold to an intermediary, or (iii) 10+ retail packages (provided each retail package is individually labeled as required)",
+      "combination_package": "INSERTED by GSR 722(E), 06.10.2023, effective 01.01.2024, as Rule 2(ka): a retail package containing 2+ individual packages/pieces of DISSIMILAR commodities (e.g., a set of spoons+knives+forks+cups+napkins)",
+      "group_package": "INSERTED by GSR 722(E), 06.10.2023, effective 01.01.2024, as Rule 2(kb): a retail package containing 2+ individual packages/pieces of SIMILAR BUT NOT IDENTICAL commodities (differ in weight/measure/volume/appearance/quality). Examples: assorted-size sponges in one pack, assorted biscuits, similar commodities of different brands packed together",
+      "multi_piece_package": "INSERTED by GSR 722(E), 06.10.2023, effective 01.01.2024, as Rule 2(kc): a package containing 2+ individually packaged/labelled pieces of the SAME commodity, IDENTICAL quantity each (e.g., 5 toilet soap cakes of 20g each, total 100g). For food articles, FSS Act 2006 applies instead of this definition."
+    }
+  },
+  "additional_checks_from_general_provisions": [
+    {
+      "rule_id": "R18_5_6",
+      "source_rule": "Rule 18(5), 18(6)",
+      "title": "MRP tampering prohibition",
+      "requirement": "No dealer may obliterate, smudge or alter the retail sale price indicated by manufacturer/packer/importer. Manufacturer/packer/importer shall not alter the price on the wrapper once printed and used for packing.",
+      "checklist_relevance": "Directly checkable via image analysis - detect signs of MRP alteration/tampering/overwriting on scanned labels"
+    },
+    {
+      "rule_id": "R31",
+      "source_rule": "Rule 31",
+      "title": "Advertisement declarations",
+      "requirement": "Any advertisement mentioning the retail sale price of a pre-packaged commodity must also contain a declaration of net quantity/number of the commodity",
+      "font_rule": "Font size of the net quantity declaration in the advertisement must match the font size of the retail sale price",
+      "checklist_relevance": "Relevant to your e-commerce/product-listing scanning feature - MRP in an online listing must be accompanied by net quantity in matching font size"
+    },
+    {
+      "rule_id": "R32_fine",
+      "source_rule": "Rule 32 (substituted) + new Rule 32A",
+      "title": "Fine for contravention",
+      "requirement": "Whoever contravenes any provision of these rules, for which no punishment is otherwise provided, shall be punished with a fine of Rs. 5,000. Rule 32A adds a compounding-of-offences table (same amounts as the GSR 359(E) table processed earlier - Rs.2000-50000 range depending on offence and applicant type).",
+      "inserted_by": "GSR 629(E)",
+      "amendment_notified_date": "2017-06-23",
+      "effective_from": "2018-01-01",
+      "bucket": "B - penalty/enforcement, not checklist-relevant, logged for completeness only"
+    },
+    {
+      "rule_id": "R33_2_omitted",
+      "source_rule": "Rule 33(2)",
+      "status": "OMITTED by GSR 226(E), 28.03.2022, effective 01.10.2022",
+      "bucket": "B - procedural (related to compounding of offences/court decisions), not checklist-relevant, logged for completeness only"
+    },
+    {
+      "rule_id": "R6_electronics_qr_PERMANENT",
+      "source_rule": "Rule 6(1)(a), (b), (f) and Rule 6(2) - new provisos",
+      "title": "Electronics QR-Code Declaration Rule (NOW PERMANENT - was originally a 1-year pilot)",
+      "applicability_window": "REMOVED - no longer time-limited or restricted to products made after a specific date. Applies to ALL electronic products, ongoing, from 23.06.2023 onward.",
+      "status": "PERMANENT/CURRENT LAW as of GSR 456(E), 23.06.2023. The original GSR 577(E) pilot (14.07.2022) applied only to electronics manufactured/packed/imported after 15 July 2022, for ONE YEAR (window closed ~mid-2023). GSR 456(E) SUBSTITUTED the same provisos WITHOUT any date restriction - converting what was a temporary pilot into a STANDING, PERMANENT rule for all electronic products, effective immediately (date of publication, 23.06.2023).",
+      "checklist_relevance": "DIRECTLY ACTIONABLE for Category 4 (Electronics/Hardware) - unlike the earlier expired pilot, this is now standing law. For electronic products, a missing printed address/common-name/dimensions is NOT automatically a violation if a QR code is present and provides that info, AND the package tells the consumer to scan for it. Manufacturer name, phone, and email must still always be printed directly, never QR-only.",
+      "superseded_by": {
+        "gsr": "456(E)",
+        "date": "2023-06-23",
+        "effective_from": "2023-06-23"
+      },
+      "current_provisions": [
+        {
+          "linked_field": "R6_1_a (Manufacturer/Packer/Importer)",
+          "requirement": "Package must print the manufacturer/packer/importer NAME on the package itself; ADDRESS and other related info MAY be deferred to a QR code, with an on-package note telling the consumer to scan for that info"
+        },
+        {
+          "linked_field": "R6_1_b (Common/Generic Name)",
+          "requirement": "Package may defer the common/generic name (and for multi-product packs, name+quantity of each product) to a QR code, with an on-package note directing the consumer to scan"
+        },
+        {
+          "linked_field": "R6_1_f (Dimensions)",
+          "requirement": "Package may defer size/dimension info to a QR code, with an on-package note directing the consumer to scan"
+        },
+        {
+          "linked_field": "R6_2 (Consumer Care Details)",
+          "requirement": "Phone number AND email address must remain printed ON the package itself (NOT QR-deferrable); only 'other related information' (e.g., full address) may be deferred to QR, with an on-package note"
+        }
+      ]
+    },
+    {
+      "rule_id": "R_fourth_schedule_sl11",
+      "source_rule": "Fourth Schedule, Serial Number 11",
+      "requirement": "Unit of quantity for this specific numbered commodity changed to: 'weight or volume, and if net quantity is declared by volume, it shall also be declared by weight' - same dual-declaration pattern as the Second Schedule edible oil rule",
+      "inserted_by": "GSR 722(E)",
+      "amendment_notified_date": "2023-10-06",
+      "bucket": "B - Fourth Schedule data table entry, low priority, logged for completeness only (we don't have the full Fourth Schedule content since it was scoped out as Bucket B earlier)"
+    },
+    {
+      "rule_id": "R33_medical_devices_no_relaxation",
+      "source_rule": "Rule 33 (renumbered as 33(1)) + new Rule 33(2)",
+      "requirement": "Rule 33's general power-to-relax-rules provision does NOT apply where the Medical Devices Rules 2017 are applicable - i.e., medical devices cannot seek relaxation under LM(PC) Rule 33 since they are already governed by MDR 2017 instead",
+      "inserted_by": "GSR 778(E)",
+      "amendment_notified_date": "2025-10-23",
+      "effective_from": "2025-10-23",
+      "bucket": "B - procedural/relaxation-power provision, but logged because it reinforces the medical-device-out-of-scope confirmation alongside Rule 2(h) and Rule 7(2)-(3) carve-outs"
+    },
+    {
+      "rule_id": "R27_registration_updates",
+      "source_rule": "Rule 27(2)(d), 27(3) proviso, 27(5)",
+      "requirement": "Manufacturer registration procedure updates: (d) registration application must now include the name of the company Director responsible for violations; annual online update requirement for registered companies (address, products+quantities manufactured/packed/imported in the previous year, country of origin); registration certificates now remain valid until cancelled (no fixed expiry).",
+      "inserted_by": "GSR 418(E)",
+      "amendment_notified_date": "2026-05-29",
+      "bucket": "B - manufacturer registration/administrative procedure, not label/declaration content - logged for completeness only, consistent with our established triage of Rule 27 as procedural"
+    }
+  ],
+  "chapter_applicability": {
+    "rule_id": "R3",
+    "source_rule": "Rule 3, Chapter II",
+    "title": "Application of Chapter (renamed from 'Applicability of the Chapter')",
+    "amendment_note": "Rule 3 ENTIRELY SUBSTITUTED by GSR 629(E), 23.06.2017, effective 01.01.2018. This is now the CURRENT text, superseding the earlier version.",
+    "note": "This is the MASTER exemption - if a package falls under (a), (b) or (c) below, the ENTIRE Chapter II (Rules 3-23, including all your checklist rules 6-17, 26) does not apply, not just individual declarations",
+    "excluded_from_chapter": [
+      {
+        "condition": "R3_a",
+        "text": "Packages of commodities containing quantity MORE THAN 25 kg or 25 litre",
+        "amendment_note": "CHANGE by GSR 629(E): the cement/fertilizer carve-out that used to be an exception WITHIN this clause has been moved out into its own separate clause (b) below, and broadened"
+      },
+      {
+        "condition": "R3_b",
+        "text": "Cement, fertilizer, AND agricultural farm produce sold in bags ABOVE 50 kilogram",
+        "amendment_note": "NEW/BROADENED by GSR 629(E), 23.06.2017: 'agricultural farm produce' explicitly added to this >50kg exclusion basket alongside cement and fertilizer (previously agricultural produce >50kg was covered under old Rule 26(d) exemption, which is now OMITTED - see R26_d - since this Rule 3(b) covers it instead)",
+        "departmental_clarification": {
+          "source": "Departmental letter I-10/9/2023-W&M, dated 06.03.2023, Legal Metrology Division",
+          "clarification": "Confirms the >50kg threshold is exact: packages of agricultural farm produce UP TO AND INCLUDING 50 kg are FULLY COVERED by Chapter II (not exempt) - only packages ABOVE 50kg are exempt. Manufacturers/packers/importers of farm produce are permitted to pack in ANY quantity up to 50kg (no fixed/standard quantity is mandated within that range for farm produce specifically) - but full Rule 6 declarations still apply since these packages ARE covered by the chapter.",
+          "checklist_relevance": "For Category 1 farm produce specifically: do NOT flag varying/non-standard pack sizes up to 50kg as a violation - any quantity up to 50kg is legally permitted; but DO still check for full Rule 6 declarations (unlike genuinely exempt >50kg packages)"
+        }
+      },
+      {
+        "condition": "R3_c",
+        "text": "Packaged commodities meant for industrial consumers or institutional consumers",
+        "institutional_consumer_definition": "See definitions.institutional_consumer (Rule 2(bc)) - as most recently substituted by GSR 629(E), now requires 'not for retail sale' declaration on the package + 'not for commercial/trade purposes' restriction",
+        "industrial_consumer_definition": "See definitions.industrial_consumer (Rule 2(bb))",
+        "amendment_note": "Substantive exemption unchanged from earlier (b) clause, just relettered to (c) since new (b) now covers cement/fertilizer/farm-produce"
+      }
+    ],
+    "checklist_relevance": "This confirms and legally grounds the 'Institutional/Industrial', '>25kg bulk', and 'agricultural produce >50kg' exemption pre-checks discussed for your architecture - these should run BEFORE any category checklist, since they exempt the whole chapter, not just one field"
+  },
+  "exemptions": [
+    {
+      "rule_id": "R26_a",
+      "source_rule": "Rule 26(a)",
+      "condition": "Net weight or measure of commodity is 10g or 10ml or less (if sold by weight/measure)",
+      "note": "ORIGINAL 2011 proviso (MRP+net qty still required for 10g-20g/10ml-20ml packages) REMOVED by GSR 784(E) dated 24.10.2011. NEW proviso INSERTED by GSR 385(E), 14.05.2015, effective 01.01.2016: this exemption (26(a)) does NOT apply to tobacco and tobacco products - such products must carry full declarations regardless of package size",
+      "effective_from": "2012-07-01",
+      "amended_by": "GSR 784(E)",
+      "amendment_notified_date": "2011-10-24",
+      "tobacco_carveout": {
+        "inserted_by": "GSR 385(E)",
+        "effective_from": "2016-01-01",
+        "text": "Provisions of this clause shall not be applicable for tobacco and tobacco products"
+      },
+      "pan_masala_carveout": {
+        "inserted_by": "GSR 881(E)",
+        "amendment_notified_date": "2025-12-02",
+        "effective_from": "2026-02-01",
+        "text": "Second further proviso: the <=10g/10ml exemption under Rule 26(a) shall NOT apply to pan masala - same treatment as the earlier tobacco carve-out (GSR 385(E), 2015). Pan masala packages must carry full declarations regardless of size."
+      }
+    },
+    {
+      "rule_id": "R26_b",
+      "source_rule": "Rule 26(b)",
+      "condition": "Package containing fast food items packed by restaurant or hotel and the like"
+    },
+    {
+      "rule_id": "R26_c",
+      "source_rule": "Rule 26(c)",
+      "condition": "Contains scheduled formulations and non-scheduled formulations covered under the Drugs (Price Control) Order, 2013 (made under Essential Commodities Act 1955)",
+      "amendment_note": "SUBSTITUTED by GSR 629(E), 23.06.2017, effective 01.01.2018. CHANGE: reference updated from Drugs (Price Control) Order 1995 to the 2013 Order",
+      "important_carveout": "NEW proviso inserted by GSR 629(E): 'no exemption shall be applicable to medical devices declared as drugs' - i.e., medical devices do NOT get this drug exemption even if legally classified as drugs; they still need full LM(PC) declarations (subject also to the separate 2023 medical devices carve-out discussed elsewhere - see notes for that document if processed)",
+      "departmental_confirmation": "CONFIRMED by departmental letter I-10/17/2023-W&M, dated 10.07.2023: reiterates that medical devices declared as drugs are NOT exempt under Rule 26(c), and must comply with full LM(PC) declarations regardless of their drug classification."
+    },
+    {
+      "rule_id": "R26_d",
+      "source_rule": "Rule 26(d)",
+      "status": "OMITTED by GSR 629(E), 23.06.2017, effective 01.01.2018",
+      "condition_historical": "Previously: Agricultural farm produce in packages above 50 kg",
+      "amendment_note": "This exemption clause is REMOVED because agricultural farm produce >50kg is now covered by the broader Rule 3(b) chapter-inapplicability clause instead (see chapter_applicability.excluded_from_chapter R3_b) - substance preserved, just relocated to a stronger exclusion (whole-chapter inapplicability rather than a single-rule exemption)"
+    },
+    {
+      "rule_id": "R26_e",
+      "source_rule": "Rule 26(e)",
+      "condition": "Any thread sold in coil to handloom weavers",
+      "inserted_by": "GSR 870(E)",
+      "amendment_notified_date": "2014-12-04",
+      "effective_from": "2014-12-04"
+    },
+    {
+      "rule_id": "R26_f",
+      "source_rule": "Rule 26(f)",
+      "condition": "Garment or hosiery sold loose/open at point of sale, in a manner that lets the consumer inspect the product before buying - AND is a finished product",
+      "inserted_by": "GSR 648(E)",
+      "amendment_notified_date": "2022-08-22",
+      "effective_from": "2023-01-01",
+      "early_adoption_permitted": true,
+      "note": "This is a CONDITIONAL exemption - not a full exemption from all declarations. See quantity_declaration_rules.R26_f_and_garment_labeling for the reduced 4-field checklist that still applies (name/address, consumer care email+phone, size, MRP), plus the e-commerce display requirement if sold online."
+    },
+    {
+      "rule_id": "R26_g",
+      "source_rule": "Rule 26(g)",
+      "condition": "Loose commodities ordered through e-commerce channels, where the consumer is already aware of the ordered commodity, its type, and quantity (i.e., not a physically pre-packaged product, but a loose item sold online where the listing itself informed the consumer)",
+      "inserted_by": "GSR 722(E)",
+      "amendment_notified_date": "2023-10-06",
+      "effective_from": "2024-01-01",
+      "note": "This is a NEW, BROADER exemption than Rule 26(f) - Rule 26(f) is specific to garments/hosiery sold loose in physical stores; Rule 26(g) covers ANY loose commodity (not just garments) ordered via e-commerce, provided the consumer already knew what they were ordering. Like 26(f), it is a CONDITIONAL exemption, not a full one - subject to a reduced declaration set.",
+      "reduced_checklist": {
+        "required_fields": [
+          {
+            "field": "Name and address",
+            "requirement": "Of manufacturer, OR marketer, OR brand owner, OR importer, OR SELLER (broader list than Rule 26(f) - includes 'seller' too) + country of origin/manufacture if imported"
+          },
+          {
+            "field": "Consumer care contact",
+            "requirement": "Email ID AND phone number"
+          },
+          {
+            "field": "MRP",
+            "requirement": "Retail sale price inclusive of all taxes, in Indian currency"
+          },
+          {
+            "field": "Net quantity",
+            "requirement": "In standard unit of weight/measure, OR if sold by number, the count of the commodity"
+          }
+        ]
+      },
+      "checklist_relevance": "DIRECTLY relevant to your e-commerce/listing-scanning feature for Category 1/4 (and beyond) - loose items sold online (e.g., bulk grains, loose produce, unpackaged hardware items sold by count) get this reduced 4-field checklist instead of full Rule 6, PROVIDED the e-commerce listing itself already conveyed commodity type+quantity to the consumer before purchase"
+    }
+  ],
+  "declarations": [
+    {
+      "rule_id": "R6_1_a",
+      "source_rule": "Rule 6(1)(a)",
+      "field": "Manufacturer/Packer/Importer Name & Address",
+      "requirement": "Name and address of manufacturer; if manufacturer is not packer, name+address of both manufacturer and packer; for imported packages, name+address of importer",
+      "exception": "Explanation III SUBSTITUTED by GSR 629(E), 23.06.2017, effective 01.01.2018: for food articles, this clause (a) does NOT apply at all - instead the Food Safety and Standards Act 2006 and rules made thereunder fully govern. CHANGE from earlier wording: strengthened from 'FSS Act applies instead' to an explicit full carve-out ('provisions of this clause shall not apply')",
+      "mandatory": true
+    },
+    {
+      "rule_id": "R6_1_aa",
+      "source_rule": "Rule 6(1)(aa)",
+      "field": "Country of Origin/Manufacture/Assembly",
+      "requirement": "For imported products, the name of the country of origin, manufacture, or assembly shall be mentioned on the package",
+      "inserted_by": "GSR 629(E)",
+      "amendment_notified_date": "2017-06-23",
+      "effective_from": "2018-01-01",
+      "mandatory": "conditional - applies to imported products",
+      "category_relevance": "NEW mandatory field for all 3 categories (1/3/4) where the product is imported - directly checkable via OCR text search for a country name near origin/mfg declarations"
+    },
+    {
+      "rule_id": "R6_1_b",
+      "source_rule": "Rule 6(1)(b)",
+      "field": "Common/Generic Name",
+      "requirement": "Common or generic name of the commodity; if package has more than one product, name and number/quantity of each product",
+      "mandatory": true
+    },
+    {
+      "rule_id": "R6_1_c",
+      "source_rule": "Rule 6(1)(c)",
+      "field": "Net Quantity",
+      "requirement": "Net quantity in standard unit of weight/measure, or number if sold by count",
+      "mandatory": true
+    },
+    {
+      "rule_id": "R6_1_d",
+      "source_rule": "Rule 6(1)(d)",
+      "field": "Month and Year of Manufacture",
+      "requirement": "Month and year commodity was manufactured. CHANGE by GSR 779(E), 02.11.2021, effective 01.04.2022: the words 'or pre-packed or imported' were OMITTED from this clause - meaning the declaration is now specifically the month/year of MANUFACTURE only, not alternatively pre-pack or import date. (Note: import-date-equivalent info is separately covered by the new Country of Origin field R6_1_aa)",
+      "exceptions": [
+        "Proviso 1 - Food articles: Food Safety and Standards Act, 2006 applies instead - UPDATED: originally Prevention of Food Adulteration Act 1954, substituted by GSR 427(E) dated 05.06.2012",
+        "Proviso 2 - Seeds labeled/certified under Seeds Act 1966 - exempt",
+        "Proviso 3 - REMOVED effective 01.07.2012 by GSR 784(E) (corrected by corrigendum GSR 832(E), 23.11.2011): originally allowed 'manufacturer may indicate month/year using a rubber stamp without overwriting' - this allowance no longer exists in current law",
+        "Proviso 4 - Cosmetics: Drugs and Cosmetics Rules 1945 applies instead",
+        "Not required on bidi or incense stick packages",
+        "Not required on domestic LPG cylinders (14.2kg or 5kg) marketed by public sector undertaking",
+        "Proviso 4th (added after the 'third proviso') - INSERTED by GSR 722(E), 06.10.2023, effective 01.04.2024: month/year of manufacture declaration does NOT apply to spare parts and accessories used for warranty servicing that are NOT sold to end customers",
+        "Proviso 5th - INSERTED by GSR 722(E), 06.10.2023, effective 01.04.2024: for electronic products' spare parts/accessories (that ARE sold to end customers), the month/year of manufacture must be specified ANYWHERE on the retail package, in a visible and clearly legible manner - i.e., no fixed PDP-grouping requirement for this specific field on such products"
+      ],
+      "mandatory": true,
+      "spare_parts_definition": "Per Explanation inserted by GSR 722(E): 'spare parts and accessories' includes any part, component, or accessory complementary to the main/core product of a machine/device/equipment, including parts sold separately as replacements for damaged/worn-out parts"
+    },
+    {
+      "rule_id": "R6_1_da",
+      "source_rule": "Rule 6(1)(da)",
+      "field": "Best Before / Use By Date",
+      "requirement": "If a package contains a commodity which may become unfit for human consumption after a period of time, the 'best before or use by the date, month and year' shall be mentioned on the label",
+      "proviso": "Does not apply if a provision on this is already made under any other law (e.g., FSS Act for food)",
+      "definitions": {
+        "best_before": "The date signifying the end of the period, under stated storage conditions, during which the product remains fully marketable and retains claimed qualities; beyond this date the commodity MAY still be safe for consumption",
+        "use_by_date": "The date signifying the end of the estimated period, under stated storage conditions, after which the product no longer has the quality attributes normally expected; after this date the commodity should NOT be regarded as marketable"
+      },
+      "inserted_by": "GSR 629(E)",
+      "amendment_notified_date": "2017-06-23",
+      "effective_from": "2018-01-01",
+      "mandatory": "conditional - applies to perishable/time-sensitive commodities",
+      "category_relevance": "Category 1 (Food) primarily - directly checkable: flag if ONLY 'Best Before' appears with no 'Use By/Expiry' where the commodity is perishable"
+    },
+    {
+      "rule_id": "R6_1_e",
+      "source_rule": "Rule 6(1)(e)",
+      "field": "Retail Sale Price (MRP)",
+      "requirement": "Retail sale price of the package",
+      "format_history": {
+        "gsr_629E_2017": "INSERTED illustrations (effective 01.01.2018): must clearly indicate it is the maximum retail price INCLUSIVE OF ALL TAXES, price rounded to nearest rupee or 50 paise. Acceptable formats illustrated: (a) 'Maximum or Max. retail price Rs./₹ xx.xx (inclusive of all taxes)', (b) 'Maximum or Max. retail price Rs./₹ xx.xx inclusive of all taxes', (c) 'MRP Rs./₹ xx.xx incl. of all taxes', (d) 'MRP Rs./₹ xx.xx (incl. of all taxes)'",
+        "gsr_779E_2021": "SIMPLIFIED effective 01.04.2022: the detailed illustrated wording above was REPLACED with a single simpler requirement - the price must simply be stated 'in Indian currency'. CURRENT LAW: exact illustrated formats above are no longer mandated verbatim - just needs to be a clear MRP figure in Indian currency (₹/Rs.), inclusive of all taxes"
+      },
+      "exceptions": [
+        "Alcoholic beverages/spirituous liquor: State Excise Laws apply instead (unless silent, then these rules apply)",
+        "Not required on bidi packages",
+        "Not required on domestic LPG cylinders under Administrative Price Mechanism",
+        "INSERTED by GSR 858(E), 07.09.2016: if the retail sale price of an essential commodity is fixed and notified by the Competent Authority under the Essential Commodities Act 1955, that government-fixed price applies instead of manufacturer-declared MRP CLARIFIED by departmental letter I-10/17/2023-W&M, dated 10.07.2023: names NPPA (National Pharmaceutical Pricing Authority) as an example 'Competent Authority' for this override, and confirms that if a price revision is permitted by Government/NPPA/any other Statutory Body via their own notification, industry may revise MRP accordingly without violating this rule."
+      ],
+      "mandatory": true
+    },
+    {
+      "rule_id": "R6_1_f",
+      "source_rule": "Rule 6(1)(f)",
+      "field": "Dimensions",
+      "requirement": "Where size of commodity is relevant, dimensions of the commodity; if different pieces have different dimensions, dimensions of each",
+      "mandatory": "conditional"
+    },
+    {
+      "rule_id": "R6_2",
+      "source_rule": "Rule 6(2)",
+      "field": "Consumer Care Details",
+      "requirement": "Name, address, telephone number, email address of the person who can be, or the office which can be, contacted for consumer complaints",
+      "amendment_note": "SUBSTITUTED by GSR 385(E), 14.05.2015, effective 01.01.2016 - substantively same content, restated wording (specifies contactable person/office rather than general contact details)",
+      "effective_from": "2016-01-01",
+      "mandatory": true
+    },
+    {
+      "rule_id": "R6_3",
+      "source_rule": "Rule 6(3)",
+      "field": "No Individual Stickers Rule",
+      "requirement": "Stickers not permitted for altering/making required declarations, EXCEPT a sticker may be used to reduce MRP (must show revised lower MRP inclusive of all taxes, must not cover original MRP declaration)",
+      "mandatory": true
+    },
+    {
+      "rule_id": "R6_5",
+      "source_rule": "Rule 6(5)",
+      "field": "Multi-component/Multi-piece Package Declaration",
+      "requirement": "Where commodity has multiple components packed in 2+ units sold as single commodity, declarations must appear on main package (which also carries info about accompanying packages), OR declarations on individual packages with intimation on main package. If sold as spare parts, all declarations on each package.",
+      "mandatory": "conditional"
+    },
+    {
+      "rule_id": "R6_7",
+      "source_rule": "Rule 6(7)",
+      "field": "GM (Genetically Modified) Food Declaration",
+      "requirement": "Every package containing genetically modified food shall bear the words 'GM' at the top of its Principal Display Panel",
+      "inserted_by": "GSR 427(E)",
+      "amendment_notified_date": "2012-06-05",
+      "effective_from": "2013-01-01",
+      "mandatory": "conditional - applies only to GM food products",
+      "category_relevance": "Category 1 (Food & Beverages) checklist addition"
+    },
+    {
+      "rule_id": "R6_8",
+      "source_rule": "Rule 6(8)",
+      "field": "Veg/Non-Veg Dot Declaration",
+      "requirement": "Every package containing soap, shampoo, toothpaste, and other cosmetics/toiletries shall bear at the top of its Principal Display Panel a RED (or brown) dot for products of non-vegetarian origin, or a GREEN dot for products of vegetarian origin",
+      "inserted_by": "GSR 137",
+      "amendment_notified_date": "2014-06-16",
+      "effective_from": "2014-07-01",
+      "mandatory": "conditional - applies to soap/shampoo/toothpaste/cosmetics/toiletries",
+      "category_relevance": "Category 4 (General Retail) checklist addition - directly checkable via image analysis (detect red/brown vs green dot on PDP)"
+    },
+    {
+      "rule_id": "R6_9",
+      "source_rule": "Rule 6(9)",
+      "field": "Imported Package Label Permission",
+      "requirement": "It is permissible to affix a label on imported packages for making the declarations required under these rules (i.e., a sticker/label is an acceptable method for imported goods to meet declaration requirements, not just original printing)",
+      "inserted_by": "GSR 385(E)",
+      "amendment_notified_date": "2015-05-14",
+      "mandatory": false,
+      "category_relevance": "Relevant to Country of Origin / imported product checks - confirms labels (not just original packaging print) are valid compliance method for imports"
+    },
+    {
+      "rule_id": "R6_4A",
+      "source_rule": "Rule 6(4A)",
+      "field": "Optional Additional Declarations",
+      "requirement": "Nothing in this rule prevents a manufacturer/packer/importer from ALSO declaring (in addition to mandatory declarations): (a) Barcode, GTIN, or QR Code; (b) 'e-code' for net quantity assurance and other declarations, obtained as specified by Central Government; (c) logos of Government schemes (e.g., Swachh Bharat Mission), where authorised by Central Government",
+      "inserted_by": "GSR 629(E)",
+      "amendment_notified_date": "2017-06-23",
+      "effective_from": "2018-01-01",
+      "mandatory": false,
+      "category_relevance": "Relevant to barcode/QR/GTIN cross-verification feature - confirms these are legally recognized voluntary declarations, not something to flag as 'extra/unusual' content on a label"
+    },
+    {
+      "rule_id": "R6_10",
+      "source_rule": "Rule 6(10)",
+      "field": "E-Commerce Mandatory Declarations",
+      "requirement": "An E-Commerce entity shall ensure that the mandatory declarations under Rule 6(1) - EXCEPT the month and year of manufacture/packing - are displayed on the digital/electronic network used for e-commerce transactions",
+      "marketplace_safe_harbor": {
+        "condition": "For marketplace-model e-commerce, responsibility for correctness of declarations lies with the manufacturer/seller/dealer/importer (NOT the platform) IF the entity: (a) merely provides access to a communication system without controlling the info, (b) does not initiate transmission, select the receiver, or modify the info, (c) observes due diligence as an intermediary under the IT Act 2000 and other prescribed guidelines",
+        "loss_of_protection": "Safe harbor does NOT apply if the entity: (a) conspired/abetted/aided/induced the unlawful act, or (b) upon actual knowledge or government notification of unlawful content, fails to expeditiously remove/disable access to it",
+        "clarification": "This safe harbor provision does NOT exempt the physical pre-packaged commodity itself from bearing full declarations when delivered to the consumer - it only addresses platform liability for the DIGITAL listing"
+      },
+      "inserted_by": "GSR 629(E)",
+      "amendment_notified_date": "2017-06-23",
+      "effective_from": "2018-01-01",
+      "mandatory": true,
+      "category_relevance": "DIRECTLY relevant to your PS scope ('product listings') and your Digital-vs-Physical Listing Mismatch feature - this is the core legal basis for that entire feature",
+      "related_rule_6_10A": {
+        "rule_id": "R6_10A",
+        "source_rule": "Rule 6(10A)",
+        "requirement": "SUBSTITUTED by GSR 312(E), 27.04.2026: Every e-commerce entity OFFERING FOR SALE any imported product shall, with effect from 1st July 2027, ensure that the PRODUCT LISTING ITSELF contains a searchable and sortable filter specifying the country of origin",
+        "inserted_by": "GSR 312(E) (substituting GSR 128(E))",
+        "amendment_notified_date": "2026-04-27",
+        "effective_from": "2027-07-01",
+        "note": "DIFFERENT KIND of requirement from the rest of Rule 6(10) - this is not about what's declared ON a listing/label, but about the e-commerce PLATFORM's UI/filtering functionality itself (a searchable/sortable country-of-origin filter across imported product listings)",
+        "checklist_relevance": "This is a platform-level feature check, not a per-product label/listing check - relevant if your system audits e-commerce platform compliance as a whole (e.g., checking whether a marketplace's search UI offers this filter) rather than just scanning individual product listings. Different tooling/approach needed (UI/DOM inspection of the platform's search page) vs. your per-listing OCR/text-matching approach for other Rule 6(10) declarations.",
+        "amendment_history": {
+          "gsr_128E_original": "Original wording (GSR 128(E), 13.02.2026): 'shall provide the product listings... in a searchable and sortable filter' - effective 01.07.2026",
+          "gsr_312E_substitution": "SUBSTITUTED by GSR 312(E), 27.04.2026: rewords to 'offering for sale' (broader than 'selling') and 'listing contains' (vs. platform 'provides'); MOST IMPORTANTLY pushes the effective date back a FULL YEAR, from 01.07.2026 to 01.07.2027"
+        },
+        "CRITICAL_STATUS_NOTE": "As of today's date (Sept 2026), this requirement is NOT YET IN EFFECT - it was previously understood to be in effect from 01.07.2026 (per GSR 128(E)), but GSR 312(E) delayed it to 01.07.2027. Do not treat this as a currently-enforceable check until that date arrives."
+      }
+    },
+    {
+      "rule_id": "R6_11",
+      "source_rule": "Rule 6(11)",
+      "field": "Unit Sale Price Declaration Format",
+      "requirement": "SUBSTITUTED by GSR 226(E), 28.03.2022, effective 01.10.2022. Unit sale price in rupees, rounded to nearest TWO decimal places, declared as: (i) per gram if net quantity <1kg, per kilogram if >1kg; (ii) per centimetre if net length <1 metre, per metre if >1 metre; (iii) per millilitre if net volume <1 litre, per litre if >1 litre; (iv) per number or unit if sold by number/unit",
+      "inserted_by": "GSR 779(E)",
+      "amendment_notified_date": "2021-11-02",
+      "effective_from": "2024-01-01",
+      "mandatory": true,
+      "category_relevance": "Directly checkable format rule across all 3 categories - verify unit price uses the correct unit (g vs kg, cm vs m, ml vs L) based on the declared net quantity threshold",
+      "provisos": [
+        "Alcoholic beverages/spirituous liquor: State Excise Laws (of the manufacturing state) apply instead",
+        "Unit sale price declaration NOT required if retail sale price (MRP) equals the unit sale price (i.e., no separate unit-price line needed for single-unit-equals-package items)",
+        "THIRD proviso INSERTED by GSR 722(E), 06.10.2023: unit sale price declaration is NOT required for a combination package, group package, or multi-piece package (as newly defined in Rule 2(ka)/(kb)/(kc)) - under these rules or any other law"
+      ],
+      "amendment_history": {
+        "gsr_779E_2021": "Original version inserted, effective 01.04.2022 (later pushed to 01.10.2022) - simple per-unit format, no rounding rule or provisos",
+        "gsr_226E_2022": "SUBSTITUTED just months later - added 2-decimal rounding rule, alcoholic beverage carve-out, and the 'MRP=unit price' exemption from declaring unit price separately"
+      }
+    }
+  ],
+  "rule5_additional_subrules": {
+    "status": "**RULE 5 ENTIRELY OMITTED** by GSR 779(E), 02.11.2021, effective 01.04.2022",
+    "critical_flag": "CONFIRMED (was flagged as needing verification, now CONFIRMED via GSR 226(E)): Rule 5 was omitted by GSR 779(E) (eff. 01.10.2022, date corrected by GSR 226(E)), AND the Second Schedule ITSELF was separately and explicitly omitted by GSR 226(E) (clause 5), same effective date. Both the enabling rule and the underlying schedule are gone. This is now settled, not speculative.",
+    "historical_content_before_01_04_2022": {
+      "note": "Rule 5 renumbered as Rule 5(1) by GSR 427(E) in 2012; sub-rules (2) and (3) inserted then. ALL of the following ceased to have legal force from 01.04.2022:",
+      "amended_by": "GSR 427(E)",
+      "amendment_notified_date": "2012-06-05",
+      "sub_rules": [
+        {
+          "rule_id": "R5_2_HISTORICAL",
+          "requirement": "When packages intended for retail sale are grouped together for sale as a retail package on promotional offer, every individual package within that group must still comply with Rule 6 declarations",
+          "successor": "This exact requirement was RE-INSERTED elsewhere by GSR 779(E) as the new Rule 4(2) - see rule4_provisions section - so the substance survives, just relocated from Rule 5 to Rule 4"
+        },
+        {
+          "rule_id": "R5_3_HISTORICAL",
+          "requirement": "Notwithstanding the Second Schedule, manufacturers/importers may sell 'value based packages' at Rs.1-Rs.10 without matching Second Schedule standard quantities, provided all other Rule 6 declarations are made",
+          "note": "No successor found yet - since Rule 5 (which this was an exception TO) is itself gone, this specific value-pack exception may now be moot/redundant rather than needing a replacement"
+        },
+        {
+          "rule_id": "R5_1_proviso_HISTORICAL",
+          "inserted_by": "GSR 858(E)",
+          "requirement": "If the Competent Authority under the Essential Commodities Act 1955 fixes/notifies standard quantity for an essential commodity, that overrides the Second Schedule",
+          "note": "Also moot if Rule 5 itself is gone - no Second Schedule enforcement rule left to override"
+        }
+      ]
+    }
+  },
+  "rule4_provisions": {
+    "source_rule": "Rule 4",
+    "amendment_note": "Original Rule 4 (enabling clause: 'No person shall pre-pack any commodity for sale unless declarations made') RENUMBERED as Rule 4(1) by GSR 779(E), 02.11.2021, effective 01.04.2022. New Rule 4(2) INSERTED at the same time.",
+    "sub_rules": [
+      {
+        "rule_id": "R4_1",
+        "requirement": "No person shall pre-pack any commodity for sale unless the package has declarations as required under these rules (original Rule 4 text, now sub-rule 1)"
+      },
+      {
+        "rule_id": "R4_2",
+        "requirement": "When one or more packages intended for retail sale are grouped together for being sold as a retail package on promotional offer, every package of the group shall comply with provisions of Rule 6",
+        "inserted_by": "GSR 779(E)",
+        "amendment_notified_date": "2021-11-02",
+        "effective_from": "2024-01-01",
+        "note": "This is substantively identical to the old Rule 5(2) promotional-grouping requirement - the provision was relocated here after Rule 5 was omitted, not newly invented"
+      },
+      {
+        "rule_id": "R4_Explanation_2",
+        "source_rule": "Rule 4, Explanation-2 (original Explanation renumbered as Explanation-1)",
+        "requirement": "Importers are allowed to make mandatory declarations AT BONDED WAREHOUSES of Authorised Economic Operator (AEO) Tier-2 and Tier-3 certified operators in India",
+        "proviso": "Retail packages MUST have ALL mandatory declarations completed BEFORE LEAVING the bonded warehouse of the AEO Tier-2/Tier-3 certified operator",
+        "context_note": "AEO Tier-2/Tier-3 are certifications administered by the Central Board of Indirect Taxes and Customs (CBIC) to speed up customs clearance for compliant importers/exporters",
+        "inserted_by": "GSR 418(E)",
+        "amendment_notified_date": "2026-05-29",
+        "effective_from": "2026-05-29",
+        "checklist_relevance": "Clarifies WHERE imported-product declarations may legally be completed (at a certified bonded warehouse) - relevant context for import-supply-chain compliance, though not directly verifiable from a single product image alone (more of a supply-chain/audit-trail fact than an OCR-checkable field)"
+      }
+    ]
+  },
+  "font_size_rules": {
+    "rule_id": "R7",
+    "source_rule": "Rule 7",
+    "title": "Principal display panel - its area, size and letter etc.",
+    "major_overhaul_note": "Rule 7 sub-rules (2), (3), (4), (5) and Table-I were ALL SUBSTITUTED, and Table-II was OMITTED ENTIRELY, by GSR 629(E), 23.06.2017, effective 01.01.2018. The structure below reflects the CURRENT law - the old separate Table-I (weight/volume) + Table-II (length/area/number) system is GONE, replaced by ONE unified area-based table.",
+    "sub_rule_1": "For packages with capacity <=10 cubic cm, PDP may be a card/tape affixed firmly to the package bearing required information (threshold raised from 5 to 10 cubic cm by GSR 385(E), 14.05.2015; reconfirmed explicitly in Rule 10 by GSR 629(E) too)",
+    "sub_rule_2": "SUBSTITUTED by GSR 629(E), effective 01.01.2018: The height of any numeral AND letter in the declaration shall be as per Table-I (single table now - no more separate weight/volume vs length/area/number tables) FURTHER PROVISO inserted by GSR 778(E), 23.10.2025: for packages containing MEDICAL DEVICES, the Medical Devices Rules 2017 apply for numeral/letter HEIGHT instead of Table-I - LM(PC) Table-I does not govern medical device font-size.",
+    "sub_rule_3": "SUBSTITUTED by GSR 629(E), effective 01.01.2018: width of letter/numeral not less than one-third of its height, except numeral '1' and letters (i), (I), (l) - substance same as before, wording restated FURTHER PROVISO inserted by GSR 778(E), 23.10.2025: for packages containing MEDICAL DEVICES, the Medical Devices Rules 2017 apply for numeral/letter WIDTH instead - same carve-out as height.",
+    "table_1_CURRENT": {
+      "title": "Table-I (CURRENT, replacing old Table-I AND Table-II combined) - Minimum height of numerals and letters, by Principal Display Panel Area",
+      "effective_from": "2018-01-01",
+      "superseded_by": "GSR 629(E), 23.06.2017",
+      "rows": [
+        {
+          "sl_no": 1,
+          "pdp_area_sq_cm": "A <= 50",
+          "min_height_mm_normal": 1.0,
+          "min_height_mm_blown_molded": 2.0,
+          "correction_note": "CORRECTED from 1.5 to 2.0 by corrigendum GSR 1373(E), dated 07.11.2017 - the original GSR 629(E) notification had a printing error here"
+        },
+        {
+          "sl_no": 2,
+          "pdp_area_sq_cm": "50 < A <= 100",
+          "min_height_mm_normal": 1.5,
+          "min_height_mm_blown_molded": 3.0
+        },
+        {
+          "sl_no": 3,
+          "pdp_area_sq_cm": "100 < A <= 500",
+          "min_height_mm_normal": 2.5,
+          "min_height_mm_blown_molded": 4.0
+        },
+        {
+          "sl_no": 4,
+          "pdp_area_sq_cm": "500 < A <= 2500",
+          "min_height_mm_normal": 4.0,
+          "min_height_mm_blown_molded": 6.0
+        },
+        {
+          "sl_no": 5,
+          "pdp_area_sq_cm": "2500 < A",
+          "min_height_mm_normal": 6.0,
+          "min_height_mm_blown_molded": 6.0
+        }
+      ]
+    },
+    "table_2_OLD_HISTORICAL": {
+      "status": "OMITTED entirely by GSR 629(E), 23.06.2017, effective 01.01.2018 - no longer part of current law",
+      "historical_title": "Old Table-II (pre-2018) - Minimum height of numeral - Net quantity in length/area/number",
+      "note": "Kept here for historical reference only - use table_1_CURRENT above for all lookups going forward"
+    },
+    "table_1_OLD_HISTORICAL": {
+      "status": "SUPERSEDED by GSR 629(E) - the pre-2018 Table-I was structured around weight/volume tiers (200g/500g breakpoints), unlike the current area-based Table-I",
+      "historical_rows": [
+        {
+          "sl_no": 1,
+          "net_quantity": "Upto 200g/ml",
+          "min_height_mm_normal": 1,
+          "min_height_mm_blown_molded": 2
+        },
+        {
+          "sl_no": 2,
+          "net_quantity": "Above 200g/ml and upto 500g/ml",
+          "min_height_mm_normal": 2,
+          "min_height_mm_blown_molded": 4
+        },
+        {
+          "sl_no": 3,
+          "net_quantity": "Above 500g/ml",
+          "min_height_mm_normal": 4,
+          "min_height_mm_blown_molded": 6
+        }
+      ]
+    },
+    "sub_rule_4_pdp_area_calculation": {
+      "note": "This is the PDP area-calculation methodology, renumbered from sub-rule (5) to sub-rule (4) by GSR 629(E) - substance is the SAME formula originally inserted by GSR 385(E), just repositioned",
+      "effective_from": "2018-01-01",
+      "title": "Methodology for calculating Principal Display Panel (PDP) area",
+      "exclusions": "Area calculation EXCLUDES: top, bottom, flange at top/bottom of cans, and shoulders/neck of bottles and jars",
+      "formulas": [
+        {
+          "package_shape": "Rectangular package (one side clearly the PDP)",
+          "formula": "height x width of that side"
+        },
+        {
+          "package_shape": "Cylindrical or nearly cylindrical package",
+          "formula": "40% of (height x circumference)"
+        },
+        {
+          "package_shape": "Any other shaped package",
+          "formula": "40% of total surface area, OR the area considered to be the PDP"
+        }
+      ],
+      "engineering_relevance": "CRITICAL for your image-processing engine - this is the exact methodology to compute PDP area from a scanned/photographed package, now used to look up the SINGLE current Table-I above. For cylindrical packages (most common: bottles, cans, tubes) measure height and circumference (or diameter x pi), multiply, take 40%."
+    },
+    "sub_rule_5_exemption_NARROWED": {
+      "note": "SUBSTITUTED by GSR 629(E), effective 01.01.2018 - this NARROWS the old blanket 'other law' exemption",
+      "general_rule": "Rules 7(1)-(4) do not apply if the same info is already required to be given under any other law in force",
+      "critical_carveout": "EXCEPT for: net weight, retail sale price (MRP), date of expiry/best-before/use-by date, and consumer care details - the font-size rules for THESE SPECIFIC FIELDS always apply regardless of any other law's exemption",
+      "checklist_relevance": "Even if a product is governed by another law (e.g., Drugs Rules, Cosmetics Rules) that might otherwise exempt it from LM(PC) font-size rules, these 4 fields (net weight, MRP, expiry date, consumer care) must STILL meet Table-I font-size minimums"
+    },
+    "verify_needed": false,
+    "medical_devices_carveout": {
+      "inserted_by": "GSR 778(E)",
+      "amendment_notified_date": "2025-10-23",
+      "effective_from": "2025-10-23",
+      "note": "CONFIRMS medical devices are fully carved out of LM(PC) Rules for PDP definition (Rule 2(h)) and font-size rules (Rule 7(2)-(3)) - governed instead by the Medical Devices Rules 2017. This formalizes what was earlier only informally discussed/anticipated for your Category 2 scoping decision - medical devices should NOT be built into your Category 1/3/4 checklist engine; they fall under a separate regulatory framework (CDSCO/Medical Devices Rules 2017), consistent with your original scoping decision to exclude a full Category 2."
+    }
+  },
+  "declaration_placement": {
+    "rule_id": "R8",
+    "source_rule": "Rule 8",
+    "requirement": "Every declaration must appear on Principal Display Panel. Area surrounding quantity declaration must be free from printed information: (a) above/below by space >= height of numeral, (b) left/right by space >= twice height of numeral."
+  },
+  "declaration_manner": {
+    "rule_id": "R9",
+    "source_rule": "Rule 9",
+    "requirements": [
+      "Legible and prominent (9(1)(a))",
+      "MRP and net quantity numerals printed/painted/inscribed in a colour that contrasts conspicuously with label background (9(1)(b))",
+      "Exception: blown/formed/molded info on glass/plastic need not be contrasting colour",
+      "Exception: handwritten/hand-script declarations must be clear, unambiguous, legible",
+      "No declaration may require reading through liquid commodity (9(2))",
+      "Outer container/wrapper must also carry all required declarations (9(3))",
+      "Rule 9(3) proviso OMITTED by GSR 385(E), 14.05.2015 - exact original proviso text not available from source document",
+      "NEW proviso INSERTED by GSR 629(E), 23.06.2017, effective 01.01.2018: no declaration is required on the INNER package if the OUTER package already contains ALL declarations required under these rules - i.e., inner packages can be declaration-free if the outer wrapper is fully compliant"
+    ]
+  },
+  "quantity_declaration_rules": [
+    {
+      "rule_id": "R10",
+      "source_rule": "Rule 10",
+      "title": "Declaration of name and address of manufacturer",
+      "requirement": "Conspicuous display of name+complete address of manufacturer (or manufacturer+packer if different; or importer if imported)",
+      "small_package_exception": "For packages <=10 cubic cm capacity (explicitly confirmed/reconfirmed as '10 cubic cm' by GSR 629(E), 23.06.2017, effective 01.01.2018 - closes earlier inconsistency where R7/R12 said 10cc but R10 hadn't been explicitly updated), a mark/inscription enabling consumer identification is sufficient",
+      "foreign_made_local_pack": "If commodity manufactured outside India but packed in India, PDP must also show name+address of Indian packer/importer",
+      "complete_address_definition": "FURTHER AMENDED by GSR 629(E), 23.06.2017, effective 01.01.2018 (Explanation renumbered as 'Explanation 1'): postal address at which the factory is situated OR company/firm is registered (BROADENED again - GSR 385(E) had narrowed this to registered-address-only in 2016; GSR 629(E) now allows EITHER factory location OR registered address); or street name + premises number + city/state + PIN code",
+      "name_requirement": "Must be actual corporate name, or trading name if unincorporated",
+      "mandatory": true,
+      "complete_address_amendment_history": [
+        {
+          "amended_by": "GSR 385(E)",
+          "effective_from": "2016-01-01",
+          "change": "'factory situated' -> 'company/firm registered' (narrowed)"
+        },
+        {
+          "amended_by": "GSR 629(E)",
+          "effective_from": "2018-01-01",
+          "change": "broadened to 'factory situated OR company/firm registered' (either now acceptable)"
+        }
+      ]
+    },
+    {
+      "rule_id": "R11",
+      "source_rule": "Rule 11",
+      "title": "General provisions relating to declaration of quantity",
+      "points": [
+        "Net quantity excludes weight of wrappers/packaging materials",
+        "If commodity quantity doesn't vary with environment: declared qty = actual received qty, no 'when packed' qualifier allowed",
+        "If variation is negligible: declare qty accounting for variation so consumer gets >= declared quantity, still no 'when packed' qualifier",
+        "If variation is significant (per Third Schedule list): 'when packed' qualifier IS permitted"
+      ]
+    },
+    {
+      "rule_id": "R12",
+      "source_rule": "Rule 12",
+      "title": "Manner of quantity declaration",
+      "points": [
+        "Unit must give accurate/adequate info: mass (solid/semi-solid/viscous), length (linear sale), area, volume (liquid/cubic), or number (count-sale) - except Fourth Schedule commodities",
+        "If declared by mass, manufacturer MAY optionally also declare item count",
+        "If weight/measure/number alone is insufficient, must also declare dimensions/number as needed",
+        "Additional consumer-relevant info must appear on same panel as other required declarations",
+        "PROHIBITED words that create exaggerated/misleading/inadequate impression: 'minimum', 'not less than', 'average', 'about', 'approximately' or similar. AMENDED by GSR 784(E), 24.10.2011 (eff. 01.07.2012): broadened to 'any word or expression of any sort whatsoever' - not limited to the listed examples, any term creating a misleading impression is prohibited",
+        "For packages <=10 cubic cm (reconfirmed by GSR 629(E), 23.06.2017, effective 01.01.2018): quantity declared on a tag/card/tape affixed such that it cannot be removed without opening container; must also carry manufacturer/packer identification"
+      ],
+      "checklist_relevance": "The prohibited-words rule (point 5 above) is a directly checkable NLP/text-matching rule for your compliance engine - flag any label containing these terms near quantity declarations"
+    },
+    {
+      "rule_id": "R13",
+      "source_rule": "Rule 13",
+      "title": "Statement of units of weight, measure or number",
+      "unit_rules": {
+        "below_1kg": "grams",
+        "below_1m": "centimetre",
+        "below_1sqm": "square decimetre",
+        "below_1cubic_m": "cubic centimetre",
+        "below_1cubic_dm": "cubic centimetre",
+        "below_1L": "millilitre",
+        "1kg_or_more": "kilogram (fractions as decimal or grams)",
+        "1m_or_more": "metre (fractions as decimal or cm)",
+        "1sqm_or_more": "square metre (fractions as decimal)",
+        "1cubic_m_or_more": "cubic metre (fractions as decimal)",
+        "1L_or_more": "litre (fractions as decimal)"
+      },
+      "prohibited": "No 'dozen', 'score', 'gross', 'great gross' or similar count-words permitted on any package",
+      "system": "Only International System of Units (SI) permitted for net quantity",
+      "number_symbol": "SUBSTITUTED by GSR 779(E), 02.11.2021, effective 01.04.2022 (Rule 13(5)(ii)): for items sold by number, the word 'number', 'unit', 'piece', 'pair', 'set', or such other word representing the quantity shall be mentioned. CHANGE: previously required a fixed symbol ('N' or 'U'); now requires a descriptive WORD instead of a symbol",
+      "litre_symbol_clarification": "INSERTED by GSR 385(E), 14.05.2015 as Explanation to Rule 13(5): capital letter 'L' may be used for litre to avoid confusion with lowercase 'l' (letter I) and figure '1'",
+      "checklist_relevance": "Directly checkable: unit must be SI-compliant; flag if 'dozen'/'gross'/'score' appears; litre symbol 'L' (capital) is acceptable; for count-based items, look for descriptive words (number/unit/piece/pair/set) rather than the old N/U symbol convention"
+    },
+    {
+      "rule_id": "R13_6",
+      "source_rule": "Rule 13(6)",
+      "title": "Supplementary quantity declaration for multi-pack prepackages",
+      "requirement": "Where a prepackage contains multiple packages of the same commodity, the number of packages AND the quantity of each individual package must be indicated as a supplementary declaration",
+      "example": "If net quantity of each individual package is 10 grams and there are 10 such packages, the label must show '10 number x 10 gram' (number of packages multiplied by individual weight)",
+      "inserted_by": "GSR 385(E)",
+      "amendment_notified_date": "2015-05-14",
+      "mandatory": "conditional - applies to multi-pack prepackages",
+      "category_relevance": "Relevant to Category 1/4 multi-pack products (e.g., biscuit multipacks, snack combo packs) - directly checkable format: 'N number x Q unit'"
+    },
+    {
+      "rule_id": "R14",
+      "source_rule": "Rule 14",
+      "title": "Dimensions for specific commodities",
+      "applies_to": "Bed-sheets, hemmed fabric materials, dhoties, sarees, napkins, pillow-covers, towels, table cloths, similar commodities",
+      "requirement": "Number and finished-size dimensions must be declared on package/label",
+      "multi_piece_proviso": "If package contains pieces of different dimensions, must declare dimensions AND retail sale price of EACH piece; dimensions+price must also be marked on each individual piece",
+      "category_relevance": "Directly relevant to Category 3 (Apparel/Textiles) checklist - saree/bedsheet/towel dimension+price-per-piece rule"
+    },
+    {
+      "rule_id": "R26_f_and_garment_labeling",
+      "source": "Rule 26(f) - CODIFIED BY LAW via GSR 648(E), 22.08.2022, effective 01.01.2023 (voluntary early adoption permitted immediately per the notification's own text). Department of Consumer Affairs advisory letters (2016-2017, referenced separately below) were the INFORMAL PRECURSOR to this now-formal rule.",
+      "source_type": "Formal Rule 26(f) exemption clause (legally binding) - UPGRADED from the earlier informal advisory-letter guidance",
+      "title": "Loose vs Pre-packaged Garment/Hosiery Labeling Requirements (NOW A FORMAL RULE 26(f) EXEMPTION)",
+      "core_principle": "Rule 26(f) formally EXEMPTS garments/hosiery sold loose or open (where the consumer can inspect before buying) from the full Chapter II declarations, SUBJECT TO a reduced, legally mandated 4-point declaration set (see current_legal_checklist below). This supersedes the earlier informal advisory letters, which addressed the same practical question but without the force of a codified Rule.",
+      "pre_packaged_test": "A garment that the consumer sees for style/design, tries on for fit, and touches/feels the fabric before purchase, and is then delivered to the consumer, is NOT a pre-packaged commodity (i.e., in-store try-on garments = loose, not pre-packaged)",
+      "loose_garment_checklist": {
+        "effective_from": "2017-07-01",
+        "note": "LIMITED declaration set - NOT the full Rule 6 checklist",
+        "required_fields": [
+          {
+            "field": "Name/Description of product",
+            "example": "Men's T-Shirt, Saree, Casual Footwear"
+          },
+          {
+            "field": "Size",
+            "requirement": "Internationally recognizable size indicator (S/M/L/XL etc.) ALONG WITH metric notation in cm or m. 'TO FIT SIZE' may be used instead of just 'Size', at trade's convenience"
+          },
+          {
+            "field": "MRP",
+            "requirement": "Standard MRP declaration"
+          },
+          {
+            "field": "Manufacturer details",
+            "requirement": "Name, full address, and Customer Care number of the manufacturer"
+          }
+        ]
+      },
+      "pre_packaged_garment_checklist": {
+        "note": "FULL Rule 6 declarations apply (see R6_1_a through R6_11, R14) for garments that ARE pre-packaged (not loose/open-for-inspection) - this is the standard checklist, not a reduced one",
+        "size_declaration_rule": "Metric units (cm or m) are the PRIMARY/required size declaration (per Rule 14); S/M/L/XL etc. may be shown as ADDITIONAL information only, not as a substitute for metric dimensions"
+      },
+      "checklist_relevance": "CRITICAL for Category 3 architecture - confirms the two-tier checklist structure: (1) Pre-check whether garment is loose/open-for-inspection (finished product) or pre-packaged, (2) Route to the appropriate checklist - loose garments get the LEGALLY-BINDING 4-field check above (Rule 26(f)), pre-packaged garments get the full Rule 6 checklist with metric-primary sizing. If sold online, both categories also trigger the e-commerce display requirement.",
+      "current_legal_checklist": [
+        {
+          "effective_from": "2023-01-01",
+          "early_adoption": "Manufacturers/packers/importers may declare this information with IMMEDIATE EFFECT even before the formal 01.01.2023 commencement date (per the notification's final proviso)",
+          "applies_to": "Finished products ONLY (per proviso - raw/unfinished textile goods are not covered by this exemption)",
+          "required_fields": [
+            {
+              "field": "Name and address",
+              "requirement": "Of the manufacturer, OR marketer, OR brand owner, OR importer (any one) - PLUS country of origin/manufacture if the product is imported"
+            },
+            {
+              "field": "Consumer care contact",
+              "requirement": "BOTH an email ID AND a phone number required (stricter than the earlier advisory, which only generically required a 'customer care no.')"
+            },
+            {
+              "field": "Size",
+              "requirement": "SUBSTITUTED by GSR 722(E), 06.10.2023 (item iii): size may be declared EITHER as metric notation (cm or m) ALONE, OR as internationally recognizable size indicators (S/M/L/XL/XXL/XXXL) ALONG WITH metric notation - metric-only is now sufficient by itself; letter-size is an optional addition, not mandatory alongside metric (loosened from the original GSR 648(E) wording which required both together)"
+            },
+            {
+              "field": "MRP",
+              "requirement": "Maximum retail price inclusive of all taxes, in Indian currency"
+            }
+          ],
+          "ecommerce_requirement": "If such a loose garment/hosiery product is sold via e-commerce, the SAME information must ALSO be displayed on the e-commerce website - directly ties to Rule 6(10)'s e-commerce declaration requirement and your listing-mismatch feature"
+        }
+      ],
+      "historical_advisory_precursor": {
+        "note": "The Department of Consumer Affairs issued 2 advisory/clarification letters in 2016-2017 addressing this same loose-vs-pre-packaged question BEFORE it was formally codified as Rule 26(f). Key concepts carried forward into the formal rule:",
+        "pre_packaged_test": "A garment that the consumer sees for style/design, tries on for fit, and touches/feels the fabric before purchase, and is then delivered to the consumer, is NOT a pre-packaged commodity (i.e., in-store try-on garments = loose, not pre-packaged) - this practical test remains a useful interpretive guide even though Rule 26(f) itself doesn't repeat this exact wording",
+        "wording_flexibility": "'TO FIT SIZE' may be used instead of just 'Size', per the original advisory - not explicitly repeated in Rule 26(f) but not contradicted either"
+      }
+    },
+    {
+      "rule_id": "R15",
+      "source_rule": "Rule 15",
+      "title": "Dimensions/weight where linked to price",
+      "requirement": "Where dimensions and/or weight has a relationship to the commodity's price, the quantity declaration must also include that dimension/weight/combination"
+    },
+    {
+      "rule_id": "R16",
+      "source_rule": "Rule 16",
+      "title": "Number of usable sheets",
+      "applies_to": "Aluminum foil, facial tissues, waxed paper, toilet paper, or similar sheet-type commodities",
+      "requirement": "Must declare number of usable sheets AND dimensions of each sheet"
+    },
+    {
+      "rule_id": "R17",
+      "source_rule": "Rule 17",
+      "title": "Dimensions for container-type commodities",
+      "applies_to": "Bags, boxes, cups, pans or similar items sold as containers for other materials",
+      "requirements": [
+        "Bag-type: number of bags + linear dimensions (whether in perforated roll or otherwise)",
+        "Square/oblong/rectangular containers: number of containers + length, width, and depth if required",
+        "Circular/round containers (not cups): number + diameter, and depth if necessary",
+        "If container's holding capacity is referenced via standard weight/measure on label, that reference must be included in the quantity declaration"
+      ]
+    }
+  ],
+  "third_schedule_when_packed_qualifier": {
+    "source_rule": "Third Schedule [See Rule 11(4)]",
+    "title": "Declaration of quantity (sold by weight or volume) which may be qualified by the words 'When packed'",
+    "note": "Commodities in this list are permitted to use the 'When packed' qualifier per Rule 11(4), since their weight/volume may vary significantly due to environmental conditions",
+    "commodities": [
+      {
+        "sl_no": 1,
+        "commodity": "All kinds of Soaps"
+      },
+      {
+        "sl_no": 2,
+        "commodity": "Lotions"
+      },
+      {
+        "sl_no": 3,
+        "commodity": "Cream (other than cream of milk)"
+      },
+      {
+        "sl_no": 4,
+        "commodity": "Camphor",
+        "inserted_by": "GSR 385(E), 14.05.2015"
+      }
+    ]
+  },
+  "first_schedule_permissible_errors": {
+    "source_rule": "First Schedule [See Rule 2(e)]",
+    "verify_needed": false,
+    "part_1_weight_volume": {
+      "title": "Maximum permissible errors on net quantities declared by weight or by volume",
+      "rows": [
+        {
+          "sl_no": "i",
+          "declared_qty_g_or_ml": "up to 50",
+          "max_error_percent": 9,
+          "max_error_g_or_ml": null
+        },
+        {
+          "sl_no": "ii",
+          "declared_qty_g_or_ml": "50 to 100",
+          "max_error_percent": null,
+          "max_error_g_or_ml": 4.5
+        },
+        {
+          "sl_no": "iii",
+          "declared_qty_g_or_ml": "100 to 200",
+          "max_error_percent": 4.5,
+          "max_error_g_or_ml": null
+        },
+        {
+          "sl_no": "iv",
+          "declared_qty_g_or_ml": "200 to 300",
+          "max_error_percent": null,
+          "max_error_g_or_ml": 9
+        },
+        {
+          "sl_no": "v",
+          "declared_qty_g_or_ml": "300 to 500",
+          "max_error_percent": 3,
+          "max_error_g_or_ml": null
+        },
+        {
+          "sl_no": "vi",
+          "declared_qty_g_or_ml": "500 to 1000",
+          "max_error_percent": null,
+          "max_error_g_or_ml": 15
+        },
+        {
+          "sl_no": "vii",
+          "declared_qty_g_or_ml": "1000 to 10000",
+          "max_error_percent": 1.5,
+          "max_error_g_or_ml": null
+        },
+        {
+          "sl_no": "viii",
+          "declared_qty_g_or_ml": "10000 to 15000",
+          "max_error_percent": null,
+          "max_error_g_or_ml": 150
+        },
+        {
+          "sl_no": "ix",
+          "declared_qty_g_or_ml": "More than 15000",
+          "max_error_percent": 1.0,
+          "max_error_g_or_ml": null
+        }
+      ],
+      "rounding_rule": "Percentage-based error rounded to nearest one-tenth of g/ml for quantities <=1000 g/ml; rounded to next whole g/ml for quantities above 1000 g/ml"
+    },
+    "part_2_length_area_number": {
+      "title": "Maximum permissible errors on net quantities declared by length, area or number",
+      "applies_to": "Commodities not specified in the First Schedule (Part 1)",
+      "rows": [
+        {
+          "sl_no": "i",
+          "quantity_type": "Length",
+          "max_error": "2% of declared quantity up to 10 metre, thereafter 1% of declared quantity"
+        },
+        {
+          "sl_no": "ii",
+          "quantity_type": "Area",
+          "max_error": "4% of declared quantity up to 10 sq. metre, thereafter 1% of declared quantity"
+        },
+        {
+          "sl_no": "iii",
+          "quantity_type": "Number",
+          "max_error": "2% of declared quantity"
+        }
+      ]
+    }
+  },
+  "known_gaps": [
+    {
+      "gap_id": "GAP_1",
+      "source": "GSR 784(E), 24.10.2011 (Third Amendment Rules, 2011), clause (b)",
+      "issue": "Text read 'in clause (d), sub-rule (1) third proviso shall be omitted' - did not specify which Rule.",
+      "status": "RESOLVED via corrigendum GSR 832(E), 23.11.2011 - confirmed to mean Rule 6(1)(d), third proviso (the rubber-stamp allowance for mfg date marking). Applied to R6_1_d entry above."
+    },
+    {
+      "gap_id": "GAP_2",
+      "source": "GSR 779(E), 02.11.2021, effective 01.04.2022",
+      "issue": "Rule 5 (the rule making Second Schedule standard-quantity packing mandatory) was entirely OMITTED. This is surprising/consequential enough that it should be independently verified against a current consolidated source before treating 'Standard Quantity Compliance' as a hard-fail checklist item for Category 1/4.",
+      "status": "RESOLVED via GSR 226(E), 28.03.2022, effective 01.10.2022 - clause 5 explicitly states 'THE SECOND SCHEDULE shall be omitted.' This CONFIRMS the earlier finding: not only was Rule 5 (the enabling rule) omitted by GSR 779(E), but the Second Schedule table itself is now formally omitted too. Standard Quantity Compliance is DEFINITIVELY not an operative legal requirement as of 01.10.2022.",
+      "action_needed": "Cross-check against a post-2022 consolidated version of the Rules, or a legal database, to confirm Rule 5 remains omitted and no later amendment reinstated it or replaced it with an equivalent provision.",
+      "resolution_date": "2024-01-01"
+    },
+    {
+      "gap_id": "GAP_3",
+      "source": "Referenced in GSR 60(E), 27.01.2023's own 'Note' section",
+      "issue": "GSR 910(E), dated 29.12.2022, is referenced as the amendment immediately preceding GSR 60(E) in the chain, but has NOT been provided/processed. Its content is inferred ONLY from GSR 60(E)'s text (which tells us it changed the commencement date to '1st day of February, 2023'). We don't know if GSR 910(E) contained ANY other substantive changes beyond this date push - given the pattern of GSR 226(E)/747(E)/859(E) being pure date-pushes, GSR 910(E) is LIKELY also just a date-push, but this is an assumption, not confirmed.",
+      "status": "OPEN - awaiting the actual GSR 910(E) document to confirm no other content was missed",
+      "action_needed": "If you have or can find GSR 910(E) dated 29.12.2022, send it so we can confirm it's purely a date correction and close this gap definitively."
+    }
+  ],
+  "amendment_changelog": [
+    {
+      "gsr": "202(E)",
+      "date": "2011-03-07",
+      "effect_date": "2011-04-01",
+      "summary": "Base notification - principal rules"
+    },
+    {
+      "gsr": "318(E)",
+      "date": "2011-04-13",
+      "summary": "Rule 6(6) inserted - transitional grace period to exhaust old packaging (deadline 30.09.2011). SPENT/EXPIRED, no current effect."
+    },
+    {
+      "gsr": "734(E)",
+      "date": "2011-09-30",
+      "summary": "Rule 6(6) deadline extended to 31.03.2012. SPENT/EXPIRED, no current effect."
+    },
+    {
+      "gsr": "784(E)",
+      "date": "2011-10-24",
+      "effect_date": "2012-07-01",
+      "summary": "Third Amendment Rules 2011. (a) Rule 5 non-standard-size proviso OMITTED - Second Schedule commodities now MUST use only standard quantities, no exceptions. (b) Rule 6(1)(d) third proviso OMITTED (rubber-stamp allowance removed) - clarified via corrigendum GSR 832(E). (c) Rule 12(6) broadened to 'any word/expression of any sort whatsoever'. (d)(e) Rule 19(7)(8) inspection procedure changes - Bucket B, skipped. (f) Rule 26(a) proviso OMITTED - 10g-20g packages no longer need MRP+net qty despite exemption. (g) Fourth Schedule Sl.15 unit correction - Bucket B, skipped.",
+      "status": "MAJOR - applied to JSON"
+    },
+    {
+      "gsr": "832(E)",
+      "date": "2011-11-23",
+      "summary": "Corrigendum to GSR 784(E) - wording fixes only, no new substantive change. Clarified clause (b) refers to Rule 6(1)(d); clarified clause (d) wording (Rule 19(7), Bucket B, no impact).",
+      "status": "Clarification only - resolved GAP_1"
+    },
+    {
+      "gsr": "427(E)",
+      "date": "2012-06-05",
+      "summary": "MAJOR amendment. (a) Rule 5 renumbered as 5(1); new 5(2) promotional-pack rule and 5(3) value-based-pack (Rs.1-10) exception inserted. (b)(i) 'Prevention of Food Adulteration Act 1954' replaced with 'Food Safety and Standards Act 2006' throughout Rule 6. (b)(ii) New Rule 6(7) - GM food 'GM' mark required on PDP, effective 01.01.2013. (c) Rule 33 relaxation power extended - Bucket B, skipped. (d) ENTIRE Second Schedule replaced with new, more granular table. (e) Fourth Schedule Sl.15 correction - Bucket B, skipped.",
+      "status": "MAJOR - applied to JSON"
+    },
+    {
+      "gsr": "426(E)",
+      "date": "2012-06-05",
+      "summary": "Amendment TO the Third Amendment Rules 2011 (GSR 784(E) itself, not the principal rules directly). (i) Confirms GSR 784(E)'s general effective date as 01.07.2012. (ii) Gives Rule 5 proviso-removal its OWN specific later effective date: 01.11.2012, overriding the general date for that one clause.",
+      "status": "MINOR but date-critical - corrected effective_from date in JSON"
+    },
+    {
+      "gsr": "359(E)",
+      "date": "2013-06-06",
+      "summary": "MAJOR. (a) Rule 2 - formal definitions inserted for 'industrial consumer' (2bb) and 'institutional consumer' (2bc); Rule 2(k) retail_package proviso omitted (structural cleanup). (b) Rule 3 Explanation omitted (definitions moved to Rule 2, same substance). (c) Rule 18(8) LPG cylinder check-weigher requirement, eff. 01.07.2013 - Bucket B, skipped. (d) Rule 32(3) compounding-of-offences table inserted - Bucket B, skipped. (e) Second Schedule expanded: Sl.2/3/7/9/10/12 quantities added, Sl.8 (Tea) fully replaced, Sl.16 cans-only restriction on 330ml removed.",
+      "status": "MAJOR - applied to JSON"
+    },
+    {
+      "gsr": "137",
+      "date": "2014-06-16",
+      "effect_date": "2014-07-01",
+      "summary": "New Rule 6(8) inserted - veg/non-veg RED/GREEN dot mandatory on soap, shampoo, toothpaste, cosmetics and toiletries.",
+      "status": "MAJOR - applied to JSON as R6_8"
+    },
+    {
+      "gsr": "870(E)",
+      "date": "2014-12-04",
+      "summary": "New Rule 26(e) inserted - thread sold in coil to handloom weavers is exempt from Chapter II.",
+      "status": "APPLIED to JSON as R26_e"
+    },
+    {
+      "gsr": "385(E)",
+      "date": "2015-05-14",
+      "summary": "MAJOR - 13 clauses. Rule 2: industrial/institutional consumer definitions broadened (importer/wholesale dealer sourcing added) + NEW 'not for retail sale' label requirement; retail food package now follows FSS Act definition. Rule 6(2) restated (eff 01.01.2016); NEW Rule 6(9) - imported package labels permitted. Rule 7(1): small-package threshold 5cc->10cc; NEW Rule 7(5) - PDP area calculation formulas for rectangular/cylindrical/other shapes (eff 01.01.2016) - CRITICAL for image-processing engine. Rule 9(3) proviso omitted (text unavailable). Rule 10(1): 'complete address' redefined from factory location to registered address (eff 01.01.2016). Rule 12(7): 5cc->10cc threshold. Rule 13: litre='L' clarification; NEW Rule 13(6) multi-pack supplementary declaration (N number x Q unit). Rule 26(a): NEW proviso - tobacco/tobacco products excluded from <=10g/10ml exemption (eff 01.01.2016). Rule 32/33: procedural, Bucket B, skipped. Second Schedule Sl.12 (non-soapy detergents) replaced again. Third Schedule: Camphor added as Sl.4.",
+      "status": "MAJOR - applied to JSON"
+    },
+    {
+      "gsr": "858(E)",
+      "date": "2016-09-07",
+      "summary": "MINOR/NICHE. Two precedence provisos: (a) Rule 5(1) - if Competent Authority under Essential Commodities Act 1955 fixes/notifies standard quantity for an essential commodity, that overrides Second Schedule. (b) Rule 6(1)(e) - if Competent Authority fixes/notifies retail price for an essential commodity, that overrides manufacturer MRP. Both are override rules requiring live external government notification data to check in practice - flagged as known limitation, not building live lookup for this.",
+      "status": "APPLIED to JSON (as documentation/limitation note)"
+    },
+    {
+      "gsr": "629(E)",
+      "date": "2017-06-23",
+      "effect_date": "2018-01-01",
+      "summary": "MASSIVE amendment - landmark restructuring. Rule 2: NEW 'Consumer' def, institutional consumer tightened ('not for retail sale' label + not-for-commercial-purposes), NEW e-commerce/e-commerce-entity/marketplace-model defs, MRP def simplified. Rule 3 ENTIRELY SUBSTITUTED: agricultural farm produce explicitly added to >50kg exclusion. Rule 6: Explanation III strengthened (food fully excluded, FSS Act governs), NEW country-of-origin field (6(1)(aa)), NEW best-before/use-by date field (6(1)(da)) with definitions, MRP illustrations added, NEW optional declarations (barcode/QR/e-code/govt logos, 6(4A)), NEW E-COMMERCE DECLARATION RULE (6(10)) with marketplace safe-harbor - core legal basis for e-commerce/listing-mismatch feature. Rule 7: MAJOR OVERHAUL - old Table-I (weight/volume) + Table-II (length/area/number) system REPLACED by single unified area-based Table-I; PDP-area-calculation formula renumbered to sub-rule(4); exemption for 'other law' NARROWED - net weight/MRP/expiry/consumer care always need font compliance regardless. Rule 9(3): new proviso - inner package declarations not needed if outer package fully compliant. Rule 10: 10cc threshold reconfirmed explicitly; complete-address definition broadened again (factory OR registered, reversing 385(E)'s narrowing). Rule 18: NEW 1A (wholesale-to-institutional sales allowed), NEW 2A (anti-differential-pricing rule). Rule 19/20: inspection procedure substituted - Bucket B, skipped. Rule 26(c): drug exemption updated to Price Control Order 2013, medical devices EXCLUDED from drug exemption. Rule 26(d) OMITTED (moved to Rule 3(b)). Rule 32 substituted + new 32A: flat fine Rs 5000 + compounding table - Bucket B, logged only. Second Schedule Sl.10: further quantities added (550/600/650 g and ml). Fifth/Sixth/Seventh Schedule: statistical testing/sampling formulas - Bucket B, skipped.",
+      "status": "MAJOR - applied to JSON (most comprehensive amendment processed to date)"
+    },
+    {
+      "gsr": "779(E)",
+      "date": "2021-11-02",
+      "effect_date": "2024-01-01",
+      "summary": "MAJOR. Rule 2(aa) 'Consumer' definition reference updated (Consumer Protection Act 1986 -> 2019 Act, since 1986 Act was repealed). Rule 4 renumbered as 4(1); NEW Rule 4(2) inserted - promotional multi-pack grouping rule (relocated here from old Rule 5(2)). **RULE 5 ENTIRELY OMITTED** - the rule that made Second Schedule standard-quantity packing mandatory no longer has legal force; flagged as a critical finding requiring verification before treating Second Schedule as a hard compliance requirement. Rule 6(1)(d): words 'or pre-packed or imported' removed - now specifically means month/year of MANUFACTURE only. Rule 6(1)(e): detailed MRP illustration wording (added by GSR 629(E) just 4 years earlier) REPLACED with simpler 'in Indian currency' requirement. NEW Rule 6(11): unit sale price format rules (Rs.__ per g/kg/cm/metre/number/ml/litre depending on quantity threshold). Rule 13(5)(ii): number symbol requirement changed from fixed 'N'/'U' symbols to descriptive words (number/unit/piece/pair/set). Rule 18(2A): Consumer Protection Act reference updated (1986->2019 Act clause numbers). Rule 18(7): 'VAT/TOT' terminology updated to 'Goods and Service Tax' (GST), reflecting 2017 tax reform.",
+      "status": "MAJOR - applied to JSON, including a critical flag on Rule 5's omission"
+    },
+    {
+      "gsr": "1373(E)",
+      "date": "2017-11-07",
+      "summary": "Corrigendum to GSR 629(E). (i) Table-I row 1 (PDP area <=50 cm2) blown/molded column corrected from 1.5mm to 2.0mm - APPLIED to JSON. (ii)(a) Page 12 line 26: sub-clause reference '(i)' corrected to '(ii)' - minor numbering fix, exact context not fully clear from corrigendum text alone, no substantive content change identified, not altering JSON beyond noting it. (ii)(b) Page 12 line 29: 'clause (c)' corrected to 'clause (nnn) and clause (r), respectively' - this is the Consumer Protection Act 1986 citation in Rule 18(2A) - APPLIED to JSON (R18_2A amendment history corrected to show the right sequence: original typo -> this corrigendum's fix -> later updated to 2019 Act by GSR 779(E)).",
+      "status": "CLARIFICATION/CORRECTION - applied to JSON (Table-I value + R18_2A citation history)"
+    },
+    {
+      "gsr": "226(E)",
+      "date": "2022-03-28",
+      "effect_date": "2024-01-01",
+      "summary": "MAJOR/LANDMARK. Rule 1(2): GSR 779(E)'s commencement date pushed from 01.04.2022 to 01.10.2022 - all dates tracing to GSR 779(E) corrected accordingly throughout this JSON. Rule 6(11) SUBSTITUTED again (just 4 months after GSR 779(E) inserted it): added 2-decimal rounding rule for unit sale price, NEW proviso for alcoholic beverages (State Excise Laws apply), NEW proviso exempting unit-price declaration when MRP equals unit price. Rule 33(2) omitted - Bucket B, logged only. **SECOND SCHEDULE FORMALLY OMITTED (clause 5)** - this RESOLVES GAP_2: confirms Second Schedule standard-quantity table has NO legal force from 01.10.2022, on top of Rule 5 (its enabling rule) already being omitted by GSR 779(E). Clause 6: prosecution moratorium protecting good-faith compliance with GSR 779(E) from the original 01.04.2022 date despite the date push-back.",
+      "status": "MAJOR - applied to JSON, GAP_2 RESOLVED"
+    },
+    {
+      "gsr": "577(E)",
+      "date": "2022-07-14",
+      "effect_date": "2022-07-14",
+      "summary": "MINOR/TIME-LIMITED, NOW EXPIRED. Introduced a QR-code declaration pilot specifically for ELECTRONIC PRODUCTS manufactured/packed/imported AFTER 15 July 2022, valid for ONE YEAR from that date (window closed ~mid-2023). During the window: manufacturer/packer/importer NAME, and consumer-care PHONE+EMAIL had to stay printed on-package, but ADDRESS, common/generic NAME, and DIMENSIONS could be deferred to a QR code instead, provided the package told the consumer to scan for that info. Captured for historical completeness (Category 4/electronics relevance) but not currently actionable since the window has expired.",
+      "status": "APPLIED to JSON as a historical/expired provision"
+    },
+    {
+      "gsr": "648(E)",
+      "date": "2022-08-22",
+      "effect_date": "2023-01-01",
+      "summary": "MAJOR for Category 3 - formally CODIFIES into law what was previously only informal advisory guidance (2016-2017 letters). New Rule 26(f): garments/hosiery sold loose/open (consumer can inspect before buying), FINISHED PRODUCTS ONLY, are exempted from full Chapter II declarations SUBJECT TO a mandatory 4-field reduced checklist: (i) name+address of manufacturer/marketer/brand-owner/importer + country of origin if imported, (ii) consumer care EMAIL and PHONE (both required), (iii) size (S/M/L/XL/XXL/XXXL) + metric notation, (iv) MRP inclusive of all taxes in Indian currency. If sold via e-commerce, same info must also appear on the website. Early voluntary adoption permitted immediately (before the 01.01.2023 formal date). Upgraded the earlier garment_labeling_advisory JSON section to reflect this as the now-authoritative legal source, with the advisory letters kept as historical precursor/interpretive context.",
+      "status": "MAJOR - applied to JSON, upgraded advisory-based section to formal rule status"
+    },
+    {
+      "gsr": "747(E)",
+      "date": "2022-09-30",
+      "summary": "Date push-back only, no substantive rule change. GSR 226(E) had set its own commencement date (Rule 1(2)) as 01.10.2022. GSR 747(E) substitutes that date again, to 01.12.2022. This affects the effective_from date of everything GSR 226(E) touched: Rule 6(11) resubstitution (2-decimal rounding, alcoholic beverage carve-out, MRP-equals-unit-price exemption), Rule 33(2) omission, and the SECOND SCHEDULE omission (GAP_2 resolution). All corrected from 2022-10-01 to 2022-12-01 throughout the JSON.",
+      "status": "MINOR - date correction only, applied to JSON"
+    },
+    {
+      "gsr": "859(E)",
+      "date": "2022-11-30",
+      "summary": "Date push-back only, no substantive rule change. GSR 226(E)'s commencement date (already pushed by GSR 747(E) to 01.12.2022) is substituted again to 01.01.2023. This is the THIRD date revision for the same commencement clause (original GSR 779(E) date 01.04.2022 -> GSR 226(E) pushed to 01.10.2022 -> GSR 747(E) pushed to 01.12.2022 -> GSR 859(E) pushed to 01.01.2023, final). All effective_from/effect_date fields tracing to GSR 226(E)/779(E) corrected from 2022-12-01 to 2023-01-01. Note: this now aligns with GSR 648(E)'s Rule 26(f) effective date, also 01.01.2023.",
+      "status": "MINOR - date correction only, applied to JSON"
+    },
+    {
+      "gsr": "60(E)",
+      "date": "2023-01-27",
+      "summary": "Date push-back only, no substantive rule change (based on available text). GSR 226(E)'s commencement date - already pushed multiple times (see chain: 01.04.2022 -> 01.10.2022 -> 01.12.2022 -> 01.01.2023 via GSR 859(E) -> 01.02.2023 via GSR 910(E), NOT YET SEEN, see GAP_3 -> 01.04.2023 via this GSR 60(E), final) - substituted again to 01.04.2023. All effective_from/effect_date fields tracing to the GSR 226(E)/779(E) chain corrected accordingly. Does NOT affect GSR 648(E)'s separate Rule 26(f) garment exemption (still effective 01.01.2023).",
+      "status": "MINOR - date correction applied to JSON; flagged GSR 910(E) as a missing document (GAP_3)"
+    },
+    {
+      "gsr": "214(E)",
+      "date": "2023-03-24",
+      "summary": "Date push-back only, no substantive rule change. GSR 226(E)'s commencement date pushed again: 01.04.2023 -> 01.06.2023 (final at this point). Full chain so far: 01.04.2022 (GSR 779(E)) -> 01.10.2022 (GSR 226(E)) -> 01.12.2022 (GSR 747(E)) -> 01.01.2023 (GSR 859(E)) -> 01.02.2023 (GSR 910(E), MISSING/GAP_3) -> 01.04.2023 (GSR 60(E)) -> 01.06.2023 (GSR 214(E)). All effective_from/effect_date fields tracing to this chain corrected. GSR 648(E)'s Rule 26(f) date (01.01.2023) unaffected.",
+      "status": "MINOR - date correction only, applied to JSON"
+    },
+    {
+      "gsr": "412(E)",
+      "date": "2023-06-05",
+      "summary": "Date push-back only, no substantive rule change. GSR 226(E)'s commencement date pushed again: 01.06.2023 -> 01.07.2023 (current, at this point in the chain). Full chain so far: 01.04.2022 -> 01.10.2022 -> 01.12.2022 -> 01.01.2023 -> 01.02.2023 (GSR 910(E), MISSING/GAP_3) -> 01.04.2023 -> 01.06.2023 -> 01.07.2023. All effective_from/effect_date fields tracing to this chain corrected. GSR 648(E)'s Rule 26(f) date (01.01.2023) unaffected.",
+      "status": "MINOR - date correction only, applied to JSON"
+    },
+    {
+      "gsr": "456(E)",
+      "date": "2023-06-23",
+      "effect_date": "2023-06-23",
+      "summary": "MAJOR for Category 4 (Electronics). Converts the earlier GSR 577(E) time-limited electronics QR-code pilot (which expired ~mid-2023, restricted to products made after 15.07.2022 for 1 year) into a PERMANENT, ongoing rule with NO date restriction. Substance unchanged: for electronic products, manufacturer NAME and consumer-care PHONE+EMAIL must stay printed on-package; ADDRESS, common/generic NAME, and DIMENSIONS may now be permanently deferred to a QR code (with an on-package note directing the consumer to scan). Applies to all electronic products going forward, not just a specific manufacturing-date window.",
+      "status": "MAJOR - applied to JSON, upgraded from expired-pilot to permanent-rule status"
+    },
+    {
+      "gsr": "463(E)",
+      "date": "2023-06-28",
+      "summary": "Date push-back only, no substantive rule change. GSR 226(E)'s commencement date pushed again: 01.07.2023 -> 01.09.2023 (current, at this point). Full chain: 01.04.2022 -> 01.10.2022 -> 01.12.2022 -> 01.01.2023 -> 01.02.2023 (GSR 910(E), MISSING/GAP_3) -> 01.04.2023 -> 01.06.2023 -> 01.07.2023 -> 01.09.2023. All effective_from/effect_date fields tracing to this chain corrected.",
+      "status": "MINOR - date correction only, applied to JSON"
+    },
+    {
+      "gsr": "640(E)",
+      "date": "2023-08-30",
+      "summary": "Date push-back only, no substantive rule change. GSR 226(E)'s commencement date pushed again: 01.09.2023 -> 01.10.2023 (current, at this point). Full chain: 01.04.2022 -> 01.10.2022 -> 01.12.2022 -> 01.01.2023 -> 01.02.2023 (GSR 910(E), MISSING/GAP_3) -> 01.04.2023 -> 01.06.2023 -> 01.07.2023 -> 01.09.2023 -> 01.10.2023. All effective_from/effect_date fields tracing to this chain corrected.",
+      "status": "MINOR - date correction only, applied to JSON"
+    },
+    {
+      "gsr": "714(E)",
+      "date": "2023-09-30",
+      "summary": "Date push-back only, no substantive rule change. GSR 226(E)'s commencement date pushed again: 01.10.2023 -> 01.01.2024 (a 3-month jump, larger than the prior monthly pushes). Full chain: 01.04.2022 -> 01.10.2022 -> 01.12.2022 -> 01.01.2023 -> 01.02.2023 (GSR 910(E), MISSING/GAP_3) -> 01.04.2023 -> 01.06.2023 -> 01.07.2023 -> 01.09.2023 -> 01.10.2023 -> 01.01.2024. All effective_from/effect_date fields tracing to this chain corrected.",
+      "status": "MINOR - date correction only, applied to JSON"
+    },
+    {
+      "gsr": "722(E)",
+      "date": "2023-10-06",
+      "effect_date": "2024-01-01 (most clauses); 2024-04-01 (clause 3 - spare parts provisos specifically)",
+      "summary": "MAJOR - 7 clauses, most substantive. (2) NEW Rule 2 definitions: combination package (dissimilar items), group package (similar-not-identical items), multi-piece package (identical items, e.g. 5x20g soap = 100g) - foundational categorization for multi-item packs. (3) Rule 6(1)(d) new provisos, eff. 01.04.2024: month/year-of-mfg NOT required for warranty spare parts not sold to end customers; for electronic spare parts that ARE sold, mfg date may appear ANYWHERE on package (not fixed-location). (4) Rule 6(11) new proviso: unit sale price NOT required for combination/group/multi-piece packages. (5) Rule 26(f) size field loosened: metric-alone now sufficient, letter-size (S/M/L) optional rather than mandatory-alongside-metric. (6) NEW Rule 26(g): loose commodities ordered via e-commerce (where consumer already knows type/quantity) get a reduced 4-field checklist (name/address+origin, consumer care email+phone, MRP, net quantity) - broader than Rule 26(f), applies beyond just garments. (7) Fourth Schedule Sl.11 unit-declaration update - Bucket B, logged only.",
+      "status": "MAJOR - applied to JSON"
+    },
+    {
+      "gsr": "N/A (SOP document, not a GSR notification)",
+      "date": "2023-01-15",
+      "summary": "Legal Metrology Standard Operating Procedure - Determination of Net Quantity of Commodities (Edible Oils & Fats). MOSTLY BUCKET B: physical sampling/inspection procedure for officers at manufacturer premises (tare weight determination, sample sizes per Fifth Schedule lot-size table, Form A/Seventh Schedule weight-checking data sheet template) - not OCR/label-checking relevant, logged only. TWO USEFUL ITEMS EXTRACTED: (1) exact specific-gravity conversion factors for edible oil/fat volume-to-weight conversion (soft oils 910g/L at 30C; other oils/vanaspati 893g/L at 50C; ghee 900g/L at 45C) - added to Second Schedule Sl.10 for cross-checking dual weight+volume declaration consistency. (2) Confirms unit sale price for edible oils/fats MUST be declared by weight (mandatory), volume is optional addition only.",
+      "status": "MOSTLY BUCKET B - 2 useful data points extracted and applied to Second Schedule Sl.10, rest logged as reference/inspection-procedure only"
+    },
+    {
+      "gsr": "778(E)",
+      "date": "2025-10-23",
+      "effect_date": "2025-10-23",
+      "summary": "MAJOR/CONFIRMATORY for scoping. Formally carves out MEDICAL DEVICES from LM(PC) Rules across 3 points: (2) Rule 2(h) PDP definition - Medical Devices Rules 2017 apply instead for medical device declarations. (3) Rule 7(2)/(3) - MDR 2017 applies for numeral/letter height AND width instead of LM(PC) Table-I. (4) Rule 33 renumbered as 33(1); new 33(2) - the general relaxation-power provision does NOT apply where MDR 2017 governs. This CONFIRMS and formalizes the project's earlier scoping decision to exclude a full Category 2 (Medical Devices) checklist - medical devices are now explicitly a separate regulatory track (CDSCO/MDR 2017), not LM(PC)-governed for these purposes.",
+      "status": "MAJOR - applied to JSON, confirms Category 2 exclusion decision"
+    },
+    {
+      "gsr": "881(E)",
+      "date": "2025-12-02",
+      "effect_date": "2026-02-01",
+      "summary": "MINOR. New proviso to Rule 26(a): the <=10g/10ml small-package exemption does NOT apply to pan masala - same treatment as the tobacco carve-out inserted earlier by GSR 385(E) in 2015. Pan masala packages must carry full declarations regardless of size, effective 01.02.2026.",
+      "status": "APPLIED to JSON"
+    },
+    {
+      "gsr": "128(E)",
+      "date": "2026-02-13",
+      "effect_date": "2026-07-01",
+      "summary": "NEW, DIFFERENT KIND of requirement - new Rule 6(10A): e-commerce entities selling imported products must provide a SEARCHABLE AND SORTABLE country-of-origin FILTER on their product listings (platform UI/functionality requirement, not a per-listing content declaration). Already in effect as of 01.07.2026 (past today's date). Relevant to a platform-level audit feature, distinct from your per-product OCR/listing-text-matching approach for the rest of Rule 6(10).",
+      "status": "APPLIED to JSON - flagged as a different check-type (platform UI feature, not label/listing content)"
+    },
+    {
+      "gsr": "312(E)",
+      "date": "2026-04-27",
+      "effect_date": "2027-07-01",
+      "summary": "Rule 6(10A) SUBSTITUTED again just months after GSR 128(E) created it. Rewording ('offering for sale' vs 'selling'; 'listing contains' vs platform 'provides') plus, MOST IMPORTANTLY, the country-of-origin searchable/sortable filter requirement's effective date is PUSHED BACK a full year: from 01.07.2026 to 01.07.2027. This means the requirement is NOT YET in effect as of today's date - corrected our JSON which had previously (correctly, at the time) marked it as already-effective.",
+      "status": "APPLIED - corrected R6_10A effective date and wording"
+    },
+    {
+      "gsr": "418(E)",
+      "date": "2026-05-29",
+      "effect_date": "2026-05-29",
+      "summary": "Rule 4: new Explanation-2 - importers may complete mandatory declarations at AEO Tier-2/Tier-3 certified bonded warehouses, provided all declarations are complete before goods leave the warehouse. Rule 27 (manufacturer registration, Bucket B): new requirement to name a responsible Director in registration; annual online update requirement for registered company details; registration certificates now valid until cancelled (no fixed expiry) - all logged as procedural/administrative, not checklist-relevant.",
+      "status": "APPLIED - Rule 4 clarification added, Rule 27 logged as Bucket B"
+    }
+  ],
+  "second_schedule_standard_quantities": {
+    "rule_id": "R5_1",
+    "source_rule": "Rule 5(1) [see Rule 5]",
+    "title": "Specific commodities to be packed and sold in recommended standard packages",
+    "requirement": "Commodities specified in the Second Schedule shall be packed for sale, distribution or delivery ONLY in the standard quantities specified in that Schedule",
+    "non_standard_proviso": "REMOVED effective 01.11.2012 (date corrected by GSR 426(E) dated 05.06.2012 - originally the general 01.07.2012 date applied, but this specific proviso removal was given its own later effective date) - no non-standard-size disclosure exception exists",
+    "value_based_exception": "Rs.1-Rs.10 value-based packs exempt from matching this Schedule, per new Rule 5(3) inserted by GSR 427(E) - see rule5_additional_subrules section",
+    "table_replaced_by": "GSR 427(E), dated 05.06.2012 - ENTIRE Second Schedule substituted with new, more detailed table below. This is the CURRENT table, superseding the original 2011 version.",
+    "effective_from": "2012-06-05",
+    "amended_by": "GSR 427(E)",
+    "commodities": [
+      {
+        "sl_no": 1,
+        "commodity": "Baby food",
+        "quantities": "25g, 50g, 100g, 200g, 300g, 350g, 400g, 450g, 500g, 600g, 700g, 800g, 900g, 1kg, 2kg, 5kg, 10kg"
+      },
+      {
+        "sl_no": 2,
+        "commodity": "Weaning food",
+        "quantities": "Below 50g no restriction; 50g, 75g, 100g, 125g, 150g, 200g, 250g, 300g, 400g, 500g, 600g, 700g, 800g, 900g, 1kg, 2kg, 5kg, 10kg (75g/125g/150g/250g inserted by GSR 359(E), 06.06.2013)"
+      },
+      {
+        "sl_no": 3,
+        "commodity": "Biscuits",
+        "quantities": "25g, 50g, 60g, 75g, 100g, 120g, 150g, 200g, 250g, 300g, 350g, 400g, thereafter multiples of 100g up to 1kg, thereafter multiples of 500g up to 5kg (350g/400g inserted by GSR 359(E), 06.06.2013)"
+      },
+      {
+        "sl_no": 4,
+        "commodity": "Bread (including brown bread, excluding bun)",
+        "quantities": "50g and thereafter multiples of 50g up to 500g; above 500g in multiples of 100g"
+      },
+      {
+        "sl_no": 5,
+        "commodity": "Un-canned packages of butter and margarine",
+        "quantities": "Below 25g no restriction; 25g, 50g, 100g, 200g, 500g, 1kg, 2kg, 5kg and thereafter multiples of 5kg"
+      },
+      {
+        "sl_no": 6,
+        "commodity": "Cereals and Pulses",
+        "quantities": "Below 100g no restriction; 100g, 200g, 500g, 1kg, 2kg, 5kg and thereafter multiples of 5kg"
+      },
+      {
+        "sl_no": 7,
+        "commodity": "Coffee",
+        "quantities": "Below 25g no restriction; 25g, 50g, 75g, 100g, 150g, 200g, 250g, 500g, 750g, 1kg, 1.5kg, 2kg and thereafter multiples of 1kg (750g inserted by GSR 359(E), 06.06.2013)"
+      },
+      {
+        "sl_no": 8,
+        "commodity": "Tea",
+        "quantities": "Below 25g no restriction, 25g, 50g, 75g, 100g, 125g, 150g, 200g, 250g, 500g, 750g, 1kg, 1.5kg, 2kg and thereafter in multiples of 1kg (ENTIRE entry substituted by GSR 359(E), 06.06.2013)"
+      },
+      {
+        "sl_no": 9,
+        "commodity": "Materials which may be constituted or reconstituted as beverages",
+        "quantities": "Below 50g no restriction; 50g, 75g, 100g, 125g, 200g, 250g, 400g, 450g, 500g, 750g, 1kg and thereafter multiples of 1kg (56g and 61g for medical purpose only) (125g inserted by GSR 359(E), 06.06.2013)"
+      },
+      {
+        "sl_no": 10,
+        "commodity": "Edible Oils, Vanaspati, ghee, butter oil",
+        "quantities": "Below 50g no restriction, 50g, 100g, 175g, 200g, 250g, 300g, 500g, 550g, 600g, 650g, 750g, 1kg, 2kg, 3kg, 5kg and thereafter multiples of 5kg. IF declared by volume: Below 50ml no restriction, 50ml, 100ml, 175ml, 200ml, 250ml, 300ml, 500ml, 550ml, 600ml, 650ml, 750ml, 1L, 2L, 3L, 5L and thereafter multiples of 5L - AND net quantity must ALSO be declared by mass in the same size of letters/numerals (175g/300g/750g and 175ml/300ml/750ml inserted by GSR 359(E), 06.06.2013; 550g/600g/650g and 550ml/600ml/650ml inserted by GSR 629(E), 23.06.2017)",
+        "weight_volume_conversion_SOP": {
+          "source": "Legal Metrology SOP - Determination of Net Quantity of Commodities (Edible Oils & Fats), issued 15.01.2023, Department of Consumer Affairs",
+          "specific_gravity_conversion_factors": {
+            "soft_oils": "910 g per 1 litre, measured at 30°C",
+            "other_oils_fats_vanaspati": "893 g per 1 litre, measured at 50°C (palm-based oils/fats, vanaspati etc.)",
+            "ghee": "900 g per 1 litre, measured at 45°C"
+          },
+          "unit_sale_price_rule": "Per this SOP para 5: unit sale price under Rule 6(11) MUST mandatorily be declared by WEIGHT for edible oils/fats; declaring it additionally by volume is optional, not a substitute",
+          "checklist_relevance": "Directly useful for cross-checking mathematical consistency of dual weight+volume declarations required by the Second Schedule proviso above (e.g., if a label declares '1L / 910g', this matches the soft-oil conversion factor and is consistent; a mismatched conversion could indicate a mislabeled/incorrect declaration worth flagging for review)"
+        }
+      },
+      {
+        "sl_no": 11,
+        "commodity": "Milk Powder",
+        "quantities": "Below 50g no restriction; 50g, 100g, 150g, 200g, 250g, 500g, 1kg and thereafter multiples of 500g"
+      },
+      {
+        "sl_no": 12,
+        "commodity": "Non-soapy detergents (powder)",
+        "quantities": "Below 50g no restriction; 50g, 75g, 100g, 150g, 200g, 250g, 400g, 500g, 700g, 750g, 800g, 1kg, 1.5kg, 2kg and thereafter multiples of 1kg (ENTIRE entry substituted by GSR 385(E), 14.05.2015 - note: this supersedes the GSR 359(E) 2013 version which had added 2.5kg/3kg; those are no longer present in the current table)"
+      },
+      {
+        "sl_no": 13,
+        "commodity": "Rice (powdered), flour, atta, rawa, suji",
+        "quantities": "100g, 200g, 500g, 1kg, 1.25kg, 1.5kg, 1.75kg, 2kg, 5kg and thereafter multiples of 5kg"
+      },
+      {
+        "sl_no": 14,
+        "commodity": "Salt",
+        "quantities": "Below 50g in multiples of 10g; 50g, 100g, 200g, 500g, 750g, 1kg, 2kg, 5kg and thereafter multiples of 5kg"
+      },
+      {
+        "sl_no": "15a",
+        "commodity": "Soaps - Laundry Soap",
+        "quantities": "25g, 50g, 75g, 100g, 125g, 150g and thereafter multiples of 50g"
+      },
+      {
+        "sl_no": "15b",
+        "commodity": "Soaps - Non-soapy detergent cakes/bars",
+        "quantities": "Below 50g no restriction; 50g, 75g, 100g, 125g, 150g, 200g, 250g, 300g and thereafter multiples of 100g"
+      },
+      {
+        "sl_no": "15c",
+        "commodity": "Soaps - Toilet Soap (incl. all bath soap cakes)",
+        "quantities": "15g, 25g, 50g, 60g, 75g, 100g, 125g, 150g and thereafter multiples of 50g"
+      },
+      {
+        "sl_no": 16,
+        "commodity": "Aerated soft drinks, non-alcoholic beverages",
+        "quantities": "65ml (fruit-based only), 100ml, 125ml (fruit-based only), 150ml, 160ml, 175ml, 180ml, 200ml, 240ml, 250ml, 300ml, 330ml, 350ml, 400ml, 475ml, 500ml, 600ml, 750ml, 1L, 1.2L, 1.25L, 1.5L, 1.75L, 2L, 2.25L, 2.5L, 3L, 4L, 5L ('(cans only)' restriction on 330ml REMOVED by GSR 359(E), 06.06.2013 - 330ml now permitted in any container type)"
+      },
+      {
+        "sl_no": 17,
+        "commodity": "Mineral water and drinking water",
+        "quantities": "100ml, 150ml, 200ml, 250ml, 300ml, 500ml, 750ml, 1L, 1.5L, 2L, 3L, 4L, 5L and thereafter multiples of 5L"
+      },
+      {
+        "sl_no": 18,
+        "commodity": "Cement in bags",
+        "quantities": "1kg, 2kg, 5kg, 10kg, 20kg, 25kg, 40kg (white cement only), 50kg"
+      },
+      {
+        "sl_no": "19a",
+        "commodity": "Paint (other than paste/solid paint), varnish, varnish stains, enamels",
+        "quantities": "50ml, 100ml, 200ml, 500ml, 1L, 2L, 3L, 4L, 5L and thereafter multiples of 5L"
+      },
+      {
+        "sl_no": "19b",
+        "commodity": "Paste paint and solid paint",
+        "quantities": "500g, 1kg, 1.5kg, 2kg, 3kg, 5kg, 7kg and thereafter multiples of 5kg"
+      },
+      {
+        "sl_no": "19c",
+        "commodity": "Base paint",
+        "quantities": "100ml, 250ml, 400ml, 450ml, 500ml, 900ml, 925ml, 950ml, 975ml, 1L, 1.5L, 2L, 2.5L, 3.5L, 3.6L, 3.7L, 3.8L, 3.9L, 4L; no restriction above 4L"
+      }
+    ],
+    "proviso": "If a Second Schedule commodity is packed in a non-standard size, label must prominently declare 'Not a standard pack size under the Legal Metrology (Packaged Commodities) Rules, 2011' or 'non standard size under the Legal Metrology (Packaged Commodities) Rules, 2011' - NOTE: this proviso itself was later removed effective 01.07.2012 by GSR 784(E); retained here for historical reference only",
+    "CRITICAL_STATUS_FLAG": "CONFIRMED (was GAP_2, now RESOLVED): THE SECOND SCHEDULE WAS FORMALLY OMITTED by GSR 226(E), 28.03.2022, effective 01.10.2022 - following Rule 5's earlier omission by GSR 779(E). This table's content below is PRESERVED FOR HISTORICAL REFERENCE ONLY. As of 01.10.2022, there is NO legal requirement for Second-Schedule commodities to be packed only in standard quantities - 'Standard Quantity Compliance' should NOT be built as a hard-fail checklist item. If your rule engine already has this check, it should be removed or clearly marked as historical/non-enforceable."
+  },
+  "rule18_provisions": {
+    "source_rule": "Rule 18",
+    "note": "Rule 18 is primarily Bucket B (inspection/verification procedure at manufacturer premises) - most sub-rules skipped as before. These specific new sub-rules are captured because they add substantive, checklist-adjacent content rather than pure inspection procedure.",
+    "sub_rules": [
+      {
+        "rule_id": "R18_1A",
+        "requirement": "A wholesale dealer shall be allowed to sell pre-packaged commodities directly to industrial and institutional consumers",
+        "inserted_by": "GSR 629(E)",
+        "amendment_notified_date": "2017-06-23",
+        "effective_from": "2018-01-01",
+        "note": "Confirms wholesale dealers (not just manufacturers/importers) can be a valid source for institutional/industrial consumer packages - relevant to the definitions.institutional_consumer / industrial_consumer sourcing requirement"
+      },
+      {
+        "rule_id": "R18_2A",
+        "requirement": "Unless otherwise specifically provided under any other law, no manufacturer/packer/importer shall declare DIFFERENT maximum retail prices on an IDENTICAL pre-packaged commodity by adopting restrictive or unfair trade practices (as defined under the Consumer Protection Act)",
+        "inserted_by": "GSR 629(E)",
+        "amendment_notified_date": "2017-06-23",
+        "effective_from": "2018-01-01",
+        "amendment_history": {
+          "gsr_629E_as_originally_printed": "Original GSR 629(E) notification (before corrigendum) had a printing error citing just 'clause (c) of sub-section (1) of section 2 of the Consumer Protection Act, 1986'",
+          "gsr_1373E_corrigendum": "CORRECTED by corrigendum GSR 1373(E), dated 07.11.2017: fixed to read 'clause (nnn) and clause (r), respectively, of sub-section (1) of section 2 of the Consumer Protection Act, 1986' (two clauses, not one)",
+          "gsr_779E": "AMENDED by GSR 779(E), 02.11.2021, effective 01.04.2022: reference updated again to 'clause (41) and (47) of section 2 of the Consumer Protection Act, 2019' (since the 1986 Act was repealed and replaced by the 2019 Act)"
+        },
+        "checklist_relevance": "Anti-differential-pricing check - flagging identical products with different declared MRPs would require a database cross-check across scanned SKUs, not a single-image OCR check alone; worth noting as a database-level feature, not a per-image rule"
+      },
+      {
+        "rule_id": "R18_7",
+        "requirement": "Reference to indirect tax terminology used in this sub-rule",
+        "amendment_history": {
+          "original": "Referenced 'Value Added Tax (VAT) or Turn Over Tax (TOT)'",
+          "gsr_779E": "SUBSTITUTED by GSR 779(E), 02.11.2021, effective 01.04.2022: updated to 'Goods and Service Tax' (GST) - reflects India's 2017 tax reform replacing VAT/TOT with GST"
+        }
+      }
+    ]
+  }
+}
