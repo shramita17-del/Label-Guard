@@ -71,6 +71,13 @@ class TestE2EPipeline(unittest.TestCase):
         self.assertIsNotNone(data["annotated_image_base64"])
         self.assertTrue(data["annotated_image_base64"].startswith("data:image/jpeg;base64"))
         
+        # Verification: Method 1 Image Authenticity executed
+        auth_check = next(c for c in data["check_results"] if c["check_id"] == "AUTH_01")
+        self.assertIsNotNone(auth_check)
+        self.assertIn("authenticity", data)
+        self.assertIsNotNone(data["authenticity"])
+        self.assertIn("authenticity_score", data["authenticity"])
+        
         # Cleanup
         if os.path.exists(dummy_img_path):
             os.remove(dummy_img_path)

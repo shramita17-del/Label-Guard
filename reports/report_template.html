@@ -21,10 +21,105 @@
     <p><strong>Scan ID:</strong> {{ report.scan_id }}</p>
     <p><strong>Category:</strong> {{ report.category.value }}</p>
     <p><strong>Generated At:</strong> {{ report.generated_at }}</p>
+    <p>
+        <strong>Image Authenticity Status:</strong> 
+        {% if report.authenticity and report.authenticity.is_ai_generated %}
+            <span style="color: #dc3545; font-weight: bold; font-size: 15px;">⚠️ AI-GENERATED (SYNTHETIC MEDIA) — FAILED</span>
+        {% elif report.authenticity and ((report.authenticity.ai_confidence_percentage >= 40 and report.authenticity.ai_confidence_percentage <= 60) or report.authenticity.status.value == 'REVIEW' or 'MAYBE AI' in report.authenticity.classification_label) %}
+            <span style="color: #d97706; font-weight: bold; font-size: 15px;">⚠️ MAYBE AI GENERATED (40%-60% CONFIDENCE) — REVIEW</span>
+        {% elif report.authenticity %}
+            <span style="color: #2e7d32; font-weight: bold; font-size: 15px;">✓ AUTHENTIC (NOT AI GENERATED) — VERIFIED PHYSICAL CAPTURE</span>
+        {% else %}
+            <span>STANDARD CAPTURE</span>
+        {% endif %}
+    </p>
     
     <div class="verdict {{ report.overall_verdict.value }}">
         Overall Verdict: {{ report.overall_verdict.value }}
+        {% if report.authenticity and report.authenticity.is_ai_generated %}
+            (NON-COMPLIANT: SYNTHETIC AI MEDIA PROHIBITED)
+        {% elif report.authenticity and ((report.authenticity.ai_confidence_percentage >= 40 and report.authenticity.ai_confidence_percentage <= 60) or report.authenticity.status.value == 'REVIEW' or 'MAYBE AI' in report.authenticity.classification_label) %}
+            (MANUAL REVIEW: BORDERLINE SYNTHETIC PROBABILITY)
+        {% endif %}
     </div>
+
+    {% if report.authenticity and report.authenticity.is_ai_generated %}
+    <div style="background-color: #f8d7da; border: 2px solid #dc3545; border-radius: 8px; padding: 16px; margin: 20px 0;">
+        <div style="margin-bottom: 8px;">
+            <span style="font-size: 16px; font-weight: bold; color: #721c24; text-transform: uppercase;">
+                ⚠️ NON-COMPLIANCE NOTICE: AI-GENERATED IMAGE DETECTED
+            </span>
+        </div>
+        <p style="margin: 4px 0; font-size: 14px; color: #721c24;">
+            <strong>Image Origin Classification:</strong>
+            <span style="background: #dc3545; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold;">
+                {{ report.authenticity.classification_label }}
+            </span>
+            &bull; <strong>AI Synthetic Probability:</strong> {{ report.authenticity.ai_confidence_percentage }}%
+        </p>
+        <p style="margin: 6px 0 0 0; font-size: 13px; color: #501319;">
+            <strong>Forensic Determination:</strong> {{ report.authenticity.verdict_summary }}
+            {% if report.authenticity.deep_learning_score is not none %}
+            <br/><strong>Deep Learning Arbiter Score:</strong> {{ (report.authenticity.deep_learning_score * 100)|round(1) }}% Fake ({{ report.authenticity.deep_learning_model or 'ViT' }})
+            {% endif %}
+            {% if report.authenticity.mockup_disclaimers %}
+            <br/><strong>Synthetic Mockup Disclaimers:</strong> {{ report.authenticity.mockup_disclaimers|join(', ') }}
+            {% endif %}
+            {% if report.authenticity.barcode_status %}
+            <br/><strong>Barcode Analysis:</strong> {{ report.authenticity.barcode_status }} {% if report.authenticity.barcode_value %}({{ report.authenticity.barcode_value }}){% endif %}
+            {% endif %}
+        </p>
+        <p style="margin: 8px 0 0 0; font-size: 12px; color: #6a1a22; font-style: italic;">
+            Statutory Rule: Automated Legal Metrology & FSSAI compliance verification requires genuine photographic scans of physical packaging. Synthetic/AI generations are fraudulent and automatically FAILED.
+        </p>
+    </div>
+    {% elif report.authenticity and ((report.authenticity.ai_confidence_percentage >= 40 and report.authenticity.ai_confidence_percentage <= 60) or report.authenticity.status.value == 'REVIEW' or 'MAYBE AI' in report.authenticity.classification_label) %}
+    <div style="background-color: #fffbeb; border: 2px solid #f59e0b; border-radius: 8px; padding: 14px 16px; margin: 20px 0;">
+        <div style="margin-bottom: 8px;">
+            <span style="font-size: 16px; font-weight: bold; color: #92400e; text-transform: uppercase;">
+                ⚠️ PACKAGING AUDIT NOTICE: MAYBE AI GENERATED
+            </span>
+        </div>
+        <p style="margin: 4px 0; font-size: 14px; color: #92400e;">
+            <strong>Image Origin Classification:</strong>
+            <span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold;">
+                {{ report.authenticity.classification_label }}
+            </span>
+            &bull; <strong>AI Synthetic Likelihood:</strong> {{ report.authenticity.ai_confidence_percentage }}%
+        </p>
+        <p style="margin: 6px 0 0 0; font-size: 13px; color: #78350f;">
+            <strong>Forensic Determination:</strong> {{ report.authenticity.verdict_summary }}
+            {% if report.authenticity.deep_learning_score is not none %}
+            <br/><strong>Deep Learning Arbiter Score:</strong> {{ (report.authenticity.deep_learning_score * 100)|round(1) }}% ({{ report.authenticity.deep_learning_model or 'ViT' }})
+            {% endif %}
+            {% if report.authenticity.mockup_disclaimers %}
+            <br/><strong>Synthetic Mockup Disclaimers:</strong> {{ report.authenticity.mockup_disclaimers|join(', ') }}
+            {% endif %}
+            {% if report.authenticity.barcode_status %}
+            <br/><strong>Barcode Analysis:</strong> {{ report.authenticity.barcode_status }} {% if report.authenticity.barcode_value %}({{ report.authenticity.barcode_value }}){% endif %}
+            {% endif %}
+        </p>
+        <p style="margin: 8px 0 0 0; font-size: 12px; color: #b45309; font-style: italic;">
+            Notice: Image exhibits borderline synthetic/AI characteristics (40%-60% confidence rating). Auditor manual verification is recommended before certification.
+        </p>
+    </div>
+    {% elif report.authenticity %}
+    <div style="background-color: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 8px; padding: 14px 16px; margin: 20px 0;">
+        <p style="margin: 0; font-size: 14px; color: #1b5e20;">
+            <strong>Image Authenticity Verification:</strong>
+            <span style="background: #2e7d32; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px;">
+                {{ report.authenticity.classification_label }}
+            </span>
+            &bull; <strong>Real Capture Confidence:</strong> {{ (report.authenticity.authenticity_score * 100)|round|int }}%
+        </p>
+        <p style="margin: 6px 0 0 0; font-size: 13px; color: #2e7d32;">
+            <strong>Forensic Assessment:</strong> {{ report.authenticity.verdict_summary }}
+            {% if report.authenticity.deep_learning_score is not none %}
+            <br/><strong>Deep Learning Arbiter:</strong> {{ (report.authenticity.deep_learning_score * 100)|round(1) }}% Fake Score ({{ report.authenticity.deep_learning_model or 'ViT' }})
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
 
     {% if report.annotated_image_base64 %}
     <h2>Annotated Scan</h2>

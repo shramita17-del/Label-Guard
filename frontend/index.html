@@ -484,6 +484,9 @@
                             <button type="button" id="btnSampleTextile" class="flex-1 sm:flex-initial px-3.5 py-2 bg-indigo-50 text-indigo-800 hover:bg-indigo-100 text-xs font-bold rounded-xl border border-indigo-200 transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
                                 <span>👕</span> Textile Label
                             </button>
+                            <button type="button" id="btnSampleAI" class="flex-1 sm:flex-initial px-3.5 py-2 bg-rose-50 text-rose-800 hover:bg-rose-100 text-xs font-bold rounded-xl border border-rose-200 transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                                <span>🤖</span> AI Mockup Test
+                            </button>
                         </div>
                     </div>
 
@@ -639,6 +642,27 @@
                                 <div class="flex justify-between items-center border-b border-slate-200/80 pb-3">
                                     <span class="text-xs font-semibold text-slate-500 uppercase">Audited By (Active Role)</span>
                                     <span id="scanAuditorTag" class="text-xs font-bold text-slate-900"></span>
+                                </div>
+                                <div class="flex justify-between items-center border-b border-slate-200/80 pb-3">
+                                    <span class="text-xs font-semibold text-slate-500 uppercase flex items-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                        <span>Image Authenticity</span>
+                                    </span>
+                                    <div class="flex items-center gap-1.5">
+                                        <span id="scanAuthBadge" class="font-bold text-xs px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 flex items-center gap-1">
+                                            <span>Authentic Media</span>
+                                        </span>
+                                        <span id="scanAuthScore" class="text-[11px] font-mono font-bold text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">100%</span>
+                                    </div>
+                                </div>
+                                <div id="scanAuthNoticeRow" class="hidden text-[11px] text-slate-600 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                                    <div class="flex items-start gap-2">
+                                        <span id="scanAuthNoticeIcon" class="text-sm">🔍</span>
+                                        <div>
+                                            <span class="font-bold text-slate-800" id="scanAuthSummary"></span>
+                                            <p class="text-[10px] text-slate-500 mt-0.5 font-mono" id="scanAuthDetails"></p>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="pt-2">
                                     <a id="downloadPdfBtn" href="#" target="_blank" class="hidden inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition gap-2 shadow-sm cursor-pointer">
@@ -995,18 +1019,19 @@
             }
         ];
 
-        // Form Handlers: Consumer Login (Strict Dummy Credential Check)
+        // Form Handlers: Consumer Login (Flexible Credential Check: Case-Insensitive & Trimmed)
         document.getElementById('formConsumerAuth').addEventListener('submit', (e) => {
             e.preventDefault();
             const errorBox = document.getElementById('consumerAuthError');
             const errorText = document.getElementById('consumerErrorText');
-            const email = document.getElementById('consumerEmail').value.trim();
-            const password = document.getElementById('consumerPassword').value;
+            const email = document.getElementById('consumerEmail').value.trim().toLowerCase();
+            const password = document.getElementById('consumerPassword').value.trim();
 
             errorBox.classList.add('hidden');
 
             const matchedUser = AUTHORIZED_CONSUMER_USERS.find(
-                u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+                u => u.email.toLowerCase() === email &&
+                     (u.password === password || u.password.toLowerCase() === password.toLowerCase())
             );
 
             if (matchedUser) {
@@ -1024,20 +1049,21 @@
             }
         });
 
-        // Form Handlers: Inspector Login (Strict Dummy Credential Check)
+        // Form Handlers: Inspector Login (Flexible Credential Check: Case-Insensitive & Trimmed)
         document.getElementById('formInspectorAuth').addEventListener('submit', (e) => {
             e.preventDefault();
             const errorBox = document.getElementById('inspectorAuthError');
             const errorText = document.getElementById('inspectorErrorText');
-            const officerId = document.getElementById('inspectorId').value.trim();
-            const passcode = document.getElementById('inspectorPasscode').value;
+            const officerId = document.getElementById('inspectorId').value.trim().toUpperCase();
+            const passcode = document.getElementById('inspectorPasscode').value.trim();
             const dept = document.getElementById('inspectorDept').value;
             const jurisdiction = document.getElementById('inspectorJurisdiction').value.trim();
 
             errorBox.classList.add('hidden');
 
             const matchedOfficer = AUTHORIZED_INSPECTOR_USERS.find(
-                o => o.id.toUpperCase() === officerId.toUpperCase() && o.passcode === passcode
+                o => o.id.toUpperCase() === officerId &&
+                     (o.passcode === passcode || o.passcode.toLowerCase() === passcode.toLowerCase())
             );
 
             if (matchedOfficer) {
@@ -1199,6 +1225,71 @@
                 `${currentSession.name} (${currentSession.role === 'inspector' ? 'Officer ID: ' + currentSession.id : 'Consumer'})` :
                 'Anonymous Consumer';
             document.getElementById('scanAuditorTag').textContent = auditorText;
+
+            // Media Authenticity Display (Method 1)
+            const authBadge = document.getElementById('scanAuthBadge');
+            const authScore = document.getElementById('scanAuthScore');
+            const authNoticeRow = document.getElementById('scanAuthNoticeRow');
+            const authSummary = document.getElementById('scanAuthSummary');
+            const authDetails = document.getElementById('scanAuthDetails');
+            const authNoticeIcon = document.getElementById('scanAuthNoticeIcon');
+
+            if (data.authenticity) {
+                const a = data.authenticity;
+                const aiPct = a.ai_confidence_percentage !== undefined ? a.ai_confidence_percentage : 0;
+                const realPct = Math.round(a.authenticity_score * 100);
+
+                if (a.is_ai_generated) {
+                    authBadge.className = 'font-bold text-xs px-2.5 py-1 rounded-lg bg-red-600 text-white flex items-center gap-1 shadow-sm';
+                    authBadge.innerHTML = '<span>⚠️ AI GENERATED IMAGE</span>';
+                    authScore.textContent = `${aiPct}% AI`;
+                    authScore.className = 'text-[11px] font-mono font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-200';
+                    authNoticeIcon.textContent = '🚫';
+                    authNoticeRow.className = 'text-[11px] text-red-950 bg-red-50/80 p-3 rounded-xl border border-red-200 shadow-sm';
+                } else if ((aiPct >= 40 && aiPct <= 60) || a.status === 'REVIEW' || (a.classification_label && a.classification_label.includes('MAYBE AI'))) {
+                    // 40% to 60% confidence rating marked in Yellow as "Maybe AI Generated"
+                    authBadge.className = 'font-bold text-xs px-2.5 py-1 rounded-lg bg-amber-400 text-amber-950 flex items-center gap-1 shadow-sm border border-amber-500/30';
+                    authBadge.innerHTML = '<span>⚠️ Maybe AI Generated</span>';
+                    authScore.textContent = `${aiPct}% Maybe AI`;
+                    authScore.className = 'text-[11px] font-mono font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded border border-amber-300';
+                    authNoticeIcon.textContent = '⚠️';
+                    authNoticeRow.className = 'text-[11px] text-amber-950 bg-amber-50/80 p-3 rounded-xl border border-amber-300 shadow-sm';
+                } else if (a.status === 'PASS') {
+                    authBadge.className = 'font-bold text-xs px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 flex items-center gap-1';
+                    authBadge.innerHTML = '<span>✓ Authentic Camera Photo</span>';
+                    authScore.textContent = `${realPct}% Real`;
+                    authScore.className = 'text-[11px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200';
+                    authNoticeIcon.textContent = '📸';
+                    authNoticeRow.className = 'text-[11px] text-slate-600 bg-white p-3 rounded-xl border border-slate-200 shadow-sm';
+                } else {
+                    authBadge.className = 'font-bold text-xs px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800 flex items-center gap-1';
+                    authBadge.innerHTML = '<span>ℹ️ Unverified / Digital Source</span>';
+                    authScore.textContent = `${aiPct}% Suspect`;
+                    authScore.className = 'text-[11px] font-mono font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200';
+                    authNoticeIcon.textContent = '🔍';
+                    authNoticeRow.className = 'text-[11px] text-slate-600 bg-white p-3 rounded-xl border border-slate-200 shadow-sm';
+                }
+
+                authSummary.textContent = a.classification_label ? `${a.classification_label}: ${a.verdict_summary}` : a.verdict_summary;
+                const detailParts = [];
+                if (a.camera_hardware) detailParts.push(`Camera: ${a.camera_hardware}`);
+                if (a.ai_signatures && a.ai_signatures.length) detailParts.push(`Signatures: ${a.ai_signatures.join(', ')}`);
+                detailParts.push(`Sensor Grain: ${a.noise_residual_score || 'N/A'}`);
+                detailParts.push(`Spectral Asymmetry: ${a.spectral_artifact_score}`);
+                if (a.deep_learning_score !== null && a.deep_learning_score !== undefined) {
+                    detailParts.push(`Deep Learning Arbiter: ${Math.round(a.deep_learning_score * 100)}% Fake (${a.deep_learning_model || 'ViT'})`);
+                }
+                if (a.mockup_disclaimers && a.mockup_disclaimers.length) {
+                    detailParts.push(`Mockup Disclaimer: "${a.mockup_disclaimers[0]}"`);
+                }
+                if (a.barcode_status) {
+                    detailParts.push(`Barcode Validation: ${a.barcode_status} ${a.barcode_value ? '(' + a.barcode_value + ')' : ''}`);
+                }
+                authDetails.textContent = detailParts.join(' • ');
+                authNoticeRow.classList.remove('hidden');
+            } else {
+                authNoticeRow.classList.add('hidden');
+            }
 
             // Download Report Buttons
             const downloadBtns = [
@@ -1492,6 +1583,13 @@ Digitally Sealed by Authorized Officer:
         if (texBtn) {
             texBtn.addEventListener('click', () => {
                 loadAndScanSample('/samples/sample_textile.jpg', 'sample_textile.jpg');
+            });
+        }
+
+        const aiBtn = document.getElementById('btnSampleAI');
+        if (aiBtn) {
+            aiBtn.addEventListener('click', () => {
+                loadAndScanSample('/samples/sample_ai_package.png', 'sample_ai_package.png');
             });
         }
 

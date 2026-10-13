@@ -17,6 +17,7 @@ from backend.rule_engine.validators.common import validate_mrp, validate_net_qua
 from backend.rule_engine.validators.apparel_textile import validate_fiber_composition as val_fiber
 from backend.rule_engine.validators.food_beverage import validate_veg_nonveg_mark as val_veg
 from backend.rule_engine.fssai_verifier import verify_fssai_license
+from backend.rule_engine.authenticity import evaluate_image_authenticity
 from backend.report_service.annotator import annotate_image
 from backend.report_service.pdf_generator import generate_pdf_report
 
@@ -130,9 +131,13 @@ async def process_scan(file: UploadFile = File(...)):
         else:
             scan.veg_nonveg_mark = analyze_veg_mark(img_path)
             
-    # 4. Rule Engine Execution (Phase 2, Step 4 + Phase 4 FSSAI)
+    # 4. Rule Engine Execution (Phase 2, Step 4 + Phase 4 FSSAI + Authenticity)
     results = []
     
+    # Tier 0 Anti-Spoofing & Image Authenticity Verification (Method 1 + Semantic/Barcode/DL Fixes)
+    auth_check, auth_details = evaluate_image_authenticity(img_path, extracted_text=all_text)
+    results.append(auth_check)
+
     # Tier 1 Common Checks
     results.append(validate_mrp(scan, conf_map.get("mrp_region", 0.95), "01", "Rule_6_1_e"))
     results.append(validate_net_quantity(scan, conf_map.get("net_quantity_region", 0.95), "02", "Rule_6_1_c"))
@@ -157,12 +162,17 @@ async def process_scan(file: UploadFile = File(...)):
             if overall != CheckStatus.FAIL:
                 overall = CheckStatus.REVIEW
                 
+    # Mandatory Compliance Directive: AI-generated/synthetic media is non-compliant by law
+    if auth_details and auth_details.is_ai_generated:
+        overall = CheckStatus.FAIL
+                
     report = ComplianceReport(
         scan_id=scan.scan_id,
         category=scan.category,
         overall_verdict=overall,
         check_results=results,
-        generated_at=datetime.utcnow().isoformat()
+        generated_at=datetime.utcnow().isoformat(),
+        authenticity=auth_details
     )
     
     # 6. Generate Outputs (Phase 3)

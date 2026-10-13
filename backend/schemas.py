@@ -123,6 +123,23 @@ class CheckResult(BaseModel):
     confidence: Optional[float] = None
     reason: Optional[str] = None
 
+class AuthenticityDetails(BaseModel):
+    is_ai_generated: bool = False
+    classification_label: str = "AUTHENTIC PHYSICAL CAPTURE" # "AI GENERATED (SYNTHETIC MEDIA)", "AUTHENTIC PHYSICAL CAPTURE", "UNVERIFIED / DIGITAL RENDER"
+    authenticity_score: float = 1.0 # 0.0 to 1.0 (1.0 = authentic photo, 0.0 = AI generated)
+    ai_confidence_percentage: int = 0 # 0% to 100%
+    status: CheckStatus # PASS, REVIEW, FAIL
+    camera_hardware: Optional[str] = None # e.g. "Apple iPhone 14"
+    ai_signatures: List[str] = [] # detected generator signatures or prompts
+    spectral_artifact_score: float = 0.0
+    noise_residual_score: float = 0.0
+    deep_learning_score: Optional[float] = None # 0.0 to 1.0 (Deep Learning Fake / AI Probability)
+    deep_learning_model: Optional[str] = None # e.g. "ViT (umm-maybe/AI-image-detector)"
+    mockup_disclaimers: List[str] = [] # detected packaging mockup/demo disclaimers
+    barcode_status: Optional[str] = None # e.g. "VALID_EAN13", "INVALID_CHECKSUM", "HALLUCINATED_PATTERN"
+    barcode_value: Optional[str] = None # extracted barcode digits
+    verdict_summary: str
+
 class ComplianceReport(BaseModel):
     scan_id: str
     category: ProductCategory
@@ -131,6 +148,7 @@ class ComplianceReport(BaseModel):
     annotated_image_base64: Optional[str] = None
     generated_at: str
     report_url: Optional[str] = None
+    authenticity: Optional[AuthenticityDetails] = None
 
 # ─────────────────────────────────────────────────────────────
 # E-COMMERCE MISMATCH CHECK — dual input comparison
