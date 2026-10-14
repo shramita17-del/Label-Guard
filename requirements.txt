@@ -24,6 +24,8 @@ weasyprint>=62.0.0
 
 # Machine Learning & OCR (Live inference)
 ultralytics>=8.3.0
+torch>=2.0.0
+transformers>=4.40.0
 # Note: For PaddlePaddle / PaddleOCR on Windows, Python <= 3.12 is recommended
 # paddlepaddle
 # paddleocr

@@ -23,40 +23,40 @@ class TestE2EPipeline(unittest.TestCase):
         # 1. Setup mock detector & extractor (simulating ML outputs)
         mock_detector = MagicMock()
         mock_extractor = MagicMock()
-        
+
         # Region Detection mock outputs
         mock_detector.detect_regions.return_value = [
             DetectedRegion(region_label="mrp_region", bbox=BoundingBox(x_min=0, y_min=0, x_max=10, y_max=10), yolo_confidence=0.99),
             DetectedRegion(region_label="fssai_region", bbox=BoundingBox(x_min=20, y_min=20, x_max=30, y_max=30), yolo_confidence=0.99)
         ]
-        
+
         # OCR Text mock outputs
         mock_extractor.extract_text.return_value = [
             OCRResult(region_label="mrp_region", raw_text="Rs. 500 incl tax", ocr_confidence=0.95, bbox=BoundingBox(x_min=0, y_min=0, x_max=10, y_max=10)),
             OCRResult(region_label="fssai_region", raw_text="10012011000168", ocr_confidence=0.95, bbox=BoundingBox(x_min=20, y_min=20, x_max=30, y_max=30))
         ]
-        
+
         mock_get_ml.return_value = (mock_detector, mock_extractor)
-        
+
         # Create a dummy payload file
         dummy_img_path = "dummy_e2e_test.jpg"
         with open(dummy_img_path, "wb") as f:
             f.write(b"fake_image_data")
-            
+
         # 2. Trigger Flow A (Full Scan) via FastAPI route
         with open(dummy_img_path, "rb") as f:
             response = client.post("/scan", files={"file": ("dummy_e2e_test.jpg", f, "image/jpeg")})
-            
+
         # Assertions
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        
+
         # Verification: Flow E (Auto-Routing) correctly sensed FSSAI -> FOOD_BEVERAGE
         self.assertEqual(data["category"], "food_beverage")
-        
+
         # Verification: Rule Engine executed multiple checks
         self.assertGreater(len(data["check_results"]), 0)
-        
+
         # Verification: Rule F14 (Tier-3 FSSAI Cache Fallback) properly resolved the FSSAI License
         fssai_check = next(c for c in data["check_results"] if c["check_name"] == "FSSAI License No.")
         self.assertEqual(fssai_check["status"], "PASS")
@@ -70,7 +70,14 @@ class TestE2EPipeline(unittest.TestCase):
         # Verification: Flow 3 (Reporting) added the base64 annotation
         self.assertIsNotNone(data["annotated_image_base64"])
         self.assertTrue(data["annotated_image_base64"].startswith("data:image/jpeg;base64"))
-        
+
+        # Verification: Method 1 Image Authenticity executed
+        auth_check = next(c for c in data["check_results"] if c["check_id"] == "AUTH_01")
+        self.assertIsNotNone(auth_check)
+        self.assertIn("authenticity", data)
+        self.assertIsNotNone(data["authenticity"])
+        self.assertIn("authenticity_score", data["authenticity"])
+
         # Cleanup
         if os.path.exists(dummy_img_path):
             os.remove(dummy_img_path)
