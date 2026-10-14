@@ -12,6 +12,10 @@ class ProductCategory(str, Enum):
     APPAREL_TEXTILE = "apparel_textile"
     GENERAL_RETAIL = "general_retail"
 
+class UserRole(str, Enum):
+    CONSUMER = "consumer"
+    INSPECTOR = "inspector"
+
 class CheckStatus(str, Enum):
     PASS = "PASS"
     FAIL = "FAIL"
@@ -23,6 +27,39 @@ class Severity(str, Enum):
     BLOCKING = "blocking"
     MAJOR = "major"
     MINOR = "minor"
+
+# ─────────────────────────────────────────────────────────────
+# AUTHENTICATION SCHEMAS
+# ─────────────────────────────────────────────────────────────
+
+class LoginRequest(BaseModel):
+    role: UserRole
+    username: str
+    password: Optional[str] = None
+    remember_me: bool = False
+
+class OTPRequest(BaseModel):
+    identifier: str
+    role: Optional[UserRole] = UserRole.CONSUMER
+
+class OTPVerifyRequest(BaseModel):
+    identifier: str
+    otp: str
+    role: Optional[UserRole] = UserRole.CONSUMER
+
+class UserProfile(BaseModel):
+    id: str
+    name: str
+    email: Optional[str] = None
+    role: UserRole
+    department: Optional[str] = None
+    jurisdiction: Optional[str] = None
+
+class AuthResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserProfile
+    message: str
 
 # ─────────────────────────────────────────────────────────────
 # STAGE 2/3 OUTPUT — Region Detection + OCR
@@ -123,6 +160,23 @@ class CheckResult(BaseModel):
     confidence: Optional[float] = None
     reason: Optional[str] = None
 
+class AuthenticityDetails(BaseModel):
+    is_ai_generated: bool = False
+    classification_label: str = "AUTHENTIC PHYSICAL CAPTURE"
+    authenticity_score: float = 1.0
+    ai_confidence_percentage: int = 0
+    status: CheckStatus
+    camera_hardware: Optional[str] = None
+    ai_signatures: List[str] = []
+    spectral_artifact_score: float = 0.0
+    noise_residual_score: float = 0.0
+    deep_learning_score: Optional[float] = None
+    deep_learning_model: Optional[str] = None
+    mockup_disclaimers: List[str] = []
+    barcode_status: Optional[str] = None
+    barcode_value: Optional[str] = None
+    verdict_summary: str
+
 class ComplianceReport(BaseModel):
     scan_id: str
     category: ProductCategory
@@ -131,6 +185,7 @@ class ComplianceReport(BaseModel):
     annotated_image_base64: Optional[str] = None
     generated_at: str
     report_url: Optional[str] = None
+    authenticity: Optional[AuthenticityDetails] = None
 
 # ─────────────────────────────────────────────────────────────
 # E-COMMERCE MISMATCH CHECK — dual input comparison

@@ -83,7 +83,11 @@ def evaluate_packaging_compliance(
 
     # Manufacturer Details Check (Rule 6(1)(a))
     r_mfg_name = fetch_rule_metadata("R6_1_a")
+    mfg_conf = conf_map.get("manufacturer_region", 0.95)
     if scan.manufacturer_name:
+        addr_suffix = f", {scan.manufacturer_address}" if scan.manufacturer_address else ""
+        pin_suffix = f" - {scan.pincode}" if scan.pincode else ""
+        full_evidence = f"{scan.manufacturer_name}{addr_suffix}{pin_suffix}"
         results.append(
             CheckResult(
                 check_id="05",
@@ -91,9 +95,21 @@ def evaluate_packaging_compliance(
                 rule_ref=r_mfg_name.get("source_rule", "Rule_6_1_a"),
                 severity=Severity.MAJOR,
                 status=CheckStatus.PASS,
-                evidence_text=scan.manufacturer_name,
-                confidence=conf_map.get("manufacturer_region", 0.95),
-                reason=f"Manufacturer declared: {scan.manufacturer_name}"
+                evidence_text=full_evidence,
+                confidence=mfg_conf,
+                reason=f"Manufacturer declared: {full_evidence}"
+            )
+        )
+    elif "manufacturer_region" in conf_map and mfg_conf < 0.85:
+        results.append(
+            CheckResult(
+                check_id="05",
+                check_name="Manufacturer/Packer",
+                rule_ref=r_mfg_name.get("source_rule", "Rule_6_1_a"),
+                severity=Severity.MAJOR,
+                status=CheckStatus.REVIEW,
+                confidence=mfg_conf,
+                reason="Manufacturer region detected but OCR confidence below 85%. Manual review required."
             )
         )
     else:
@@ -104,7 +120,7 @@ def evaluate_packaging_compliance(
                 rule_ref=r_mfg_name.get("source_rule", "Rule_6_1_a"),
                 severity=Severity.MAJOR,
                 status=CheckStatus.FAIL,
-                confidence=conf_map.get("manufacturer_region", 0.95),
+                confidence=mfg_conf,
                 reason="Manufacturer/Packer name and address not found on packaging."
             )
         )
