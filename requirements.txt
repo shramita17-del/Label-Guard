@@ -17,15 +17,22 @@ opencv-python-headless>=4.10.0
 numpy>=1.26.0
 pillow>=10.0.0
 rapidfuzz>=3.9.0
+zxing-cpp>=3.0.0
 
 # Report & PDF Generation
+# xhtml2pdf: pure-Python PDF engine, works on Windows without GTK/Pango system libs
+xhtml2pdf>=0.2.16
 reportlab>=4.2.0
-weasyprint>=62.0.0
+# weasyprint>=62.0.0  # Requires GTK+/Pango — does NOT work on plain Windows; install GTK first if needed
 
 # Machine Learning & OCR (Live inference)
 ultralytics>=8.3.0
 torch>=2.0.0
 transformers>=4.40.0
+rapidocr-onnxruntime>=1.2.3
+winocr>=0.0.15
+scikit-learn>=1.5.0
+xgboost>=2.0.0
 # Note: For PaddlePaddle / PaddleOCR on Windows, Python <= 3.12 is recommended
 # paddlepaddle
 # paddleocr

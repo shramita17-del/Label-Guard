@@ -1,0 +1,12 @@
+{
+  "version": "v1.0.0-hybrid",
+  "seed": 42,
+  "dataset_size": 80,
+  "train_samples": 56,
+  "val_samples": 12,
+  "test_samples": 12,
+  "models": {
+    "field_classifier": "models\\field_classifier.joblib",
+    "confidence_scorer": "models\\confidence_scorer.joblib"
+  }
+}

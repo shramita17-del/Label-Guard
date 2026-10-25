@@ -42,10 +42,21 @@ class DeepLearningAIDetector:
             from transformers import AutoImageProcessor, AutoModelForImageClassification
 
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-            logger.info(f"Loading AI detection model '{self.model_name}' on {self.device}...")
 
-            self.processor = AutoImageProcessor.from_pretrained(self.model_name)
-            self.model = AutoModelForImageClassification.from_pretrained(self.model_name)
+            # Try loading from local HuggingFace cache first
+            try:
+                self.processor = AutoImageProcessor.from_pretrained(self.model_name, local_files_only=True)
+                self.model = AutoModelForImageClassification.from_pretrained(self.model_name, local_files_only=True)
+            except Exception:
+                if os.getenv("LABELGUARD_DOWNLOAD_MODELS", "0") == "1":
+                    logger.info(f"Downloading AI detection model '{self.model_name}' on {self.device}...")
+                    self.processor = AutoImageProcessor.from_pretrained(self.model_name)
+                    self.model = AutoModelForImageClassification.from_pretrained(self.model_name)
+                else:
+                    logger.info(f"AI detection model '{self.model_name}' not cached locally. Set LABELGUARD_DOWNLOAD_MODELS=1 to download.")
+                    self._load_failed = True
+                    return False
+
             self.model.to(self.device)
             self.model.eval()
             self._is_loaded = True

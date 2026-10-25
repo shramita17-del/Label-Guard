@@ -200,22 +200,27 @@ class TestAuthenticityModule(unittest.TestCase):
         self.assertEqual(exp, 1)
         self.assertEqual(act, 9)
 
-    def test_fix3_barcode_hallucination_flagged_in_image(self):
-        img_path = os.path.join(self.test_dir, "packaging_with_barcode.png")
+    def test_phone_number_never_decoded_as_barcode(self):
+        img_path = os.path.join(self.test_dir, "clean_phone_test.png")
         img = Image.new("RGB", (256, 256), color=(140, 150, 160))
         img.save(img_path)
 
-        # Spaced out sequence as seen on AI generated barcode: "8 906123 456789"
-        check_res, details = evaluate_image_authenticity(
+        # Phone numbers in OCR text must never be decoded or treated as barcodes
+        b_status, b_val, b_anomaly = check_barcode_integrity(
             img_path,
-            extracted_text="Coco Crisp Barcode 8 906123 456789 Net Wt 100g"
+            extracted_text="CONSUMER CARE: 1800425444444 OR +919876543210"
         )
-        self.assertTrue(details.is_ai_generated)
-        self.assertEqual(check_res.status, CheckStatus.FAIL)
-        self.assertEqual(check_res.severity, Severity.BLOCKING)
-        self.assertIn("HALLUCINATED BARCODE", details.classification_label)
-        self.assertIsNotNone(details.barcode_status)
-        self.assertEqual(details.barcode_value, "8906123456789")
+        self.assertEqual(b_status, "BARCODE_UNREADABLE")
+        self.assertIsNone(b_val)
+        self.assertIsNone(b_anomaly)
+
+    def test_ai_sample_c976a757_fails_auth01(self):
+        sample_path = "frontend/samples/sample_ai_package.png"
+        if os.path.exists(sample_path):
+            check_res, details = evaluate_image_authenticity(sample_path)
+            self.assertTrue(details.is_ai_generated)
+            self.assertEqual(check_res.status, CheckStatus.FAIL)
+            self.assertEqual(check_res.severity, Severity.BLOCKING)
 
     def test_maybe_ai_generated_40_to_60_percent_confidence(self):
         # 40% to 60% confidence rating must be marked as Yellow Maybe AI Generated (CheckStatus.REVIEW)

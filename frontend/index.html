@@ -95,7 +95,7 @@
             </div>
 
             <!-- Authenticated state (Hidden initially) -->
-            <div id="navLoggedIn" class="hidden flex items-center gap-3">
+            <div id="navLoggedIn" class="hidden flex items-center gap-3" aria-hidden="true">
                 <div id="userBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium bg-slate-50">
                     <!-- Populated dynamically -->
                 </div>
@@ -1188,10 +1188,12 @@
                 return;
             }
 
-            // Save session
+            // Save session — respect "Remember Me" for persistence across tabs/restarts
+            // If unchecked, sessionStorage clears when the tab closes.
             const storage = payload.remember_me ? localStorage : sessionStorage;
             storage.setItem(SESS_KEY, JSON.stringify(data));
-            // Also store in current memory
+            // Remove from the other store to keep a single source of truth
+            (payload.remember_me ? sessionStorage : localStorage).removeItem(SESS_KEY);
             authSession = data;
 
             showToast(data.message || 'Authenticated successfully!', data.user.role === 'inspector' ? 'inspector' : 'success');
@@ -1259,11 +1261,26 @@
         workspaceSection.scrollIntoView({ behavior: 'smooth' });
     }
 
-    function renderLoggedOutUI() {
+    // ─────────────────────────────────────────────────────────────
+    // AUTH UTILITIES
+    // ─────────────────────────────────────────────────────────────
+
+    /**
+     * clearAuthData — wipes both storages and the in-memory variable.
+     * Call this whenever the server says the session is invalid.
+     */
+    function clearAuthData() {
         authSession = null;
         localStorage.removeItem(SESS_KEY);
         sessionStorage.removeItem(SESS_KEY);
+    }
 
+    /**
+     * renderLoggedOutUI — clears data and updates every UI element.
+     * Safe to call multiple times (idempotent).
+     */
+    function renderLoggedOutUI() {
+        clearAuthData();
         document.getElementById('navLoggedOut').classList.remove('hidden');
         document.getElementById('navLoggedIn').classList.add('hidden');
         document.getElementById('workspaceSection').classList.add('hidden');
@@ -1271,19 +1288,100 @@
         inputPassword.value = '';
     }
 
+    /**
+     * authFetch — a thin fetch() wrapper that intercepts 401/403 responses
+     * from any API call and immediately forces the signed-out UI.
+     */
+    async function authFetch(url, options = {}) {
+        if (authSession && authSession.access_token) {
+            options.headers = options.headers || {};
+            options.headers['Authorization'] = `Bearer ${authSession.access_token}`;
+        }
+        const resp = await fetch(url, options);
+        if (resp.status === 401 || resp.status === 403) {
+            renderLoggedOutUI();
+            showToast('Your session expired. Please sign in again.', 'error');
+        }
+        return resp;
+    }
+
+    /**
+     * refreshAuthState — SINGLE SOURCE OF TRUTH for auth UI.
+     * Reads stored token, hits /api/auth/me, and updates the entire UI.
+     * Called on load, pageshow, and window focus.
+     */
+    async function refreshAuthState() {
+        // Hide both states while we verify — prevents flash of wrong UI
+        const navLoggedIn  = document.getElementById('navLoggedIn');
+        const navLoggedOut = document.getElementById('navLoggedOut');
+        navLoggedIn.classList.add('hidden');
+        navLoggedOut.classList.add('hidden');
+
+        const raw = localStorage.getItem(SESS_KEY) || sessionStorage.getItem(SESS_KEY);
+        if (!raw) {
+            // No token stored — definitely signed out
+            navLoggedOut.classList.remove('hidden');
+            return;
+        }
+
+        let stored;
+        try {
+            stored = JSON.parse(raw);
+        } catch (_) {
+            // Corrupt storage
+            clearAuthData();
+            navLoggedOut.classList.remove('hidden');
+            return;
+        }
+
+        if (!stored || !stored.access_token) {
+            clearAuthData();
+            navLoggedOut.classList.remove('hidden');
+            return;
+        }
+
+        // Verify the token against the server
+        try {
+            const resp = await fetch('/api/auth/me', {
+                headers: { 'Authorization': `Bearer ${stored.access_token}` }
+            });
+
+            if (resp.ok) {
+                // Server confirmed the session is valid
+                const freshUser = await resp.json();
+                // Update stored data with latest profile (in case server state changed)
+                stored.user = freshUser;
+                authSession = stored;
+                renderAuthenticatedUI(stored);
+            } else {
+                // 401 / 403 / any non-200 — session dead (e.g. server restarted)
+                clearAuthData();
+                navLoggedOut.classList.remove('hidden');
+                if (resp.status === 401 || resp.status === 403) {
+                    showToast('Your session has expired. Please sign in again.', 'error');
+                }
+            }
+        } catch (networkErr) {
+            // Network failure — show sign-in but don't clear storage
+            // (server might just be temporarily down; keep token for retry)
+            navLoggedOut.classList.remove('hidden');
+        }
+    }
+
     // Logout Button
     document.getElementById('btnLogout').addEventListener('click', async () => {
-        try {
-            if (authSession && authSession.access_token) {
-                await fetch('/api/auth/logout', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${authSession.access_token}` }
-                });
-            }
-        } catch (_) {}
+        const token = authSession && authSession.access_token;
+        // Clear client state FIRST so a failed server call doesn't block UI
         renderLoggedOutUI();
         showToast('Signed out successfully', 'info');
         document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
+        // Best-effort server-side session invalidation (fire and forget)
+        if (token) {
+            fetch('/api/auth/logout', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).catch(() => {});
+        }
     });
 
     // Switch Role in Banner
@@ -1292,19 +1390,6 @@
         setRole(selectedRole === 'consumer' ? 'inspector' : 'consumer');
         document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
     });
-
-    // Restore Session on load
-    function checkExistingSession() {
-        try {
-            const raw = localStorage.getItem(SESS_KEY) || sessionStorage.getItem(SESS_KEY);
-            if (raw) {
-                const sess = JSON.parse(raw);
-                renderAuthenticatedUI(sess);
-            }
-        } catch (e) {
-            console.error('Session load error', e);
-        }
-    }
 
     // ─────────────────────────────────────────────────────────────
     // OTP FLOW
@@ -1623,20 +1708,54 @@
             document.getElementById('imgAnnotated').src = data.annotated_image_base64;
         }
 
-        // PDF Download links
+        // PDF Download — use fetch() blob so the browser saves the file instead of opening a tab
         const downloadBtns = [
             document.getElementById('btnDownloadReportHeader'),
             document.getElementById('btnDownloadReportBody')
         ];
-        downloadBtns.forEach(btn => {
-            if (data.report_url) {
-                btn.href = data.report_url;
-                btn.target = '_blank';
+        const scanId = data.scan_id; // always use the scan_id from the current response
+        if (data.report_url && scanId) {
+            downloadBtns.forEach(btn => {
                 btn.classList.remove('hidden');
-            } else {
-                btn.classList.add('hidden');
-            }
-        });
+                // Clone to remove old listeners, then re-attach a fresh one
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+
+                newBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const spanEl = newBtn.querySelector('span');
+                    const originalText = spanEl ? spanEl.textContent : 'Download PDF';
+                    if (spanEl) spanEl.textContent = 'Generating PDF…';
+                    newBtn.style.pointerEvents = 'none';
+                    newBtn.style.opacity = '0.7';
+                    try {
+                        const downloadUrl = `/reports/${scanId}/download`;
+                        const resp = await fetch(downloadUrl);
+                        if (!resp.ok) {
+                            const err = await resp.json().catch(() => ({ detail: resp.statusText }));
+                            throw new Error(err.detail || `HTTP ${resp.status}`);
+                        }
+                        const blob = await resp.blob();
+                        const objectUrl = URL.createObjectURL(blob);
+                        const anchor = document.createElement('a');
+                        anchor.href = objectUrl;
+                        anchor.download = `LabelGuard_Report_${scanId}.pdf`;
+                        document.body.appendChild(anchor);
+                        anchor.click();
+                        anchor.remove();
+                        setTimeout(() => URL.revokeObjectURL(objectUrl), 5000);
+                    } catch (err) {
+                        alert(`PDF download failed: ${err.message}`);
+                    } finally {
+                        if (spanEl) spanEl.textContent = originalText;
+                        newBtn.style.pointerEvents = '';
+                        newBtn.style.opacity = '';
+                    }
+                });
+            });
+        } else {
+            downloadBtns.forEach(btn => btn.classList.add('hidden'));
+        }
 
         // Table of checks
         const tbody = document.getElementById('tableChecksBody');
@@ -1819,10 +1938,26 @@ Digitally Sealed by Authorized Officer:
         e.target.reset();
     });
 
-    // Run check on load
+    // ─────────────────────────────────────────────────────────────
+    // STARTUP & AUTH LIFECYCLE HOOKS
+    // ─────────────────────────────────────────────────────────────
+
+    // 1. On initial load — verify session with server
     window.addEventListener('DOMContentLoaded', () => {
         setRole('consumer');
-        checkExistingSession();
+        refreshAuthState();
+    });
+
+    // 2. On back/forward cache restore (bfcache) — re-validate
+    window.addEventListener('pageshow', (e) => {
+        if (e.persisted) {
+            refreshAuthState();
+        }
+    });
+
+    // 3. On window focus — re-validate in case server restarted while tab was open
+    window.addEventListener('focus', () => {
+        refreshAuthState();
     });
 </script>
 </body>

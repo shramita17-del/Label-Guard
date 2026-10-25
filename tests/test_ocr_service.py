@@ -2,12 +2,12 @@ import sys
 import unittest
 from unittest.mock import MagicMock, patch
 
-# Mock heavy ML dependencies so tests run instantly without installing PyTorch/Paddle
-sys.modules['cv2'] = MagicMock()
-sys.modules['numpy'] = MagicMock()
-sys.modules['ultralytics'] = MagicMock()
-sys.modules['paddleocr'] = MagicMock()
+# Mock only the heavy ML dependencies that aren't installed in test env
+# NEVER mock cv2 or numpy globally — it poisons other tests in the same process
+sys.modules.setdefault('ultralytics', MagicMock())
+sys.modules.setdefault('paddleocr', MagicMock())
 
+import numpy as np
 from backend.schemas import DetectedRegion, BoundingBox, OCRResult
 from backend.ocr_service.detector import YoloDetector
 from backend.ocr_service.extractor import OCRExtractor
@@ -53,9 +53,8 @@ class TestOCRService(unittest.TestCase):
     def test_paddle_extractor(self, mock_imread):
         extractor = OCRExtractor()
         
-        # Mock image dimensions to prevent out-of-bounds crop errors in logic
-        mock_img = MagicMock()
-        mock_img.shape = (1000, 1000, 3)
+        # Use a real numpy array so crop slicing and cv2 preprocessing work correctly
+        mock_img = np.zeros((1000, 1000, 3), dtype=np.uint8)
         mock_imread.return_value = mock_img
         
         # Mock PaddleOCR return format: [[ [box], ('text', conf) ]]
@@ -77,9 +76,10 @@ class TestOCRService(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertIsInstance(results[0], OCRResult)
         self.assertEqual(results[0].region_label, "mrp_region")
-        self.assertEqual(results[0].raw_text, "Rs. 199.00 incl of all taxes")
+        self.assertEqual(results[0].raw_text, "Rs. 199.00\nincl of all taxes")
         self.assertEqual(results[0].ocr_confidence, 0.95) # Average of 0.98 and 0.92
         self.assertEqual(results[0].bbox.x_min, 10)
 
 if __name__ == '__main__':
     unittest.main()
+

@@ -141,62 +141,184 @@ def validate_ean13_checksum(code: str) -> Tuple[bool, int, int]:
     actual_check = int(digits[12])
     return (expected_check == actual_check), expected_check, actual_check
 
+def _crop_and_decode_barcode_candidates(cv_img: np.ndarray) -> List[Tuple[str, str]]:
+    """
+    Finds candidate barcode regions (dense vertical gradient bars), crops, upscales 3x,
+    converts to grayscale, tries rotations of -10..+10 degrees, and retries decoding.
+    """
+    results: List[Tuple[str, str]] = []
+    if cv_img is None or cv2 is None:
+        return results
+
+    try:
+        gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY) if len(cv_img.shape) == 3 else cv_img
+        grad_x = cv2.Sobel(gray, cv2.CV_32F, 1, 0, ksize=-1)
+        grad_y = cv2.Sobel(gray, cv2.CV_32F, 0, 1, ksize=-1)
+        gradient = cv2.subtract(cv2.convertScaleAbs(grad_x), cv2.convertScaleAbs(grad_y))
+
+        blurred = cv2.blur(gradient, (9, 9))
+        _, thresh = cv2.threshold(blurred, 225, 255, cv2.THRESH_BINARY)
+
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (21, 7))
+        closed = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+        closed = cv2.erode(closed, None, iterations=2)
+        closed = cv2.dilate(closed, None, iterations=2)
+
+        contours, _ = cv2.findContours(closed.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        h_img, w_img = gray.shape[:2]
+
+        candidate_boxes = []
+        for c in contours:
+            x, y, w, h = cv2.boundingRect(c)
+            if w * h > 800 and w > 25 and h > 15:
+                pad_x = int(w * 0.15)
+                pad_y = int(h * 0.15)
+                candidate_boxes.append((
+                    max(0, x - pad_x),
+                    max(0, y - pad_y),
+                    min(w_img, x + w + pad_x),
+                    min(h_img, y + h + pad_y)
+                ))
+
+        import zxingcpp
+        for x1, y1, x2, y2 in candidate_boxes:
+            crop = gray[y1:y2, x1:x2]
+            if crop.size == 0:
+                continue
+
+            crop_3x = cv2.resize(crop, None, fx=3.0, fy=3.0, interpolation=cv2.INTER_CUBIC)
+            ch, cw = crop_3x.shape[:2]
+            center = (cw / 2.0, ch / 2.0)
+
+            for angle in [0, -10, -7, -4, 4, 7, 10]:
+                if angle == 0:
+                    rotated = crop_3x
+                else:
+                    M = cv2.getRotationMatrix2D(center, angle, 1.0)
+                    rotated = cv2.warpAffine(crop_3x, M, (cw, ch), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+
+                try:
+                    zx_res = zxingcpp.read_barcodes(rotated)
+                    for zr in zx_res:
+                        txt = str(zr.text).strip()
+                        if txt:
+                            results.append((txt, str(zr.format)))
+                except Exception:
+                    pass
+
+                if results:
+                    break
+            if results:
+                break
+    except Exception:
+        pass
+
+    return results
+
+
+def is_phone_number_or_non_barcode(val: str) -> bool:
+    """Detects phone numbers (1800..., 91..., or 10-13 digits starting 1800) which must never be considered barcodes."""
+    digits = re.sub(r"\D", "", val)
+    if digits.startswith("1800"):
+        return True
+    if digits.startswith("91") and len(digits) >= 10:
+        return True
+    return False
+
+
 def check_barcode_integrity(
     image_path: str,
     extracted_text: Optional[str] = None
 ) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     """
-    Checks barcode & QR decodability and mathematical EAN-13 checksum validity.
-    Returns:
-        barcode_status (str or None): Status description.
-        barcode_val (str or None): Extracted/decoded barcode digits.
-        anomaly_reason (str or None): Anomaly description if invalid/hallucinated.
-    """
-    candidates = []
-    if extracted_text:
-        # Match sequences of digits like "8 906123 456789" or "8906123456789"
-        raw_matches = re.findall(r"\b\d(?:\s*\d){12}\b", extracted_text)
-        for rm in raw_matches:
-            clean = re.sub(r"\s+", "", rm)
-            if len(clean) == 13:
-                candidates.append(clean)
+    Decodes barcodes strictly from the physical image using zxing-cpp or OpenCV BarcodeDetector.
+    Strictly decodes from pixels, never from OCR text strings.
+    Ignores phone numbers, text line digits, etc.
 
-    decoded_codes = []
+    Returns:
+        barcode_status: "VALID_EAN13" | "VALID_BARCODE" | "INVALID_EAN13_CHECKSUM" | "HALLUCINATED_DUMMY_SEQUENCE" | "BARCODE_UNREADABLE"
+        barcode_val: Decoded barcode string if found
+        anomaly_reason: Anomaly description if decoded barcode failed checks, or None
+    """
+    decoded_codes: List[Tuple[str, str]] = []
+    cv_img = cv2.imread(image_path) if cv2 is not None and os.path.exists(image_path) else None
+
+    # 1. Try zxing-cpp (preferred fast C++ decoder on full image)
     try:
-        if cv2 is not None and hasattr(cv2, "barcode") and hasattr(cv2.barcode, "BarcodeDetector"):
-            cv_img = cv2.imread(image_path)
-            if cv_img is not None:
-                detector = cv2.barcode.BarcodeDetector()
-                ok, decoded_info, _, _ = detector.detectAndDecode(cv_img)
-                if ok and decoded_info:
-                    for d in decoded_info:
-                        if d and str(d).strip():
-                            decoded_codes.append(str(d).strip())
+        import zxingcpp
+        if cv_img is not None:
+            zx_results = zxingcpp.read_barcodes(cv_img)
+            for zr in zx_results:
+                txt = str(zr.text).strip()
+                if txt and not is_phone_number_or_non_barcode(txt):
+                    decoded_codes.append((txt, str(zr.format)))
     except Exception:
         pass
 
-    all_codes = list(dict.fromkeys(candidates + decoded_codes))
+    # 2. Try OpenCV BarcodeDetector fallback if nothing decoded yet
+    if not decoded_codes and cv_img is not None and hasattr(cv2, "barcode") and hasattr(cv2.barcode, "BarcodeDetector"):
+        try:
+            detector = cv2.barcode.BarcodeDetector()
+            ret = detector.detectAndDecode(cv_img)
+            decoded_info = None
+            if isinstance(ret, (list, tuple)):
+                if len(ret) >= 3 and isinstance(ret[0], str) and ret[0]:
+                    decoded_info = [ret[0]]
+                elif len(ret) >= 2 and isinstance(ret[1], (list, tuple)):
+                    decoded_info = ret[1]
+                elif len(ret) >= 1 and isinstance(ret[0], (list, tuple)):
+                    decoded_info = ret[0]
+            if decoded_info:
+                for d in decoded_info:
+                    d_str = str(d).strip()
+                    if d_str and not is_phone_number_or_non_barcode(d_str):
+                        decoded_codes.append((d_str, "EAN_13"))
+        except Exception:
+            pass
 
-    for code in all_codes:
-        # Check for dummy sequential digits often hallucinated by AI
-        if "12345678" in code or "98765432" in code:
+    # 3. If still not decoded: crop candidate barcode regions, upscale 3x, grayscale, rotate -10..+10
+    if not decoded_codes and cv_img is not None:
+        cand_results = _crop_and_decode_barcode_candidates(cv_img)
+        for c_txt, c_fmt in cand_results:
+            if not is_phone_number_or_non_barcode(c_txt):
+                decoded_codes.append((c_txt, c_fmt))
+
+    # If no barcode was decoded from image pixels: return BARCODE_UNREADABLE (weak signal only, never FAIL)
+    if not decoded_codes:
+        return ("BARCODE_UNREADABLE", None, None)
+
+    # Prioritize 1D product barcodes (EAN-13 / UPC) over 2D QR codes
+    decoded_codes.sort(
+        key=lambda x: 0 if (len(re.sub(r"\s+", "", x[0])) in (12, 13) and re.sub(r"\s+", "", x[0]).isdigit()) else 1
+    )
+
+    for code, fmt in decoded_codes:
+        clean_code = re.sub(r"\s+", "", code)
+        if is_phone_number_or_non_barcode(clean_code):
+            continue
+
+        if "12345678" in clean_code or "98765432" in clean_code:
             return (
                 "HALLUCINATED_DUMMY_SEQUENCE",
                 code,
-                f"Barcode contains hallucinated sequential digits ('{code}')"
+                f"Decoded barcode contains hallucinated sequential digits ('{code}')"
             )
 
-        is_valid, exp_c, act_c = validate_ean13_checksum(code)
-        if not is_valid and exp_c != -1:
-            return (
-                "INVALID_EAN13_CHECKSUM",
-                code,
-                f"Barcode '{code}' failed mathematical EAN-13 checksum (expected check digit {exp_c}, found {act_c})"
-            )
-        elif is_valid:
-            return ("VALID_EAN13", code, None)
+        if len(clean_code) == 13 and clean_code.isdigit():
+            is_valid, exp_c, act_c = validate_ean13_checksum(clean_code)
+            if not is_valid and exp_c != -1:
+                return (
+                    "INVALID_EAN13_CHECKSUM",
+                    code,
+                    f"Decoded barcode '{code}' failed mathematical EAN-13 checksum (expected check digit {exp_c}, found {act_c})"
+                )
+            elif is_valid:
+                return ("VALID_EAN13", code, None)
+        else:
+            return ("VALID_BARCODE", code, None)
 
-    return (None, None, None)
+    return ("VALID_BARCODE", decoded_codes[0][0], None)
+
 
 def inspect_metadata(img: Image.Image) -> Tuple[Optional[str], List[str], Dict[str, Any]]:
     """
@@ -500,171 +622,145 @@ def evaluate_image_authenticity(
                 return check_result, authenticity_details
 
             # -----------------------------------------------------------------
-            # FIX 3: Barcode & QR Code Decodability & Mathematical EAN-13 Checksum
-            # -----------------------------------------------------------------
-            b_status, b_val, b_anomaly = check_barcode_integrity(image_path, combined_text)
-            if b_anomaly:
-                summary = f"Synthetic / Fraudulent Media Flagged: {b_anomaly}."
-                reasons = [b_anomaly]
-                full_reason = f"{summary} Details: {'; '.join(reasons)}"
-                check_result = CheckResult(
-                    check_id="AUTH_01",
-                    check_name="Image Authenticity & Anti-Spoofing",
-                    rule_ref="ISO/IEC 30107 / Anti-Synthetic Media",
-                    severity=Severity.BLOCKING,
-                    status=CheckStatus.FAIL,
-                    evidence_text="AI GENERATED (HALLUCINATED BARCODE DETECTED) (96% AI Probability)",
-                    confidence=0.04,
-                    reason=full_reason
-                )
-                authenticity_details = AuthenticityDetails(
-                    is_ai_generated=True,
-                    classification_label="AI GENERATED (HALLUCINATED BARCODE DETECTED)",
-                    authenticity_score=0.04,
-                    ai_confidence_percentage=96,
-                    status=CheckStatus.FAIL,
-                    camera_hardware=camera_hardware,
-                    ai_signatures=all_ai_signatures,
-                    spectral_artifact_score=0.0,
-                    noise_residual_score=0.0,
-                    deep_learning_score=0.96,
-                    deep_learning_model="Barcode Integrity Validator",
-                    mockup_disclaimers=[],
-                    barcode_status=b_status,
-                    barcode_value=b_val,
-                    verdict_summary=summary
-                )
-                return check_result, authenticity_details
-
-            # -----------------------------------------------------------------
-            # STEP 2: Metadata is stripped -> Run FFT/Noise checks (Modules 3/4)
+            # MULTI-SIGNAL AI AUTHENTICITY EVALUATION
+            # Signals:
+            # 1. Binary Manifests / Container C2PA Metadata (Decisive)
+            # 2. Semantic Mockup Disclaimers (Decisive)
+            # 3. Barcode Decodability & Checksum on DECODED barcode (Weak/Medium)
+            # 4. Sensor Grain Residual (Medium)
+            # 5. 2D FFT Spectral Grid Asymmetry (Medium)
+            # 6. Deep Learning Vision Classifier (Medium/Strong)
+            # Hard Rule: Checksum failure alone NEVER produces blocking FAIL. Require >= 2 signals.
             # -----------------------------------------------------------------
             gray_img = np.array(pil_img.convert("L"))
             flat_noise, edge_noise, noise_ratio = compute_sensor_noise_features(gray_img)
             hf_ratio, asymmetry, lap_var = compute_spectral_features(gray_img)
 
-            reasons = []
-            is_ai = False
-            ai_confidence = 0
-            score = 1.0
-            status = CheckStatus.PASS
-            severity = Severity.MINOR
-            label = "AUTHENTIC PHYSICAL CAPTURE"
-            summary = ""
-            dl_fake_score = None
-            dl_model_name = None
+            b_status, b_val, b_anomaly = check_barcode_integrity(image_path, extracted_text=extracted_text)
 
-            # Forensic Check 1: Synthetic flat grain (diffusion/GAN noiseless flat areas)
-            if not camera_hardware and flat_noise < 0.18 and noise_ratio > 40.0:
-                is_ai = True
-                ai_confidence = 92
-                score = 0.08
-                status = CheckStatus.FAIL
-                severity = Severity.BLOCKING
-                label = "AI GENERATED / SYNTHETIC MEDIA"
-                summary = "AI-Generated Media Flagged: Image lacks physical optical sensor grain and camera hardware provenance."
-                reasons.append(f"Zero optical sensor grain in flat background (flat_noise={flat_noise:.4f}, expected >= 0.35)")
-                reasons.append(f"Unnatural edge-to-background gradient disparity (ratio={noise_ratio:.1f})")
-
-            # Forensic Check 2: High spectral grid asymmetry (deconvolution checkerboard)
-            elif not camera_hardware and asymmetry > 0.40:
-                is_ai = True
-                ai_confidence = 85
-                score = 0.15
-                status = CheckStatus.FAIL
-                severity = Severity.BLOCKING
-                label = "AI GENERATED / SYNTHETIC MEDIA"
-                summary = "AI-Generated / Synthetic Artifacts Detected: High-frequency deconvolution checkerboard and unnatural spectral profile."
-                reasons.append(f"Elevated frequency grid asymmetry ({asymmetry:.2f})")
-                reasons.append(f"Unnatural power distribution (HF ratio={hf_ratio:.2f})")
-
-            # -----------------------------------------------------------------
-            # FIX 1: Calibrated Deep Learning Arbiter (ViT / CNN)
-            # Threshold calibrated:
-            # - For unverified sources without camera hardware: 0.65 threshold (catches dark/textured AI packaging).
-            # - For confirmed camera hardware: 0.85 threshold (overrides faked hardware tags).
-            # -----------------------------------------------------------------
+            if dl_score_override is not None:
+                dl_fake_score = float(dl_score_override)
+                dl_model_name = "DeepLearningVisionClassifier"
             else:
-                # Query Deep Learning Classifier
-                if dl_score_override is not None:
-                    dl_fake_score = float(dl_score_override)
-                    dl_model_name = "DeepLearningVisionClassifier"
-                else:
-                    dl_fake_score, dl_model_name = get_deep_learning_fake_score(pil_img)
+                dl_fake_score, dl_model_name = get_deep_learning_fake_score(pil_img)
 
-                # Calibrated threshold for synthetic override
-                dl_threshold = 0.65 if not camera_hardware else 0.85
+            # Signal 1: Manifests
+            s_manifest = bool(all_ai_signatures)
+            # Signal 2: Mockups
+            s_mockup = bool(mockup_markers)
+            # Signal 3: Barcode Anomaly
+            s_barcode = bool(b_anomaly)
+            # Signal 4: Noise Anomaly
+            s_noise = bool(not camera_hardware and flat_noise < 0.18 and noise_ratio > 40.0)
+            # Signal 5: Spectral Asymmetry
+            s_fft = bool(not camera_hardware and asymmetry > 0.40)
+            # Signal 6: Deep Learning
+            dl_threshold = 0.85 if camera_hardware else 0.65
+            s_dl = bool(dl_fake_score is not None and dl_fake_score > dl_threshold)
+            s_dl_borderline = bool(dl_fake_score is not None and (0.40 <= dl_fake_score <= 0.60 or (camera_hardware and 0.60 < dl_fake_score <= 0.85)))
 
-                # ARBITER OVERRIDE: Fake score > calibrated threshold
-                if dl_fake_score is not None and dl_fake_score > dl_threshold:
-                    is_ai = True
-                    ai_confidence = int(round(dl_fake_score * 100))
-                    score = round(max(0.0, 1.0 - dl_fake_score), 2)
-                    status = CheckStatus.FAIL
-                    severity = Severity.BLOCKING
-                    label = "AI GENERATED (DEEP LEARNING OVERRIDE)"
-                    summary = f"Deep Learning Model Override: Vision classifier flagged latent synthetic artifacts ({dl_fake_score*100:.1f}% AI probability > {int(dl_threshold*100)}% threshold for {'unverified' if not camera_hardware else 'camera'} source)."
-                    reasons.append(f"Deep learning neural classifier ({dl_model_name}) fake score: {dl_fake_score:.3f}")
-                    if camera_hardware:
-                        reasons.append(f"Camera EXIF tags were present ({camera_hardware}) but overridden by deep neural latent analysis")
-                    else:
-                        reasons.append("Missing camera hardware EXIF tags")
+            reasons = []
+            signals_fired = []
 
-                # BORDERLINE 40% TO 60% CONFIDENCE: Flagged as Yellow "Maybe AI Generated"
-                elif dl_fake_score is not None and (0.40 <= dl_fake_score <= 0.60 or (camera_hardware and 0.60 < dl_fake_score <= 0.85)):
-                    is_ai = False
-                    ai_confidence = int(round(dl_fake_score * 100))
-                    score = round(max(0.1, 1.0 - dl_fake_score), 2)
-                    status = CheckStatus.REVIEW
-                    severity = Severity.MAJOR
-                    label = "MAYBE AI GENERATED"
-                    summary = f"Borderline AI Detection: Neural classifier indicated {ai_confidence}% synthetic likelihood (40%-60% confidence range). Flagged for review as Maybe AI Generated."
-                    reasons.append(f"Deep learning neural classifier ({dl_model_name}) fake score: {dl_fake_score:.3f} ({ai_confidence}%)")
-                    if camera_hardware:
-                        reasons.append(f"Camera hardware EXIF detected ({camera_hardware}) but neural classifier observed synthetic artifacts")
-                    else:
-                        reasons.append("Missing camera hardware EXIF tags")
+            if s_manifest:
+                signals_fired.append(f"AI Manifest ({all_ai_signatures[0]})")
+                reasons.append(f"Manifest: {all_ai_signatures[0]}")
+            if s_mockup:
+                signals_fired.append(f"Mockup Disclaimer ({mockup_markers[0]})")
+                reasons.append(f"Mockup: {mockup_markers[0]}")
+            if s_barcode:
+                signals_fired.append(f"Barcode Anomaly ({b_anomaly})")
+                reasons.append(f"Barcode: {b_anomaly}")
+            elif b_val:
+                reasons.append(f"Decoded physical barcode: {b_val} ({b_status})")
+            if s_noise:
+                signals_fired.append(f"Synthetic flat grain (noise={flat_noise:.4f})")
+                reasons.append(f"Zero optical sensor grain (noise={flat_noise:.4f}, ratio={noise_ratio:.1f})")
+            if s_fft:
+                signals_fired.append(f"FFT Spectral Grid Asymmetry ({asymmetry:.2f})")
+                reasons.append(f"Spectral asymmetry: {asymmetry:.2f}")
+            if s_dl:
+                signals_fired.append(f"DL Fake Score ({dl_fake_score*100:.1f}%)")
+                reasons.append(f"Neural classifier ({dl_model_name}): {dl_fake_score*100:.1f}% fake")
+            elif s_dl_borderline:
+                reasons.append(f"Neural classifier borderline: {dl_fake_score*100:.1f}%")
 
-                # Image PASSED FFT/Noise AND PASSED Deep Learning Model (< 40% fake score)
-                elif camera_hardware and (flat_noise >= 0.35 or lap_var > 100):
-                    is_ai = False
-                    dl_pct = int(round(dl_fake_score * 100)) if dl_fake_score is not None else 5
-                    ai_confidence = min(dl_pct, 15)
-                    score = 0.95
-                    status = CheckStatus.PASS
-                    severity = Severity.MINOR
-                    label = "AUTHENTIC PHYSICAL CAPTURE"
-                    summary = f"Authentic Physical Capture: Camera hardware verified ({camera_hardware}) with natural optical sensor noise."
+            # Determine Verdict using multi-signal aggregation
+            # Identify strong signals that independently indicate AI generation
+            strong_signals = []
+            if s_manifest:
+                strong_signals.append(signals_fired[0] if signals_fired else "AI Manifest")
+            if s_mockup:
+                strong_signals.append(signals_fired[1] if len(signals_fired) > 1 else "Mockup Disclaimer")
+            if s_noise:
+                strong_signals.append(signals_fired[3] if len(signals_fired) > 3 else "Noise Anomaly")
+            if s_fft:
+                strong_signals.append(signals_fired[4] if len(signals_fired) > 4 else "FFT Asymmetry")
+
+            if s_dl and not camera_hardware:
+                is_ai = True
+                ai_confidence = int(round(dl_fake_score * 100))
+                score = round(max(0.04, 1.0 - (dl_fake_score or 0.82)), 2)
+                status = CheckStatus.FAIL
+                severity = Severity.BLOCKING
+                label = "AI GENERATED (DEEP LEARNING OVERRIDE)"
+                summary = f"Neural Vision Classifier ({dl_model_name}): Confirmed AI-generated synthetic media ({ai_confidence}% likelihood)."
+            elif strong_signals:
+                is_ai = True
+                ai_confidence = 100
+                score = 0.0
+                status = CheckStatus.FAIL
+                severity = Severity.BLOCKING
+                label = "AI GENERATED (STRONG SIGNAL)"
+                summary = f"Detected strong AI indicators: {'; '.join(strong_signals)}."
+            elif len(signals_fired) >= 2:
+                is_ai = True
+                ai_confidence = max(82, int(round((dl_fake_score or 0.82) * 100)))
+                score = round(max(0.04, 1.0 - (ai_confidence / 100.0)), 2)
+                status = CheckStatus.FAIL
+                severity = Severity.BLOCKING
+                label = "AI GENERATED (MULTI-SIGNAL CONFIRMED)"
+                summary = f"Synthetic Media Confirmed by {len(signals_fired)} independent signals: {'; '.join(signals_fired)}."
+            elif len(signals_fired) == 1:
+                is_ai = False
+                ai_confidence = int(round((dl_fake_score or 0.50) * 100)) if dl_fake_score else 45
+                score = round(max(0.15, 1.0 - (ai_confidence / 100.0)), 2)
+                status = CheckStatus.REVIEW
+                severity = Severity.MAJOR
+                label = "MAYBE AI GENERATED / UNCONFIRMED SINGLE SIGNAL"
+                summary = f"Borderline Forensic Anomaly ({signals_fired[0]}): Single signal requires manual review, not automatic failure."
+            elif s_dl_borderline:
+                is_ai = False
+                ai_confidence = int(round(dl_fake_score * 100))
+                score = round(max(0.20, 1.0 - dl_fake_score), 2)
+                status = CheckStatus.REVIEW
+                severity = Severity.MAJOR
+                label = "MAYBE AI GENERATED"
+                summary = f"Borderline AI Detection: Neural classifier indicated {ai_confidence}% synthetic likelihood. Flagged for review."
+            else:
+                is_ai = False
+                dl_pct = int(round((dl_fake_score or 0.05) * 100))
+                ai_confidence = min(dl_pct, 15)
+                score = 0.95 if camera_hardware else 0.88
+                status = CheckStatus.PASS
+                severity = Severity.MINOR
+                label = "AUTHENTIC PHYSICAL CAPTURE"
+                summary = f"Authentic Physical Capture: Natural optical sensor characteristics and image integrity verified."
+                if camera_hardware:
                     reasons.append(f"Hardware sensor profile: {camera_hardware}")
-                    reasons.append(f"Natural sensor grain (noise={flat_noise:.2f})")
-                    if dl_fake_score is not None:
-                        reasons.append(f"Deep learning confirmed authentic (fake score: {dl_fake_score:.3f})")
-
-                elif not camera_hardware:
-                    # Stripped EXIF / web upload, but passed noise/FFT and DL < 40%
-                    is_ai = False
-                    dl_pct = int(round(dl_fake_score * 100)) if dl_fake_score is not None else 15
-                    ai_confidence = dl_pct
-                    score = 0.85
-                    status = CheckStatus.PASS
-                    severity = Severity.MINOR
-                    label = "AUTHENTIC PHYSICAL CAPTURE"
-                    summary = "Image authenticity verified: Optical characteristics and neural latent pixel relationships match physical capture."
-                    reasons.append("Passed optical frequency and sensor noise checks")
-                    if dl_fake_score is not None:
-                        reasons.append(f"Deep learning verified authentic (fake score: {dl_fake_score:.3f})")
-
-                else:
-                    is_ai = False
-                    ai_confidence = 10
-                    score = 0.90
-                    status = CheckStatus.PASS
-                    severity = Severity.MINOR
-                    label = "AUTHENTIC PHYSICAL CAPTURE"
-                    summary = "Image authenticity verified: Physical camera optical characteristics confirmed."
-                    reasons.append("Natural optical frequency distribution observed")
-                    if dl_fake_score is not None:
-                        reasons.append(f"Deep learning fake score: {dl_fake_score:.3f}")
+                reasons.append(f"Sensor noise: {flat_noise:.2f}")
+                if dl_fake_score is not None:
+                    reasons.append(f"Deep learning verified authentic ({dl_fake_score:.3f})")
+                score = 0.95 if camera_hardware else 0.88
+                status = CheckStatus.PASS
+                severity = Severity.MINOR
+                label = "AUTHENTIC PHYSICAL CAPTURE"
+                summary = f"Authentic Physical Capture: Natural optical sensor characteristics and image integrity verified."
+                if camera_hardware:
+                    reasons.append(f"Hardware sensor profile: {camera_hardware}")
+                reasons.append(f"Sensor noise: {flat_noise:.2f}")
+                if dl_fake_score is not None:
+                    reasons.append(f"Deep learning verified authentic ({dl_fake_score:.3f})")
 
             full_reason = f"{summary} Details: {'; '.join(reasons)}"
 

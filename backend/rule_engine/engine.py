@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from datetime import datetime
 from backend.schemas import (
     NormalizedScan,
@@ -17,21 +17,67 @@ from backend.rule_engine.validators.common import (
     validate_mrp,
     validate_net_quantity,
     validate_date_of_mfg,
-    validate_country_of_origin
+    validate_country_of_origin,
+    validate_manufacturer,
+    validate_consumer_care,
 )
 from backend.rule_engine.validators.apparel_textile import validate_fiber_composition
 from backend.rule_engine.validators.food_beverage import validate_veg_nonveg_mark
 from backend.rule_engine.fssai_verifier import verify_fssai_license
 
 
+def evaluate_rule_23(digital_claims: dict, physical_ocr: dict) -> dict:
+    """Layer 1 deterministic rule engine for Legal Metrology Rule 23.
+
+    Performs hard‑coded compliance checks on the digital listing versus the
+    physical OCR extraction.
+
+    Args:
+        digital_claims: Dictionary representing the digital e‑commerce listing.
+            Expected keys: ``mrp``, ``net_quantity``, ``country_of_origin``,
+            ``expiry_date``, ``manufacturer_address``.
+        physical_ocr: Dictionary representing OCR‑extracted values from the
+            physical package. Expected keys mirror ``digital_claims``.
+
+    Returns:
+        dict: ``{"has_hard_breach": bool, "violations": List[str]}`` where
+        ``has_hard_breach`` is ``True`` if any rule violation occurs and
+        ``violations`` contains the textual breach messages.
+    """
+    violations = []
+    def _to_float(value):
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+    digital_mrp = _to_float(digital_claims.get("mrp"))
+    physical_mrp = _to_float(physical_ocr.get("mrp"))
+    if digital_mrp is not None and physical_mrp not in (None, 0):
+        if digital_mrp > physical_mrp:
+            violations.append("FAIL: Digital MRP exceeds physical package MRP.")
+    digital_qty = _to_float(digital_claims.get("net_quantity"))
+    physical_qty = _to_float(physical_ocr.get("net_quantity"))
+    if digital_qty is not None and physical_qty not in (None, 0):
+        if digital_qty > physical_qty:
+            violations.append("FAIL: Digital net quantity exceeds physical package quantity.")
+    mandatory_fields = ["country_of_origin", "expiry_date", "manufacturer_address"]
+    for field in mandatory_fields:
+        if not digital_claims.get(field):
+            violations.append(f"FAIL: Mandatory field '{field}' missing in digital claims.")
+    has_hard_breach = len(violations) > 0
+    return {"has_hard_breach": has_hard_breach, "violations": violations}
+
+
+
 def evaluate_packaging_compliance(
     scan: NormalizedScan,
-    conf_map: Optional[Dict[str, float]] = None
+    conf_map: Optional[Dict[str, float]] = None,
+    digital_claims: Optional[Dict[str, Any]] = None,
 ) -> List[CheckResult]:
     """
     Executes categorized compliance evaluation as per ProductCategory schema.
     Takes NormalizedScan (from OCR pipeline) and produces List[CheckResult]
-    enriched with Supabase Legal Metrology citations.
+    enriched with Legal Metrology citations.
     """
     if conf_map is None:
         conf_map = {}
@@ -47,7 +93,9 @@ def evaluate_packaging_compliance(
         scan,
         conf_map.get("mrp_region", 0.95),
         check_id="01",
-        rule_ref=r_mrp.get("source_rule", "Rule_6_1_e")
+        rule_ref=r_mrp.get("source_rule", "Rule_6_1_e"),
+        conf_map=conf_map,
+        digital_claims=digital_claims,
     )
     results.append(mrp_res)
 
@@ -57,7 +105,9 @@ def evaluate_packaging_compliance(
         scan,
         conf_map.get("net_quantity_region", 0.95),
         check_id="02",
-        rule_ref=r_net_qty.get("source_rule", "Rule_6_1_c")
+        rule_ref=r_net_qty.get("source_rule", "Rule_6_1_c"),
+        conf_map=conf_map,
+        digital_claims=digital_claims,
     )
     results.append(net_qty_res)
 
@@ -67,7 +117,9 @@ def evaluate_packaging_compliance(
         scan,
         conf_map.get("date_region", 0.95),
         check_id="03",
-        rule_ref=r_mfg.get("source_rule", "Rule_6_1_d")
+        rule_ref=r_mfg.get("source_rule", "Rule_6_1_d"),
+        conf_map=conf_map,
+        digital_claims=digital_claims,
     )
     results.append(mfg_res)
 
@@ -77,53 +129,36 @@ def evaluate_packaging_compliance(
         scan,
         conf_map.get("coo_region", 0.95),
         check_id="04",
-        rule_ref=r_coo.get("source_rule", "Rule_6_1_aa")
+        rule_ref=r_coo.get("source_rule", "Rule_6_1_aa"),
+        conf_map=conf_map,
+        digital_claims=digital_claims,
     )
     results.append(coo_res)
 
     # Manufacturer Details Check (Rule 6(1)(a))
     r_mfg_name = fetch_rule_metadata("R6_1_a")
-    mfg_conf = conf_map.get("manufacturer_region", 0.95)
-    if scan.manufacturer_name:
-        addr_suffix = f", {scan.manufacturer_address}" if scan.manufacturer_address else ""
-        pin_suffix = f" - {scan.pincode}" if scan.pincode else ""
-        full_evidence = f"{scan.manufacturer_name}{addr_suffix}{pin_suffix}"
-        results.append(
-            CheckResult(
-                check_id="05",
-                check_name="Manufacturer/Packer",
-                rule_ref=r_mfg_name.get("source_rule", "Rule_6_1_a"),
-                severity=Severity.MAJOR,
-                status=CheckStatus.PASS,
-                evidence_text=full_evidence,
-                confidence=mfg_conf,
-                reason=f"Manufacturer declared: {full_evidence}"
-            )
+    mfg_res = validate_manufacturer(
+        scan,
+        conf_map.get("manufacturer_region", 0.95),
+        check_id="05",
+        rule_ref=r_mfg_name.get("source_rule", "Rule_6_1_a"),
+        conf_map=conf_map,
+        digital_claims=digital_claims,
+    )
+    results.append(mfg_res)
+
+    # Consumer Care Details Check (Rule 6(1)(f)) - if present on package or detected
+    if scan.consumer_care is not None or "consumer_care_region" in conf_map:
+        r_cc = fetch_rule_metadata("R6_1_f")
+        cc_res = validate_consumer_care(
+            scan,
+            conf_map.get("consumer_care_region", 0.95),
+            check_id="06",
+            rule_ref=r_cc.get("source_rule", "Rule_6_1_f"),
+            conf_map=conf_map,
+            digital_claims=digital_claims,
         )
-    elif "manufacturer_region" in conf_map and mfg_conf < 0.85:
-        results.append(
-            CheckResult(
-                check_id="05",
-                check_name="Manufacturer/Packer",
-                rule_ref=r_mfg_name.get("source_rule", "Rule_6_1_a"),
-                severity=Severity.MAJOR,
-                status=CheckStatus.REVIEW,
-                confidence=mfg_conf,
-                reason="Manufacturer region detected but OCR confidence below 85%. Manual review required."
-            )
-        )
-    else:
-        results.append(
-            CheckResult(
-                check_id="05",
-                check_name="Manufacturer/Packer",
-                rule_ref=r_mfg_name.get("source_rule", "Rule_6_1_a"),
-                severity=Severity.MAJOR,
-                status=CheckStatus.FAIL,
-                confidence=mfg_conf,
-                reason="Manufacturer/Packer name and address not found on packaging."
-            )
-        )
+        results.append(cc_res)
 
     # -------------------------------------------------------------
     # 2. TIER 2: CATEGORY-SPECIFIC CHECKS
@@ -179,7 +214,7 @@ def build_compliance_report(
         if r.status == CheckStatus.FAIL and r.severity == Severity.BLOCKING:
             overall = CheckStatus.FAIL
             break
-        elif r.status == CheckStatus.REVIEW:
+        elif r.status in [CheckStatus.REVIEW, CheckStatus.UNCERTAIN]:
             if overall != CheckStatus.FAIL:
                 overall = CheckStatus.REVIEW
 

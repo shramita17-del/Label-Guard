@@ -20,6 +20,7 @@ class CheckStatus(str, Enum):
     PASS = "PASS"
     FAIL = "FAIL"
     REVIEW = "REVIEW"
+    UNCERTAIN = "UNCERTAIN"
     EXEMPT = "EXEMPT"
     NOT_APPLICABLE = "N/A"
 
@@ -76,11 +77,17 @@ class DetectedRegion(BaseModel):
     bbox: BoundingBox
     yolo_confidence: float = Field(ge=0, le=1)
 
+class OCRToken(BaseModel):
+    text: str
+    confidence: float = Field(ge=0, le=1)
+    bbox: BoundingBox
+
 class OCRResult(BaseModel):
     region_label: str
     raw_text: str
     ocr_confidence: float = Field(ge=0, le=1)
     bbox: BoundingBox
+    tokens: List[OCRToken] = []
 
 class OCRPayload(BaseModel):
     image_id: str
@@ -159,6 +166,11 @@ class CheckResult(BaseModel):
     evidence_bbox: Optional[BoundingBox] = None
     confidence: Optional[float] = None
     reason: Optional[str] = None
+    matched_span: Optional[dict] = None
+    l1_status: Optional[str] = None
+    l2_score: Optional[float] = None
+    decision_path: Optional[str] = None
+    recovered_by_ml: bool = False
 
 class AuthenticityDetails(BaseModel):
     is_ai_generated: bool = False

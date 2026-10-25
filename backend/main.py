@@ -3,9 +3,9 @@ import shutil
 import uuid
 import re
 from datetime import datetime, timezone
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Any
 
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Depends, Header
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Depends, Header, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 
@@ -13,28 +13,47 @@ from backend.schemas import (
     ProductCategory, NormalizedScan, ComplianceReport,
     CheckStatus, CheckResult, Severity, AuthenticityDetails,
     UserRole, LoginRequest, OTPRequest, OTPVerifyRequest,
-    UserProfile, AuthResponse
+    UserProfile, AuthResponse, OCRToken
 )
 from backend.rule_engine.engine import evaluate_packaging_compliance
 from backend.rule_engine.authenticity import evaluate_image_authenticity
 from backend.ocr_service.detector import YoloDetector
 from backend.ocr_service.extractor import OCRExtractor
+from backend.parser_service.layout_extractor import extract_mrp, extract_net_quantity, extract_fssai, extract_coo, extract_manufacturer, extract_date
 from backend.parser_service.normalizers import (
     normalize_mrp, normalize_net_quantity, normalize_dates, normalize_fiber_composition
 )
 from backend.parser_service.geometry import analyze_veg_mark
 from backend.report_service.annotator import annotate_image
 from backend.report_service.pdf_generator import generate_pdf_report
+from backend.verification.reconciler import VerificationReconciler
+
+# Hybrid two-step reconciler and trace registry
+reconciler = VerificationReconciler()
+SCAN_TRACES: Dict[str, Any] = {}
 
 app = FastAPI(
     title="LabelGuard AI",
     description="Automated Packaging Compliance Verification Engine (SIH 26034)"
 )
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={'detail': f'Backend Crash: {str(exc)}'}
+    )
 
 # ─────────────────────────────────────────────────────────────
 # IN-MEMORY AUTHENTICATION & ROLE ENFORCEMENT
 # ─────────────────────────────────────────────────────────────
 
+# In-memory session store.
+# IMPORTANT: This dict is wiped on every server restart, invalidating all tokens.
+# This is by design for the hackathon demo. The frontend handles stale tokens
+# cleanly: refreshAuthState() calls GET /api/auth/me on every page load/focus;
+# a 401 response triggers renderLoggedOutUI() and clears client storage.
+# Production upgrade path: replace with signed JWTs (secret from env var) or
+# a persistent store (Redis, DB) so sessions survive restarts.
 ACTIVE_SESSIONS: Dict[str, UserProfile] = {}
 ACTIVE_OTPS: Dict[str, str] = {
     "customer@labelguard.com": "482190",
@@ -236,18 +255,26 @@ def auto_route_category(ocr_results) -> ProductCategory:
 
 
 @app.post("/scan", response_model=ComplianceReport)
-async def process_scan(file: UploadFile = File(...), authorization: Optional[str] = Header(None)):
+async def process_scan(
+    file: UploadFile = File(...),
+    digital_claims: Optional[str] = Form(None),
+    digital_mrp: Optional[float] = Form(None),
+    digital_qty: Optional[float] = Form(None),
+    digital_address: Optional[str] = Form(None),
+    authorization: Optional[str] = Header(None)
+):
     """
     Flow A: Full Physical Package Scan Pipeline:
     1. Upload & save image to scratch
     2. Detect packaging layout regions (YOLO)
-    3. OCR text extraction & confidence scoring
+    3. OCR text extraction & confidence scoring (RapidOCR/WinOCR/PaddleOCR fallback chain)
     4. Auto-route category (Food/Beverage, Apparel/Textile, General Retail)
     5. Multi-signal AI Image Authenticity detection (Method 1 + Semantic + Barcode + DL Arbiter)
     6. Normalize key Legal Metrology attributes (MRP, Net Qty, Dates, COO, Manufacturer)
-    7. Execute shared compliance rule engine with dynamic Supabase / SQLite metadata
-    8. Calculate overall compliance verdict including AI authenticity directive
-    9. Generate annotated visual & downloadable PDF report
+    7. Layer 1: Deterministic Legal Metrology Rule Engine
+    8. Layer 2 & Reconciler: ML field prediction & calibrated confidence arbitration
+    9. Calculate overall compliance verdict including AI authenticity directive
+    10. Generate annotated visual & downloadable PDF report
     """
     detector, extractor = get_ml()
 
@@ -257,6 +284,20 @@ async def process_scan(file: UploadFile = File(...), authorization: Optional[str
     img_name = file.filename if file.filename else f"scan_{scan_id}.jpg"
     img_path = os.path.join(temp_dir, f"{scan_id}_{img_name}")
 
+    # Parse cross-field digital claims if provided
+    claims_dict = {}
+    if digital_claims:
+        try:
+            claims_dict = json.loads(digital_claims)
+        except Exception:
+            pass
+    if digital_mrp is not None:
+        claims_dict["mrp"] = digital_mrp
+    if digital_qty is not None:
+        claims_dict["net_quantity"] = digital_qty
+    if digital_address is not None:
+        claims_dict["manufacturer_address"] = digital_address
+
     try:
         with open(img_path, "wb") as f:
             shutil.copyfileobj(file.file, f)
@@ -265,28 +306,40 @@ async def process_scan(file: UploadFile = File(...), authorization: Optional[str
         regions = detector.detect_regions(img_path) if detector else []
         ocr_results = extractor.extract_text(img_path, regions) if extractor else []
 
+        # Detect whether OCR actually ran (engines available) or was silent
+        ocr_available = bool(extractor and extractor.is_available) if hasattr(extractor, 'is_available') else True
+        any_text_found = any(r.raw_text.strip() for r in ocr_results)
+        ocr_produced_text = ocr_available and any_text_found
+
         # 2. Auto Routing (Flow E)
         category = auto_route_category(ocr_results)
 
         # 3. Pydantic Normalization Mapping (Phase 2, Step 3)
         text_map = {r.region_label: r.raw_text for r in ocr_results}
         conf_map = {r.region_label: r.ocr_confidence for r in ocr_results}
+        conf_map["__ocr_available__"] = 1.0 if ocr_produced_text else 0.0
         all_text = " ".join([r.raw_text for r in ocr_results])
 
         # 4. Multi-Signal Image Authenticity Verification (Machine C: Method 1 + Fixes)
         auth_check, auth_details = evaluate_image_authenticity(img_path, extracted_text=all_text)
 
         # 5. Extract fields from labeled regions and full text
-        mrp_text = text_map.get("mrp_region", all_text)
-        net_qty_text = text_map.get("net_quantity_region", all_text)
+        # Gather all OCR tokens across regions
+        all_tokens: List[OCRToken] = []
+        for _r in ocr_results:
+            all_tokens.extend(_r.tokens)
 
-        fssai_val = text_map.get("fssai_region")
+        # 5. Extract fields using layout-aware anchor extraction
+        mrp_text = extract_mrp(all_tokens) or text_map.get("mrp_region", all_text)
+        net_qty_text = extract_net_quantity(all_tokens) or text_map.get("net_quantity_region", all_text)
+
+        fssai_val = extract_fssai(all_tokens) or text_map.get("fssai_region")
         if not fssai_val:
             f_match = re.search(r'\b([12]\d{13})\b', all_text)
             if f_match:
                 fssai_val = f_match.group(1)
 
-        coo_val = text_map.get("coo_region")
+        coo_val = extract_coo(all_tokens) or text_map.get("coo_region")
         if not coo_val:
             c_match = re.search(r'(?:country of origin|made in|origin)\s*[:\-]?\s*([a-zA-Z\s]+)', all_text, re.IGNORECASE)
             if c_match:
@@ -295,7 +348,7 @@ async def process_scan(file: UploadFile = File(...), authorization: Optional[str
                 coo_val = "India"
 
         # Manufacturer name extraction heuristic
-        mfg_name = text_map.get("manufacturer_region")
+        mfg_name = extract_manufacturer(all_tokens) or text_map.get("manufacturer_region")
         if not mfg_name:
             m_match = re.search(r'(?:mfg by|manufactured by|packed by|marketed by|mfd by)\s*[:\-]?\s*([a-zA-Z0-9\s,\.]+)', all_text, re.IGNORECASE)
             if m_match:
@@ -308,7 +361,7 @@ async def process_scan(file: UploadFile = File(...), authorization: Optional[str
             pincode_val = pin_match.group(1)
 
         fiber_text = text_map.get("fiber_region", all_text)
-        date_text = text_map.get("date_region", all_text)
+        date_text = extract_date(all_tokens) or text_map.get("date_region", all_text)
 
         scan = NormalizedScan(
             scan_id=scan_id,
@@ -327,7 +380,6 @@ async def process_scan(file: UploadFile = File(...), authorization: Optional[str
             scan.dates.append(dates)
 
         if category == ProductCategory.FOOD_BEVERAGE:
-            # Pass bbox geometry for OpenCV analysis if region detected
             veg_region = next((r for r in regions if r.region_label == "veg_mark"), None)
             if veg_region:
                 b = veg_region.bbox
@@ -335,33 +387,43 @@ async def process_scan(file: UploadFile = File(...), authorization: Optional[str
             else:
                 scan.veg_nonveg_mark = analyze_veg_mark(img_path)
 
-        # 6. Shared rule engine execution (Machine B: Supabase / SQLite metadata)
-        rule_results = evaluate_packaging_compliance(scan, conf_map)
-        results = [auth_check] + rule_results
+        # 6. Layer 1: Shared deterministic rule engine execution
+        rule_results = evaluate_packaging_compliance(scan, conf_map, digital_claims=claims_dict)
 
-        # 7. Determine overall verdict
-        overall = CheckStatus.PASS
-        for result in results:
-            if (
-                result.status == CheckStatus.FAIL
-                and result.severity == Severity.BLOCKING
-            ):
-                overall = CheckStatus.FAIL
-                break
-            elif result.status == CheckStatus.REVIEW:
-                if overall != CheckStatus.FAIL:
-                    overall = CheckStatus.REVIEW
+        # 7. Layer 2 & Reconciler: Hybrid verification combination
+        reconciled_rules, overall_reconciled = reconciler.reconcile_report(
+            rule_results, all_text=all_text, auth_details=auth_details
+        )
+        results = [auth_check] + reconciled_rules
+        overall = overall_reconciled
 
-        # Mandatory Compliance Directive: AI-generated/synthetic media is non-compliant by law
-        if auth_details and auth_details.is_ai_generated:
-            overall = CheckStatus.FAIL
-        elif auth_details and (
-            (auth_details.ai_confidence_percentage >= 40 and auth_details.ai_confidence_percentage <= 60)
-            or auth_details.status == CheckStatus.REVIEW
-            or (auth_details.classification_label and "MAYBE AI" in auth_details.classification_label)
-        ):
-            if overall != CheckStatus.FAIL:
-                overall = CheckStatus.REVIEW
+        # Record debug trace
+        raw_tokens_trace = []
+        for r in ocr_results:
+            for tok in getattr(r, 'tokens', []):
+                raw_tokens_trace.append(tok.model_dump())
+
+        SCAN_TRACES[scan_id] = {
+            "scan_id": scan_id,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "category": scan.category.value,
+            "ocr_tokens": raw_tokens_trace,
+            "all_text": all_text,
+            "layer_1_results": [r.model_dump() for r in rule_results],
+            "layer_2_predictions": [
+                {
+                    "check_id": r.check_id,
+                    "check_name": r.check_name,
+                    "l2_score": r.l2_score,
+                    "decision_path": r.decision_path,
+                    "recovered_by_ml": r.recovered_by_ml,
+                }
+                for r in reconciled_rules
+            ],
+            "reconciled_results": [r.model_dump() for r in results],
+            "overall_verdict": overall.value,
+            "auth_details": auth_details.model_dump() if auth_details else None,
+        }
 
         report = ComplianceReport(
             scan_id=scan.scan_id,
@@ -380,12 +442,13 @@ async def process_scan(file: UploadFile = File(...), authorization: Optional[str
         report_out_path = os.path.join(pdf_dir, f"{scan_id}.pdf")
         final_report_path = generate_pdf_report(report, os.path.join(os.getcwd(), "reports"), report_out_path)
         if final_report_path and os.path.exists(final_report_path):
-            report.report_url = f"/reports/generated/{os.path.basename(final_report_path)}"
+            report.report_url = f"/reports/{scan_id}/download"
 
         return report
 
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"detail": str(e)})
     finally:
-        # Clean up temporary uploaded file safely
         if os.path.exists(img_path):
             try:
                 os.remove(img_path)
@@ -393,12 +456,65 @@ async def process_scan(file: UploadFile = File(...), authorization: Optional[str
                 pass
 
 
+@app.get("/debug/scan/{scan_id}/trace")
+async def get_scan_trace(scan_id: str):
+    """
+    Developer Trace Endpoint:
+    Returns raw OCR tokens, Layer 1 results, Layer 2 predictions, and reconciler outputs.
+    """
+    if scan_id not in SCAN_TRACES:
+        raise HTTPException(status_code=404, detail=f"Trace for scan_id '{scan_id}' not found in active session.")
+    return SCAN_TRACES[scan_id]
+
+
+@app.get("/reports/{scan_id}/download")
+async def download_report(scan_id: str):
+    """
+    Dedicated PDF download endpoint.
+    Returns the generated PDF with Content-Disposition: attachment so the
+    browser saves it directly instead of opening it in a new tab.
+    """
+    pdf_dir = os.path.join(os.getcwd(), "reports", "generated")
+    pdf_path = os.path.join(pdf_dir, f"{scan_id}.pdf")
+    html_path = os.path.join(pdf_dir, f"{scan_id}.html")
+
+    if os.path.exists(pdf_path):
+        return FileResponse(
+            path=pdf_path,
+            media_type="application/pdf",
+            filename=f"LabelGuard_Report_{scan_id}.pdf",
+            headers={"Content-Disposition": f"attachment; filename=\"LabelGuard_Report_{scan_id}.pdf\""}
+        )
+    # Fallback: if only HTML was generated, return it with a note
+    if os.path.exists(html_path):
+        return FileResponse(
+            path=html_path,
+            media_type="text/html",
+            filename=f"LabelGuard_Report_{scan_id}.html",
+        )
+    raise HTTPException(
+        status_code=404,
+        detail=f"No report found for scan ID '{scan_id}'. Run a scan first."
+    )
+
+
 @app.get("/reports/generated/{filename}")
 async def get_generated_report(filename: str):
     file_path = os.path.join(os.getcwd(), "reports", "generated", filename)
+    # Also check for HTML fallback if PDF file doesn't exist
+    if not os.path.exists(file_path) and filename.endswith(".pdf"):
+        html_fallback = file_path.replace(".pdf", ".html")
+        if os.path.exists(html_fallback):
+            file_path = html_fallback
     if os.path.exists(file_path):
-        media_type = "application/pdf" if filename.endswith(".pdf") else "text/html"
-        return FileResponse(file_path, media_type=media_type)
+        # Always serve as PDF when the file is a PDF; otherwise serve HTML
+        if file_path.endswith(".pdf"):
+            return FileResponse(
+                path=file_path,
+                media_type="application/pdf",
+                filename=f"LabelGuard_Report_{filename}"
+            )
+        return FileResponse(file_path, media_type="text/html")
     raise HTTPException(status_code=404, detail="Report not found")
 
 

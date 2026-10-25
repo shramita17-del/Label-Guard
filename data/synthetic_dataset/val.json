@@ -1,0 +1,1271 @@
+[
+  {
+    "sample_id": "syn_0053",
+    "category": "food_beverage",
+    "is_compliant": true,
+    "defect_type": null,
+    "ground_truth": {
+      "mrp": 1,
+      "net_quantity": 1,
+      "mfg_date": 1,
+      "country": 1,
+      "manufacturer": 1,
+      "consumer_care": 1,
+      "fssai": 1
+    },
+    "lines": [
+      {
+        "field": "consumer_care",
+        "text": "Consumer Care: care@bioveda.com, Tel: 1800-425-8555"
+      },
+      {
+        "field": "manufacturer",
+        "text": "Mfg by: Apex Agro Foods Pvt. Ltd., Plot 42, Okhla Industrial Area, Phase-III, New Delhi - 110020"
+      },
+      {
+        "field": "net_quantity",
+        "text": "Net Qty: 5 number"
+      },
+      {
+        "field": "fssai",
+        "text": "FSSAI Lic. No. 11561085528005"
+      },
+      {
+        "field": "mrp",
+        "text": "MRP: Rs. 1311.72 (inclusive of all taxes)"
+      },
+      {
+        "field": "mfg_date",
+        "text": "Mfg Date: 03/2024"
+      },
+      {
+        "field": "country",
+        "text": "Country of Origin: India"
+      }
+    ],
+    "image_path": "data\\synthetic_dataset\\images\\syn_0053.jpg",
+    "ocr_lines": [
+      {
+        "text": "ConsumerCare:care@bioveda.com,Tel:1800-425-8555",
+        "confidence": 0.915,
+        "bbox": {
+          "x_min": 79,
+          "y_min": 36,
+          "x_max": 684,
+          "y_max": 61
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "Mfg by: Apex Agro Foods Pvt. Ltd., Plot 42, Okhla Industrial",
+        "confidence": 0.908,
+        "bbox": {
+          "x_min": 63,
+          "y_min": 90,
+          "x_max": 698,
+          "y_max": 117
+        },
+        "field_label": "manufacturer"
+      },
+      {
+        "text": "NetQty:5number",
+        "confidence": 0.9,
+        "bbox": {
+          "x_min": 57,
+          "y_min": 136,
+          "x_max": 254,
+          "y_max": 161
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "FSSA/Lic.No.11561085528005",
+        "confidence": 0.898,
+        "bbox": {
+          "x_min": 65,
+          "y_min": 195,
+          "x_max": 411,
+          "y_max": 217
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "MRP:Rs. 1311.72 (inclusive of all taxes)",
+        "confidence": 0.898,
+        "bbox": {
+          "x_min": 73,
+          "y_min": 240,
+          "x_max": 505,
+          "y_max": 268
+        },
+        "field_label": "mrp"
+      },
+      {
+        "text": "MfgDate:03/2024",
+        "confidence": 0.892,
+        "bbox": {
+          "x_min": 75,
+          "y_min": 293,
+          "x_max": 273,
+          "y_max": 318
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "Countryof Origin:India",
+        "confidence": 0.909,
+        "bbox": {
+          "x_min": 65,
+          "y_min": 343,
+          "x_max": 308,
+          "y_max": 368
+        },
+        "field_label": "other"
+      }
+    ]
+  },
+  {
+    "sample_id": "syn_0067",
+    "category": "apparel_textile",
+    "is_compliant": true,
+    "defect_type": null,
+    "ground_truth": {
+      "mrp": 1,
+      "net_quantity": 1,
+      "mfg_date": 1,
+      "country": 1,
+      "manufacturer": 1,
+      "consumer_care": 1,
+      "fssai": 0
+    },
+    "lines": [
+      {
+        "field": "country",
+        "text": "Made in India"
+      },
+      {
+        "field": "mrp",
+        "text": "MRP: R$ 881.45 (incl of all taxes)"
+      },
+      {
+        "field": "net_quantity",
+        "text": "Net Qty: 50 number"
+      },
+      {
+        "field": "manufacturer",
+        "text": "Mfg by: Apex Agro Foods Pvt. Ltd., Plot 42, Okhla Industrial Area, Phase-III, New Delhi - 110020"
+      },
+      {
+        "field": "consumer_care",
+        "text": "Consumer Care: care@apexgoods.com, Tel: 1800-425-5381"
+      },
+      {
+        "field": "mfg_date",
+        "text": "Mfg Date: 11/2026"
+      }
+    ],
+    "image_path": "data\\synthetic_dataset\\images\\syn_0067.jpg",
+    "ocr_lines": [
+      {
+        "text": "MadeinIndia",
+        "confidence": 0.861,
+        "bbox": {
+          "x_min": 45,
+          "y_min": 39,
+          "x_max": 173,
+          "y_max": 57
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "MRP:Rs881.45(inclofalltaxes)",
+        "confidence": 0.895,
+        "bbox": {
+          "x_min": 68,
+          "y_min": 89,
+          "x_max": 390,
+          "y_max": 109
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "NetQty:50number",
+        "confidence": 0.911,
+        "bbox": {
+          "x_min": 66,
+          "y_min": 142,
+          "x_max": 255,
+          "y_max": 162
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "Mfg by: Apex Agro Foods Pvt. Ltd., Plot 42, Okhla Industrial Area, Phase-lll",
+        "confidence": 0.923,
+        "bbox": {
+          "x_min": 70,
+          "y_min": 194,
+          "x_max": 795,
+          "y_max": 216
+        },
+        "field_label": "manufacturer"
+      },
+      {
+        "text": "ConsumerCare:care@apexgoods.com,Tel:1800-425-5381",
+        "confidence": 0.946,
+        "bbox": {
+          "x_min": 62,
+          "y_min": 240,
+          "x_max": 645,
+          "y_max": 264
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "MfgDate:11/2026",
+        "confidence": 0.9,
+        "bbox": {
+          "x_min": 55,
+          "y_min": 294,
+          "x_max": 233,
+          "y_max": 317
+        },
+        "field_label": "other"
+      }
+    ]
+  },
+  {
+    "sample_id": "syn_0050",
+    "category": "general_retail",
+    "is_compliant": true,
+    "defect_type": null,
+    "ground_truth": {
+      "mrp": 1,
+      "net_quantity": 1,
+      "mfg_date": 1,
+      "country": 1,
+      "manufacturer": 1,
+      "consumer_care": 1,
+      "fssai": 0
+    },
+    "lines": [
+      {
+        "field": "mfg_date",
+        "text": "Mfg Date: 02/2026"
+      },
+      {
+        "field": "manufacturer",
+        "text": "Mfg by: Daily Needs Consumer Care, GIDC Estate, Phase 2, Vatva, Ahmedabad, Gujarat - 382445"
+      },
+      {
+        "field": "mrp",
+        "text": "MRP: Rs. 232.06 INCL. OF ALL TAXES"
+      },
+      {
+        "field": "consumer_care",
+        "text": "Consumer Care: care@bioveda.com, Tel: 1800-425-8486"
+      },
+      {
+        "field": "country",
+        "text": "India"
+      },
+      {
+        "field": "net_quantity",
+        "text": "Net Qty: 100 l"
+      }
+    ],
+    "image_path": "data\\synthetic_dataset\\images\\syn_0050.jpg",
+    "ocr_lines": [
+      {
+        "text": "MfgDate:02/2026",
+        "confidence": 0.913,
+        "bbox": {
+          "x_min": 60,
+          "y_min": 37,
+          "x_max": 225,
+          "y_max": 57
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "Mfg by:DailyNeeds Consumer Care, GIDCEstate, Phase 2,Vatva,Ah",
+        "confidence": 0.893,
+        "bbox": {
+          "x_min": 64,
+          "y_min": 80,
+          "x_max": 699,
+          "y_max": 103
+        },
+        "field_label": "manufacturer"
+      },
+      {
+        "text": "MRP:Rs.232.06INCL.OFALLTAXES",
+        "confidence": 0.897,
+        "bbox": {
+          "x_min": 80,
+          "y_min": 136,
+          "x_max": 434,
+          "y_max": 156
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "ConsumerCare:care@bioveda.com,Tel:1800-425-8486",
+        "confidence": 0.908,
+        "bbox": {
+          "x_min": 62,
+          "y_min": 193,
+          "x_max": 571,
+          "y_max": 213
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "India",
+        "confidence": 0.689,
+        "bbox": {
+          "x_min": 58,
+          "y_min": 252,
+          "x_max": 106,
+          "y_max": 274
+        },
+        "field_label": "country"
+      },
+      {
+        "text": "Net Qty: 1001",
+        "confidence": 0.742,
+        "bbox": {
+          "x_min": 77,
+          "y_min": 310,
+          "x_max": 205,
+          "y_max": 332
+        },
+        "field_label": "net_quantity"
+      }
+    ]
+  },
+  {
+    "sample_id": "syn_0051",
+    "category": "general_retail",
+    "is_compliant": false,
+    "defect_type": "missing_mrp_tax",
+    "ground_truth": {
+      "mrp": 0,
+      "net_quantity": 1,
+      "mfg_date": 1,
+      "country": 1,
+      "manufacturer": 1,
+      "consumer_care": 1,
+      "fssai": 0
+    },
+    "lines": [
+      {
+        "field": "consumer_care",
+        "text": "Consumer Care: care@apexgoods.com, Tel: 1800-425-8994"
+      },
+      {
+        "field": "country",
+        "text": "Country of Origin: India"
+      },
+      {
+        "field": "mfg_date",
+        "text": "Mfg Date: 11/2026"
+      },
+      {
+        "field": "net_quantity",
+        "text": "Net Qty: 1000 kg"
+      },
+      {
+        "field": "mrp",
+        "text": "MRP: 165.46"
+      },
+      {
+        "field": "manufacturer",
+        "text": "Mfg by: Daily Needs Consumer Care, GIDC Estate, Phase 2, Vatva, Ahmedabad, Gujarat - 382445"
+      }
+    ],
+    "image_path": "data\\synthetic_dataset\\images\\syn_0051.jpg",
+    "ocr_lines": [
+      {
+        "text": "ConsumerCare:care@apexgoods.com,Tel:1800-425-8994",
+        "confidence": 0.954,
+        "bbox": {
+          "x_min": 52,
+          "y_min": 43,
+          "x_max": 633,
+          "y_max": 65
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "CountryofOrigin:India",
+        "confidence": 0.917,
+        "bbox": {
+          "x_min": 62,
+          "y_min": 102,
+          "x_max": 282,
+          "y_max": 122
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "MfgDate:11/2026",
+        "confidence": 0.87,
+        "bbox": {
+          "x_min": 80,
+          "y_min": 154,
+          "x_max": 259,
+          "y_max": 177
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "Net Qty: 1000kg",
+        "confidence": 0.837,
+        "bbox": {
+          "x_min": 76,
+          "y_min": 213,
+          "x_max": 238,
+          "y_max": 238
+        },
+        "field_label": "net_quantity"
+      },
+      {
+        "text": "MRP: 165.46",
+        "confidence": 0.861,
+        "bbox": {
+          "x_min": 60,
+          "y_min": 267,
+          "x_max": 187,
+          "y_max": 287
+        },
+        "field_label": "mrp"
+      }
+    ]
+  },
+  {
+    "sample_id": "syn_0075",
+    "category": "general_retail",
+    "is_compliant": false,
+    "defect_type": "missing_mfg_address",
+    "ground_truth": {
+      "mrp": 1,
+      "net_quantity": 1,
+      "mfg_date": 1,
+      "country": 1,
+      "manufacturer": 0,
+      "consumer_care": 1,
+      "fssai": 0
+    },
+    "lines": [
+      {
+        "field": "mrp",
+        "text": "MRP: Rs. 910.42 (incl of all taxes)"
+      },
+      {
+        "field": "manufacturer",
+        "text": "Mfg by: Apex Agro Foods Pvt. Ltd."
+      },
+      {
+        "field": "country",
+        "text": "Country of Origin: India"
+      },
+      {
+        "field": "mfg_date",
+        "text": "Mfg Date: 09/2026"
+      },
+      {
+        "field": "net_quantity",
+        "text": "Net Qty: 5 number"
+      },
+      {
+        "field": "consumer_care",
+        "text": "Consumer Care: care@pureherb.com, Tel: 1800-425-1672"
+      }
+    ],
+    "image_path": "data\\synthetic_dataset\\images\\syn_0075.jpg",
+    "ocr_lines": [
+      {
+        "text": "MRP:Rs.910.42 (incl of all taxes)",
+        "confidence": 0.875,
+        "bbox": {
+          "x_min": 52,
+          "y_min": 51,
+          "x_max": 410,
+          "y_max": 75
+        },
+        "field_label": "mrp"
+      },
+      {
+        "text": "Mfg by: Apex Agro Foods Pvt. Ltd.",
+        "confidence": 0.906,
+        "bbox": {
+          "x_min": 68,
+          "y_min": 96,
+          "x_max": 434,
+          "y_max": 121
+        },
+        "field_label": "manufacturer"
+      },
+      {
+        "text": "Countryof Origin:India",
+        "confidence": 0.839,
+        "bbox": {
+          "x_min": 69,
+          "y_min": 148,
+          "x_max": 312,
+          "y_max": 172
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "MfgDate:09/2026",
+        "confidence": 0.902,
+        "bbox": {
+          "x_min": 44,
+          "y_min": 201,
+          "x_max": 240,
+          "y_max": 224
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "NetQty:5number",
+        "confidence": 0.858,
+        "bbox": {
+          "x_min": 72,
+          "y_min": 260,
+          "x_max": 265,
+          "y_max": 282
+        },
+        "field_label": "other"
+      }
+    ]
+  },
+  {
+    "sample_id": "syn_0015",
+    "category": "apparel_textile",
+    "is_compliant": false,
+    "defect_type": "missing_mrp_tax",
+    "ground_truth": {
+      "mrp": 0,
+      "net_quantity": 1,
+      "mfg_date": 1,
+      "country": 1,
+      "manufacturer": 1,
+      "consumer_care": 1,
+      "fssai": 0
+    },
+    "lines": [
+      {
+        "field": "net_quantity",
+        "text": "Net Qty: 250 kg"
+      },
+      {
+        "field": "mfg_date",
+        "text": "Mfg Date: 07/2024"
+      },
+      {
+        "field": "manufacturer",
+        "text": "Mfg by: Zenith Garments & Textiles, 14/B Tirupur Knitwear Park, Tamil Nadu - 641602"
+      },
+      {
+        "field": "consumer_care",
+        "text": "Consumer Care: care@apexgoods.com, Tel: 1800-425-5915"
+      },
+      {
+        "field": "country",
+        "text": "India"
+      },
+      {
+        "field": "mrp",
+        "text": "MRP: 1020.10"
+      }
+    ],
+    "image_path": "data\\synthetic_dataset\\images\\syn_0015.jpg",
+    "ocr_lines": [
+      {
+        "text": "Net Qty: 250kg",
+        "confidence": 0.879,
+        "bbox": {
+          "x_min": 64,
+          "y_min": 44,
+          "x_max": 230,
+          "y_max": 73
+        },
+        "field_label": "net_quantity"
+      },
+      {
+        "text": "MfgDate:07/2024",
+        "confidence": 0.866,
+        "bbox": {
+          "x_min": 68,
+          "y_min": 94,
+          "x_max": 263,
+          "y_max": 117
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "ConsumerCare:care@apexgoods.com,Tel:1800-425-5915",
+        "confidence": 0.921,
+        "bbox": {
+          "x_min": 74,
+          "y_min": 210,
+          "x_max": 713,
+          "y_max": 235
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "India",
+        "confidence": 0.781,
+        "bbox": {
+          "x_min": 72,
+          "y_min": 268,
+          "x_max": 127,
+          "y_max": 292
+        },
+        "field_label": "country"
+      },
+      {
+        "text": "MRP:1020.10",
+        "confidence": 0.897,
+        "bbox": {
+          "x_min": 63,
+          "y_min": 314,
+          "x_max": 214,
+          "y_max": 338
+        },
+        "field_label": "other"
+      }
+    ]
+  },
+  {
+    "sample_id": "syn_0034",
+    "category": "general_retail",
+    "is_compliant": true,
+    "defect_type": null,
+    "ground_truth": {
+      "mrp": 1,
+      "net_quantity": 1,
+      "mfg_date": 1,
+      "country": 1,
+      "manufacturer": 1,
+      "consumer_care": 1,
+      "fssai": 0
+    },
+    "lines": [
+      {
+        "field": "mrp",
+        "text": "MRP: Rs. 970.60 (incl of all taxes)"
+      },
+      {
+        "field": "consumer_care",
+        "text": "Consumer Care: care@pureherb.com, Tel: 1800-425-9548"
+      },
+      {
+        "field": "net_quantity",
+        "text": "Net Qty: 200 l"
+      },
+      {
+        "field": "country",
+        "text": "Made in India"
+      },
+      {
+        "field": "manufacturer",
+        "text": "Mfg by: Daily Needs Consumer Care, GIDC Estate, Phase 2, Vatva, Ahmedabad, Gujarat - 382445"
+      },
+      {
+        "field": "mfg_date",
+        "text": "Mfg Date: 03/2026"
+      }
+    ],
+    "image_path": "data\\synthetic_dataset\\images\\syn_0034.jpg",
+    "ocr_lines": [
+      {
+        "text": "MRP:Rs.970.60 (incl of all taxes)",
+        "confidence": 0.877,
+        "bbox": {
+          "x_min": 79,
+          "y_min": 53,
+          "x_max": 382,
+          "y_max": 74
+        },
+        "field_label": "mrp"
+      },
+      {
+        "text": "ConsumerCare:care@pureherb.com,Tel:1800-425-9548",
+        "confidence": 0.912,
+        "bbox": {
+          "x_min": 76,
+          "y_min": 99,
+          "x_max": 598,
+          "y_max": 119
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "Net Qty: 2001",
+        "confidence": 0.8,
+        "bbox": {
+          "x_min": 60,
+          "y_min": 155,
+          "x_max": 188,
+          "y_max": 177
+        },
+        "field_label": "net_quantity"
+      },
+      {
+        "text": "Madein India",
+        "confidence": 0.862,
+        "bbox": {
+          "x_min": 46,
+          "y_min": 214,
+          "x_max": 166,
+          "y_max": 234
+        },
+        "field_label": "country"
+      },
+      {
+        "text": "Mfg by:DailyNeeds Consumer Care, GIDCEstate, Phase2,Vatva,Ahm",
+        "confidence": 0.907,
+        "bbox": {
+          "x_min": 45,
+          "y_min": 258,
+          "x_max": 698,
+          "y_max": 281
+        },
+        "field_label": "consumer_care"
+      },
+      {
+        "text": "MfgDate:03/2026",
+        "confidence": 0.916,
+        "bbox": {
+          "x_min": 55,
+          "y_min": 314,
+          "x_max": 220,
+          "y_max": 332
+        },
+        "field_label": "other"
+      }
+    ]
+  },
+  {
+    "sample_id": "syn_0029",
+    "category": "apparel_textile",
+    "is_compliant": true,
+    "defect_type": null,
+    "ground_truth": {
+      "mrp": 1,
+      "net_quantity": 1,
+      "mfg_date": 1,
+      "country": 1,
+      "manufacturer": 1,
+      "consumer_care": 1,
+      "fssai": 0
+    },
+    "lines": [
+      {
+        "field": "mrp",
+        "text": "MRP: Rs. 1415.98 INCL. OF ALL TAXES"
+      },
+      {
+        "field": "mfg_date",
+        "text": "Mfg Date: 09/2026"
+      },
+      {
+        "field": "manufacturer",
+        "text": "Mfg by: Daily Needs Consumer Care, GIDC Estate, Phase 2, Vatva, Ahmedabad, Gujarat - 382445"
+      },
+      {
+        "field": "consumer_care",
+        "text": "Consumer Care: care@dailybite.com, Tel: 1800-425-9947"
+      },
+      {
+        "field": "country",
+        "text": "India"
+      },
+      {
+        "field": "net_quantity",
+        "text": "Net Qty: 1000 l"
+      }
+    ],
+    "image_path": "data\\synthetic_dataset\\images\\syn_0029.jpg",
+    "ocr_lines": [
+      {
+        "text": "MRP:Rs.1415.98INCL.OFALLTAXES",
+        "confidence": 0.868,
+        "bbox": {
+          "x_min": 74,
+          "y_min": 53,
+          "x_max": 510,
+          "y_max": 73
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "MfgDate:09/2026",
+        "confidence": 0.848,
+        "bbox": {
+          "x_min": 62,
+          "y_min": 101,
+          "x_max": 259,
+          "y_max": 124
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "Mfg by: Daily Needs Consumer Care, GIDC Estate, Phase 2, Vatva,",
+        "confidence": 0.913,
+        "bbox": {
+          "x_min": 69,
+          "y_min": 144,
+          "x_max": 793,
+          "y_max": 170
+        },
+        "field_label": "manufacturer"
+      },
+      {
+        "text": "ConsumerCare:care@dailybite.com,Tel:1800-425-9947",
+        "confidence": 0.915,
+        "bbox": {
+          "x_min": 59,
+          "y_min": 194,
+          "x_max": 666,
+          "y_max": 216
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "India",
+        "confidence": 0.8,
+        "bbox": {
+          "x_min": 43,
+          "y_min": 251,
+          "x_max": 97,
+          "y_max": 275
+        },
+        "field_label": "country"
+      },
+      {
+        "text": "Net Qty: 10001",
+        "confidence": 0.845,
+        "bbox": {
+          "x_min": 49,
+          "y_min": 300,
+          "x_max": 212,
+          "y_max": 324
+        },
+        "field_label": "net_quantity"
+      }
+    ]
+  },
+  {
+    "sample_id": "syn_0057",
+    "category": "general_retail",
+    "is_compliant": false,
+    "defect_type": "missing_mfg_address",
+    "ground_truth": {
+      "mrp": 1,
+      "net_quantity": 1,
+      "mfg_date": 1,
+      "country": 1,
+      "manufacturer": 0,
+      "consumer_care": 1,
+      "fssai": 0
+    },
+    "lines": [
+      {
+        "field": "consumer_care",
+        "text": "Consumer Care: care@pureherb.com, Tel: 1800-425-7464"
+      },
+      {
+        "field": "net_quantity",
+        "text": "Net Qty: 1000 number"
+      },
+      {
+        "field": "manufacturer",
+        "text": "Mfg by: Daily Needs Consumer Care"
+      },
+      {
+        "field": "mfg_date",
+        "text": "Mfg Date: 06/2024"
+      },
+      {
+        "field": "country",
+        "text": "India"
+      },
+      {
+        "field": "mrp",
+        "text": "MRP: Rs. 253.10 (inclusive of all taxes)"
+      }
+    ],
+    "image_path": "data\\synthetic_dataset\\images\\syn_0057.jpg",
+    "ocr_lines": [
+      {
+        "text": "NetQty:1000number",
+        "confidence": 0.88,
+        "bbox": {
+          "x_min": 47,
+          "y_min": 110,
+          "x_max": 281,
+          "y_max": 132
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "Mfgby:DailyNeedsConsumerCare",
+        "confidence": 0.899,
+        "bbox": {
+          "x_min": 68,
+          "y_min": 167,
+          "x_max": 456,
+          "y_max": 192
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "MfgDate:06/2024",
+        "confidence": 0.848,
+        "bbox": {
+          "x_min": 44,
+          "y_min": 223,
+          "x_max": 240,
+          "y_max": 246
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "India",
+        "confidence": 0.807,
+        "bbox": {
+          "x_min": 40,
+          "y_min": 275,
+          "x_max": 95,
+          "y_max": 301
+        },
+        "field_label": "country"
+      },
+      {
+        "text": "MRP:Rs.253.10 (inclusive of alltaxes)",
+        "confidence": 0.923,
+        "bbox": {
+          "x_min": 41,
+          "y_min": 324,
+          "x_max": 455,
+          "y_max": 348
+        },
+        "field_label": "mrp"
+      }
+    ]
+  },
+  {
+    "sample_id": "syn_0036",
+    "category": "general_retail",
+    "is_compliant": false,
+    "defect_type": "missing_country",
+    "ground_truth": {
+      "mrp": 1,
+      "net_quantity": 1,
+      "mfg_date": 1,
+      "country": 0,
+      "manufacturer": 1,
+      "consumer_care": 1,
+      "fssai": 0
+    },
+    "lines": [
+      {
+        "field": "mrp",
+        "text": "MRP: Rs. 1065.72 INCL. OF ALL TAXES"
+      },
+      {
+        "field": "manufacturer",
+        "text": "Mfg by: Zenith Garments & Textiles, 14/B Tirupur Knitwear Park, Tamil Nadu - 641602"
+      },
+      {
+        "field": "mfg_date",
+        "text": "Mfg Date: 04/2024"
+      },
+      {
+        "field": "net_quantity",
+        "text": "Net Qty: 50 number"
+      },
+      {
+        "field": "consumer_care",
+        "text": "Consumer Care: care@apexgoods.com, Tel: 1800-425-4954"
+      }
+    ],
+    "image_path": "data\\synthetic_dataset\\images\\syn_0036.jpg",
+    "ocr_lines": [
+      {
+        "text": "MRP:Rs.1065.72INCL.OFALLTAXES",
+        "confidence": 0.899,
+        "bbox": {
+          "x_min": 75,
+          "y_min": 42,
+          "x_max": 511,
+          "y_max": 61
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "MfgDate:04/2024",
+        "confidence": 0.873,
+        "bbox": {
+          "x_min": 62,
+          "y_min": 141,
+          "x_max": 257,
+          "y_max": 164
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "NetQty:50number",
+        "confidence": 0.899,
+        "bbox": {
+          "x_min": 69,
+          "y_min": 198,
+          "x_max": 278,
+          "y_max": 223
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "ConsumerCare:care@apexgoods.com,Tel:1800-425-4954",
+        "confidence": 0.93,
+        "bbox": {
+          "x_min": 65,
+          "y_min": 251,
+          "x_max": 704,
+          "y_max": 275
+        },
+        "field_label": "other"
+      }
+    ]
+  },
+  {
+    "sample_id": "syn_0071",
+    "category": "food_beverage",
+    "is_compliant": true,
+    "defect_type": null,
+    "ground_truth": {
+      "mrp": 1,
+      "net_quantity": 1,
+      "mfg_date": 1,
+      "country": 1,
+      "manufacturer": 1,
+      "consumer_care": 1,
+      "fssai": 1
+    },
+    "lines": [
+      {
+        "field": "fssai",
+        "text": "FSSAI Lic. No. 11943070704592"
+      },
+      {
+        "field": "net_quantity",
+        "text": "Net Qty: 1000 m1"
+      },
+      {
+        "field": "mrp",
+        "text": "MRP: Rs. 1298.56 (Incl. of all taxes)"
+      },
+      {
+        "field": "mfg_date",
+        "text": "Mfg Date: 08/2024"
+      },
+      {
+        "field": "consumer_care",
+        "text": "Consumer Care: care@apexgoods.com, Tel: 1800-425-6129"
+      },
+      {
+        "field": "country",
+        "text": "Made in India"
+      },
+      {
+        "field": "manufacturer",
+        "text": "Mfg by: Apex Agro Foods Pvt. Ltd., Plot 42, Okhla Industrial Area, Phase-III, New Delhi - 110020"
+      }
+    ],
+    "image_path": "data\\synthetic_dataset\\images\\syn_0071.jpg",
+    "ocr_lines": [
+      {
+        "text": "FSSAILic.No.11943070704592",
+        "confidence": 0.898,
+        "bbox": {
+          "x_min": 80,
+          "y_min": 33,
+          "x_max": 397,
+          "y_max": 53
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "NetQty:1000m1",
+        "confidence": 0.859,
+        "bbox": {
+          "x_min": 68,
+          "y_min": 84,
+          "x_max": 237,
+          "y_max": 105
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "MRP:Rs.1298.56 (lncl.of all taxes)",
+        "confidence": 0.866,
+        "bbox": {
+          "x_min": 62,
+          "y_min": 140,
+          "x_max": 412,
+          "y_max": 164
+        },
+        "field_label": "mrp"
+      },
+      {
+        "text": "MfgDate:08/2024",
+        "confidence": 0.881,
+        "bbox": {
+          "x_min": 53,
+          "y_min": 187,
+          "x_max": 230,
+          "y_max": 207
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "ConsumerCare:care@apexgoods.com,Tel:1800-425-6129",
+        "confidence": 0.929,
+        "bbox": {
+          "x_min": 58,
+          "y_min": 238,
+          "x_max": 639,
+          "y_max": 260
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "Made in India",
+        "confidence": 0.818,
+        "bbox": {
+          "x_min": 74,
+          "y_min": 284,
+          "x_max": 208,
+          "y_max": 307
+        },
+        "field_label": "country"
+      }
+    ]
+  },
+  {
+    "sample_id": "syn_0030",
+    "category": "general_retail",
+    "is_compliant": false,
+    "defect_type": "missing_mrp_tax",
+    "ground_truth": {
+      "mrp": 0,
+      "net_quantity": 1,
+      "mfg_date": 1,
+      "country": 1,
+      "manufacturer": 1,
+      "consumer_care": 1,
+      "fssai": 0
+    },
+    "lines": [
+      {
+        "field": "mfg_date",
+        "text": "Mfg Date: 09/2024"
+      },
+      {
+        "field": "consumer_care",
+        "text": "Consumer Care: care@apexgoods.com, Tel: 1800-425-7455"
+      },
+      {
+        "field": "manufacturer",
+        "text": "Mfg by: Daily Needs Consumer Care, GIDC Estate, Phase 2, Vatva, Ahmedabad, Gujarat - 382445"
+      },
+      {
+        "field": "net_quantity",
+        "text": "Net Qty: 200 number"
+      },
+      {
+        "field": "country",
+        "text": "Country of Origin: India"
+      },
+      {
+        "field": "mrp",
+        "text": "MRP: 288.31"
+      }
+    ],
+    "image_path": "data\\synthetic_dataset\\images\\syn_0030.jpg",
+    "ocr_lines": [
+      {
+        "text": "MfgDate:09/2024",
+        "confidence": 0.914,
+        "bbox": {
+          "x_min": 72,
+          "y_min": 41,
+          "x_max": 237,
+          "y_max": 61
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "ConsumerCare:care@apexgoods.com,Tel:1800-425-7455",
+        "confidence": 0.933,
+        "bbox": {
+          "x_min": 78,
+          "y_min": 95,
+          "x_max": 618,
+          "y_max": 117
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "Mfgby:DailyNeedsConsumerCare,GiDCEstate,Phase2,Vatva,A",
+        "confidence": 0.908,
+        "bbox": {
+          "x_min": 78,
+          "y_min": 151,
+          "x_max": 698,
+          "y_max": 174
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "NetQty:200number",
+        "confidence": 0.887,
+        "bbox": {
+          "x_min": 77,
+          "y_min": 210,
+          "x_max": 264,
+          "y_max": 230
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "Countryof Origin:India",
+        "confidence": 0.922,
+        "bbox": {
+          "x_min": 63,
+          "y_min": 258,
+          "x_max": 268,
+          "y_max": 278
+        },
+        "field_label": "other"
+      },
+      {
+        "text": "MRP: 288.31",
+        "confidence": 0.812,
+        "bbox": {
+          "x_min": 68,
+          "y_min": 314,
+          "x_max": 186,
+          "y_max": 334
+        },
+        "field_label": "mrp"
+      }
+    ]
+  }
+]

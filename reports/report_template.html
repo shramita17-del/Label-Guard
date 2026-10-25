@@ -1,156 +1,518 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>LabelGuard AI Compliance Report</title>
+    <meta charset="UTF-8" />
+    <title>LabelGuard AI Compliance Report {{ report.scan_id }}</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
-        h1 { color: #222; }
-        .verdict { font-size: 20px; font-weight: bold; padding: 10px; border-radius: 5px; margin-bottom: 20px; display: inline-block; }
-        .PASS { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .FAIL { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .REVIEW { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .annotated-img { max-width: 100%; margin-top: 10px; border: 1px solid #ccc; max-height: 500px; object-fit: contain; }
-        .evidence { font-size: 12px; color: #555; font-style: italic; margin-top: 4px; }
+        /* ================================================================
+           PAGE SETUP — A4, 15 mm side margins, 20 mm bottom for footer
+           ================================================================ */
+        @page {
+            size: A4;
+            margin: 14mm 15mm 22mm 15mm;
+            @frame footer {
+                -pdf-frame-content: reportFooter;
+                bottom: 5mm;
+                margin-left: 15mm;
+                margin-right: 15mm;
+                height: 12mm;
+            }
+        }
+        * { margin: 0; padding: 0; }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #1a1a2e;
+            line-height: 1.4;
+        }
+
+        /* ================================================================
+           HEADER BAND
+           ================================================================ */
+        .header-band {
+            background: #1d3557;
+            color: white;
+            padding: 9px 14px 8px 14px;
+            margin-bottom: 10px;
+        }
+        .header-band h1 {
+            font-size: 17px;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+        }
+        .header-band .sub {
+            font-size: 9px;
+            color: #a8c8e8;
+            margin-top: 2px;
+        }
+
+        /* ================================================================
+           META INFO BLOCK — 2-column compact table
+           ================================================================ */
+        .meta-table {
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: 10px;
+        }
+        .meta-table td {
+            padding: 2px 12px 2px 0;
+            vertical-align: top;
+            width: 25%;
+        }
+        .meta-table .lbl {
+            font-weight: bold;
+            color: #666;
+            font-size: 8.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .meta-table .val {
+            color: #1a1a2e;
+            font-weight: normal;
+        }
+
+        /* ================================================================
+           VERDICT BANNER — full-width coloured box
+           ================================================================ */
+        .verdict-banner {
+            padding: 10px 16px;
+            margin-bottom: 8px;
+            page-break-inside: avoid;
+        }
+        .verdict-banner .verdict-title {
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 0.2px;
+        }
+        .verdict-banner .verdict-sub {
+            font-size: 10px;
+            margin-top: 3px;
+            font-weight: normal;
+        }
+        .verdict-PASS   { background: #d4edda; color: #155724; border: 2px solid #b1dfbb; }
+        .verdict-FAIL   { background: #f8d7da; color: #721c24; border: 2px solid #f1b0b7; }
+        .verdict-REVIEW { background: #fff3cd; color: #856404; border: 2px solid #ffd97d; }
+
+        /* ================================================================
+           SUMMARY COUNT CARDS — horizontal row of 3
+           ================================================================ */
+        .summary-row {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .summary-row td {
+            width: 33%;
+            padding: 5px 8px;
+            text-align: center;
+        }
+        .summary-card {
+            padding: 6px 8px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .card-pass   { background: #d4edda; color: #155724; border: 1px solid #b1dfbb; }
+        .card-fail   { background: #f8d7da; color: #721c24; border: 1px solid #f1b0b7; }
+        .card-review { background: #fff3cd; color: #856404; border: 1px solid #ffd97d; }
+        .card-num { font-size: 18px; display: block; }
+
+        /* ================================================================
+           AUTHENTICITY NOTICE — compact 3-line box
+           ================================================================ */
+        .auth-box {
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+            font-size: 10px;
+        }
+        .auth-box .auth-title {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .auth-row { margin-top: 3px; }
+        .auth-fail   { background: #f8d7da; border: 1.5px solid #dc3545; color: #721c24; }
+        .auth-review { background: #fffbeb; border: 1.5px solid #f59e0b; color: #92400e; }
+        .auth-pass   { background: #e8f5e9; border: 1px solid #c8e6c9;   color: #1b5e20; }
+
+        /* Authenticity details expandable section */
+        .auth-detail-box {
+            border: 1px solid #dde;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            font-size: 10px;
+            background: #f9f9ff;
+            page-break-inside: avoid;
+        }
+        .auth-detail-box .detail-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #1d3557;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #dde;
+            padding-bottom: 3px;
+        }
+        .detail-row { margin-top: 3px; }
+        .detail-list {
+            margin: 4px 0 0 12px;
+            font-size: 9.5px;
+            color: #555;
+        }
+
+        /* ================================================================
+           ANNOTATED IMAGE — small preview card
+           ================================================================ */
+        .image-preview-table {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        /* ================================================================
+           SECTION HEADING — keep with next, no page break after
+           ================================================================ */
+        h2.section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #1d3557;
+            margin: 10px 0 4px 0;
+            border-bottom: 2px solid #1d3557;
+            padding-bottom: 3px;
+        }
+
+        /* ================================================================
+           COMPLIANCE TABLE — fixed columns, repeating header, zebra
+           ================================================================ */
+        table.checks {
+            width: 100%;
+            font-size: 10px;
+            border-collapse: collapse;   /* xhtml2pdf supports this inline */
+        }
+        table.checks thead { display: table-header-group; }
+
+        /* Fixed column widths: 7+18+14+16+9+9+27 = 100 */
+        table.checks col.c-id     { width: 7%;  }
+        table.checks col.c-name   { width: 18%; }
+        table.checks col.c-rule   { width: 14%; }
+        table.checks col.c-verif  { width: 16%; }
+        table.checks col.c-sev    { width: 9%;  }
+        table.checks col.c-status { width: 9%;  }
+        table.checks col.c-reason { width: 27%; }
+
+        table.checks th {
+            background: #1d3557;
+            color: white;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 5px 6px;
+            text-align: left;
+            border: 1px solid #1d3557;
+        }
+        table.checks td {
+            border: 1px solid #ddd;
+            padding: 5px 6px;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+        table.checks tr { page-break-inside: avoid; }
+
+        /* Zebra + row tinting (status wins over zebra) */
+        table.checks tbody tr.row-even { background: #f7f8fc; }
+        table.checks tbody tr.row-odd  { background: #ffffff; }
+        table.checks tbody tr.row-FAIL   { background: #fff6f6 !important; }
+        table.checks tbody tr.row-REVIEW { background: #fffdf0 !important; }
+        table.checks tbody tr.row-PASS   { background: #f6fff8 !important; }
+
+        /* Status badges */
+        .sb {
+            display: inline-block;
+            padding: 2px 7px;
+            font-weight: bold;
+            font-size: 9px;
+        }
+        .sb-PASS   { background: #d4edda; color: #155724; }
+        .sb-FAIL   { background: #f8d7da; color: #721c24; }
+        .sb-REVIEW { background: #fff3cd; color: #856404; }
+
+        .ev-text {
+            font-size: 9px;
+            color: #555;
+            font-style: italic;
+            margin-top: 3px;
+            padding-left: 6px;
+            border-left: 2px solid #ccc;
+        }
+
+        /* Severity chip */
+        .sev-blocking { color: #721c24; font-weight: bold; }
+        .sev-major    { color: #856404; }
+        .sev-minor    { color: #155724; }
+
+        /* ================================================================
+           FOOTER
+           ================================================================ */
+        .doc-footer {
+            margin-top: 14px;
+            padding-top: 7px;
+            border-top: 1px solid #ccc;
+            font-size: 8.5px;
+            color: #888;
+            text-align: center;
+        }
+
+        /* ================================================================
+           INLINE BADGE (for meta labels)
+           ================================================================ */
+        .ibadge {
+            display: inline-block;
+            padding: 1px 6px;
+            font-weight: bold;
+            font-size: 9px;
+            color: white;
+        }
+        .ibadge-red   { background: #dc3545; }
+        .ibadge-amber { background: #f59e0b; }
+        .ibadge-green { background: #2e7d32; }
+
     </style>
 </head>
 <body>
-    <h1>LabelGuard AI - Compliance Report</h1>
-    <p><strong>Scan ID:</strong> {{ report.scan_id }}</p>
-    <p><strong>Category:</strong> {{ report.category.value }}</p>
-    <p><strong>Generated At:</strong> {{ report.generated_at }}</p>
-    <p>
-        <strong>Image Authenticity Status:</strong>
+
+<!-- ═══════════════════════════════════════════════════════
+     HEADER BAND
+══════════════════════════════════════════════════════════ -->
+<div class="header-band">
+    <h1>LabelGuard AI — Compliance Report</h1>
+    <div class="sub">Automated Packaging Compliance Verification Engine &nbsp;|&nbsp; SIH 26034 &nbsp;|&nbsp; Report ID: {{ report.scan_id }}</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     META INFO (2-row × 4-col compact table)
+══════════════════════════════════════════════════════════ -->
+<table class="meta-table">
+    <tr>
+        <td>
+            <div class="lbl">Scan Reference</div>
+            <div class="val">{{ report.scan_id }}</div>
+        </td>
+        <td>
+            <div class="lbl">Generated At</div>
+            <div class="val">{{ generated_at_display }}</div>
+        </td>
+        <td>
+            <div class="lbl">Packaging Category</div>
+            <div class="val">{{ report.category.value | replace("_", " ") | title }}</div>
+        </td>
+        <td>
+            <div class="lbl">Regulatory Framework</div>
+            <div class="val">LM (PC) Rules 2011, Rule 6</div>
+        </td>
+    </tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════
+     VERDICT BANNER
+══════════════════════════════════════════════════════════ -->
+{% set fail_count   = report.check_results | selectattr("status.value", "equalto", "FAIL")   | list | length %}
+{% set review_count = report.check_results | selectattr("status.value", "equalto", "REVIEW") | list | length %}
+{% set pass_count   = report.check_results | selectattr("status.value", "equalto", "PASS")   | list | length %}
+{% set blocking_fail = report.check_results | selectattr("status.value", "equalto", "FAIL") | selectattr("severity.value", "equalto", "blocking") | list | length %}
+
+<div class="verdict-banner verdict-{{ report.overall_verdict.value }}">
+    <div class="verdict-title">Overall Verdict: {{ report.overall_verdict.value }}
         {% if report.authenticity and report.authenticity.is_ai_generated %}
-            <span style="color: #dc3545; font-weight: bold; font-size: 15px;">⚠️ AI-GENERATED (SYNTHETIC MEDIA) — FAILED</span>
-        {% elif report.authenticity and ((report.authenticity.ai_confidence_percentage >= 40 and report.authenticity.ai_confidence_percentage <= 60) or report.authenticity.status.value == 'REVIEW' or 'MAYBE AI' in report.authenticity.classification_label) %}
-            <span style="color: #d97706; font-weight: bold; font-size: 15px;">⚠️ MAYBE AI GENERATED (40%-60% CONFIDENCE) — REVIEW</span>
-        {% elif report.authenticity %}
-            <span style="color: #2e7d32; font-weight: bold; font-size: 15px;">✓ AUTHENTIC (NOT AI GENERATED) — VERIFIED PHYSICAL CAPTURE</span>
-        {% else %}
-            <span>STANDARD CAPTURE</span>
-        {% endif %}
-    </p>
-
-    <div class="verdict {{ report.overall_verdict.value }}">
-        Overall Verdict: {{ report.overall_verdict.value }}
-        {% if report.authenticity and report.authenticity.is_ai_generated %}
-            (NON-COMPLIANT: SYNTHETIC AI MEDIA PROHIBITED)
-        {% elif report.authenticity and ((report.authenticity.ai_confidence_percentage >= 40 and report.authenticity.ai_confidence_percentage <= 60) or report.authenticity.status.value == 'REVIEW' or 'MAYBE AI' in report.authenticity.classification_label) %}
-            (MANUAL REVIEW: BORDERLINE SYNTHETIC PROBABILITY)
+            &nbsp;— NON-COMPLIANT: SYNTHETIC AI MEDIA
+        {% elif report.authenticity and ((report.authenticity.ai_confidence_percentage >= 40 and report.authenticity.ai_confidence_percentage <= 60) or report.authenticity.status.value == 'REVIEW') %}
+            &nbsp;— MANUAL REVIEW REQUIRED
         {% endif %}
     </div>
-
-    {% if report.authenticity and report.authenticity.is_ai_generated %}
-    <div style="background-color: #f8d7da; border: 2px solid #dc3545; border-radius: 8px; padding: 16px; margin: 20px 0;">
-        <div style="margin-bottom: 8px;">
-            <span style="font-size: 16px; font-weight: bold; color: #721c24; text-transform: uppercase;">
-                ⚠️ NON-COMPLIANCE NOTICE: AI-GENERATED IMAGE DETECTED
-            </span>
-        </div>
-        <p style="margin: 4px 0; font-size: 14px; color: #721c24;">
-            <strong>Image Origin Classification:</strong>
-            <span style="background: #dc3545; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold;">
-                {{ report.authenticity.classification_label }}
-            </span>
-            &bull; <strong>AI Synthetic Probability:</strong> {{ report.authenticity.ai_confidence_percentage }}%
-        </p>
-        <p style="margin: 6px 0 0 0; font-size: 13px; color: #501319;">
-            <strong>Forensic Determination:</strong> {{ report.authenticity.verdict_summary }}
-            {% if report.authenticity.deep_learning_score is not none %}
-            <br/><strong>Deep Learning Arbiter Score:</strong> {{ (report.authenticity.deep_learning_score * 100)|round(1) }}% Fake ({{ report.authenticity.deep_learning_model or 'ViT' }})
-            {% endif %}
-            {% if report.authenticity.mockup_disclaimers %}
-            <br/><strong>Synthetic Mockup Disclaimers:</strong> {{ report.authenticity.mockup_disclaimers|join(', ') }}
-            {% endif %}
-            {% if report.authenticity.barcode_status %}
-            <br/><strong>Barcode Analysis:</strong> {{ report.authenticity.barcode_status }} {% if report.authenticity.barcode_value %}({{ report.authenticity.barcode_value }}){% endif %}
-            {% endif %}
-        </p>
-        <p style="margin: 8px 0 0 0; font-size: 12px; color: #6a1a22; font-style: italic;">
-            Statutory Rule: Automated Legal Metrology & FSSAI compliance verification requires genuine photographic scans of physical packaging. Synthetic/AI generations are fraudulent and automatically FAILED.
-        </p>
+    <div class="verdict-sub">
+        {{ fail_count }} failure(s) &nbsp;|&nbsp; {{ blocking_fail }} blocking &nbsp;|&nbsp; {{ review_count }} review &nbsp;|&nbsp; {{ pass_count }} passed &nbsp;|&nbsp; {{ report.check_results | length }} total checks
     </div>
-    {% elif report.authenticity and ((report.authenticity.ai_confidence_percentage >= 40 and report.authenticity.ai_confidence_percentage <= 60) or report.authenticity.status.value == 'REVIEW' or 'MAYBE AI' in report.authenticity.classification_label) %}
-    <div style="background-color: #fffbeb; border: 2px solid #f59e0b; border-radius: 8px; padding: 14px 16px; margin: 20px 0;">
-        <div style="margin-bottom: 8px;">
-            <span style="font-size: 16px; font-weight: bold; color: #92400e; text-transform: uppercase;">
-                ⚠️ PACKAGING AUDIT NOTICE: MAYBE AI GENERATED
-            </span>
-        </div>
-        <p style="margin: 4px 0; font-size: 14px; color: #92400e;">
-            <strong>Image Origin Classification:</strong>
-            <span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold;">
-                {{ report.authenticity.classification_label }}
-            </span>
-            &bull; <strong>AI Synthetic Likelihood:</strong> {{ report.authenticity.ai_confidence_percentage }}%
-        </p>
-        <p style="margin: 6px 0 0 0; font-size: 13px; color: #78350f;">
-            <strong>Forensic Determination:</strong> {{ report.authenticity.verdict_summary }}
-            {% if report.authenticity.deep_learning_score is not none %}
-            <br/><strong>Deep Learning Arbiter Score:</strong> {{ (report.authenticity.deep_learning_score * 100)|round(1) }}% ({{ report.authenticity.deep_learning_model or 'ViT' }})
-            {% endif %}
-            {% if report.authenticity.mockup_disclaimers %}
-            <br/><strong>Synthetic Mockup Disclaimers:</strong> {{ report.authenticity.mockup_disclaimers|join(', ') }}
-            {% endif %}
-            {% if report.authenticity.barcode_status %}
-            <br/><strong>Barcode Analysis:</strong> {{ report.authenticity.barcode_status }} {% if report.authenticity.barcode_value %}({{ report.authenticity.barcode_value }}){% endif %}
-            {% endif %}
-        </p>
-        <p style="margin: 8px 0 0 0; font-size: 12px; color: #b45309; font-style: italic;">
-            Notice: Image exhibits borderline synthetic/AI characteristics (40%-60% confidence rating). Auditor manual verification is recommended before certification.
-        </p>
-    </div>
-    {% elif report.authenticity %}
-    <div style="background-color: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 8px; padding: 14px 16px; margin: 20px 0;">
-        <p style="margin: 0; font-size: 14px; color: #1b5e20;">
-            <strong>Image Authenticity Verification:</strong>
-            <span style="background: #2e7d32; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px;">
-                {{ report.authenticity.classification_label }}
-            </span>
-            &bull; <strong>Real Capture Confidence:</strong> {{ (report.authenticity.authenticity_score * 100)|round|int }}%
-        </p>
-        <p style="margin: 6px 0 0 0; font-size: 13px; color: #2e7d32;">
-            <strong>Forensic Assessment:</strong> {{ report.authenticity.verdict_summary }}
-            {% if report.authenticity.deep_learning_score is not none %}
-            <br/><strong>Deep Learning Arbiter:</strong> {{ (report.authenticity.deep_learning_score * 100)|round(1) }}% Fake Score ({{ report.authenticity.deep_learning_model or 'ViT' }})
-            {% endif %}
-        </p>
-    </div>
-    {% endif %}
+</div>
 
-    {% if report.annotated_image_base64 %}
-    <h2>Annotated Scan</h2>
-    <img class="annotated-img" src="{{ report.annotated_image_base64 }}" alt="Annotated image showing compliance checks" />
-    {% endif %}
+<!-- ═══════════════════════════════════════════════════════
+     SUMMARY COUNT CARDS
+══════════════════════════════════════════════════════════ -->
+<table class="summary-row">
+    <tr>
+        <td>
+            <div class="summary-card card-pass">
+                <span class="card-num">{{ pass_count }}</span>Passed
+            </div>
+        </td>
+        <td>
+            <div class="summary-card card-review">
+                <span class="card-num">{{ review_count }}</span>Review
+            </div>
+        </td>
+        <td>
+            <div class="summary-card card-fail">
+                <span class="card-num">{{ fail_count }}</span>Failed
+            </div>
+        </td>
+    </tr>
+</table>
 
-    <h2>Check Results</h2>
-    <table>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     ANNOTATED SCAN IMAGE
+══════════════════════════════════════════════════════════ -->
+{% set current_image_src = image_src or report.annotated_image_base64 %}
+{% if current_image_src %}
+{% set current_caption = image_caption if image_caption else ("Annotated Package Scan (OpenCV Bounding-Box Detection)" if (report.check_results | selectattr("evidence_bbox") | list | length > 0) else "Scanned Package Image") %}
+{% set d_width = display_width if display_width else "85mm" %}
+{% set d_height = display_height if display_height else "60mm" %}
+<table width="100%" class="image-preview-table"><tr><td align="center" style="border:1px solid #cbd5e1; padding:6px;">
+  <img src="{{ current_image_src }}" width="{{ d_width }}" height="{{ d_height }}" />
+  <div style="font-size:8pt; color:#64748b; margin-top:4px;">{{ current_caption }}</div>
+</td></tr></table>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════════════════
+     COMPLIANCE CHECK RESULTS TABLE
+     Heading is page-break-after:avoid so the table always
+     starts directly under its heading, never orphaned.
+══════════════════════════════════════════════════════════ -->
+<h2 class="section-title">Compliance Check Results</h2>
+<table class="checks">
+    <colgroup>
+        <col class="c-id"     />
+        <col class="c-name"   />
+        <col class="c-rule"   />
+        <col class="c-verif"  />
+        <col class="c-sev"    />
+        <col class="c-status" />
+        <col class="c-reason" />
+    </colgroup>
+    <thead>
         <tr>
             <th>ID</th>
-            <th>Name</th>
+            <th>Check</th>
             <th>Rule Ref</th>
+            <th>Verification: L1 / L2 / Final</th>
             <th>Severity</th>
             <th>Status</th>
             <th>Reason / Evidence</th>
         </tr>
+    </thead>
+    <tbody>
         {% for check in report.check_results %}
-        <tr class="{{ check.status.value }}">
+        {% set loop_parity = "row-even" if loop.index % 2 == 0 else "row-odd" %}
+        <tr class="{{ loop_parity }} row-{{ check.status.value }}">
             <td>{{ check.check_id }}</td>
             <td>{{ check.check_name }}</td>
-            <td>{{ check.rule_ref }}</td>
-            <td>{{ check.severity.value }}</td>
-            <td><strong>{{ check.status.value }}</strong></td>
+            <td style="font-size:9px;">{{ check.rule_ref }}</td>
+            <td style="font-size:8.5px;line-height:1.25;">
+                <div><strong>L1:</strong> {{ check.l1_status or check.status.value }}</div>
+                <div><strong>L2:</strong> {% if check.l2_score is not none %}{{ (check.l2_score * 100)|round|int }}%{% else %}N/A{% endif %}</div>
+                <div><strong>Final:</strong> <span class="sb sb-{{ check.status.value }}">{{ check.status.value }}</span></div>
+                {% if check.recovered_by_ml %}
+                <div style="color:#2e7d32;font-size:7.5px;font-weight:bold;">[ML Recovered]</div>
+                {% endif %}
+            </td>
             <td>
-                {{ check.reason or "No reason provided" }}
-                {% if check.evidence_text %}
-                <div class="evidence">Evidence: "{{ check.evidence_text }}"</div>
+                {% if check.severity.value == "blocking" %}
+                    <span class="sev-blocking">BLOCKING</span>
+                {% elif check.severity.value == "major" %}
+                    <span class="sev-major">MAJOR</span>
+                {% else %}
+                    <span class="sev-minor">minor</span>
+                {% endif %}
+            </td>
+            <td>
+                <span class="sb sb-{{ check.status.value }}">{{ check.status.value }}</span>
+            </td>
+            <td>
+                {# For AUTH_01: show short reason only; full details are in the section below #}
+                {% if check.check_id == "AUTH_01" or check.check_id == "auth_01" or check.check_name == "Image Authenticity" %}
+                    {{ check.reason or "See Authenticity Details section below." }}
+                {% else %}
+                    {{ check.reason or "No reason provided." }}
+                    {% if check.decision_path %}
+                    <div style="font-size:8px;color:#0d47a1;margin-top:2px;"><em>Path: {{ check.decision_path }}</em></div>
+                    {% endif %}
+                    {% if check.evidence_text %}
+                    <div class="ev-text">{{ check.evidence_text[:120] }}{% if check.evidence_text|length > 120 %}...{% endif %}</div>
+                    {% endif %}
                 {% endif %}
             </td>
         </tr>
         {% endfor %}
+    </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════
+     AUTHENTICITY DETAILS (moved out of table)
+══════════════════════════════════════════════════════════ -->
+{% if report.authenticity %}
+<h2 class="section-title">Authenticity Details</h2>
+<div class="auth-detail-box">
+    <div class="detail-title">Image Forensic Analysis — AUTH_01</div>
+
+    <div class="detail-row"><strong>Verdict:</strong> {{ report.authenticity.verdict_summary }}</div>
+    <div class="detail-row"><strong>Classification:</strong> {{ report.authenticity.classification_label }} &nbsp;|&nbsp; <strong>AI Confidence:</strong> {{ report.authenticity.ai_confidence_percentage }}% &nbsp;|&nbsp; <strong>Authenticity Score:</strong> {{ "%.3f"|format(report.authenticity.authenticity_score) }}</div>
+
+    {% if report.authenticity.spectral_artifact_score %}
+    <div class="detail-row"><strong>Spectral Artifact Score:</strong> {{ "%.3f"|format(report.authenticity.spectral_artifact_score) }} &nbsp;|&nbsp; <strong>Noise Residual Score:</strong> {{ "%.3f"|format(report.authenticity.noise_residual_score) }}</div>
+    {% endif %}
+
+    {% if report.authenticity.deep_learning_score is not none %}
+    <div class="detail-row"><strong>Deep Learning Arbiter:</strong> {{ (report.authenticity.deep_learning_score * 100)|round(1) }}% Fake Probability &nbsp;({{ report.authenticity.deep_learning_model or 'ViT' }})</div>
+    {% endif %}
+
+    {% if report.authenticity.barcode_status %}
+    <div class="detail-row"><strong>Barcode Analysis:</strong> {{ report.authenticity.barcode_status }}{% if report.authenticity.barcode_value %} — Value: {{ report.authenticity.barcode_value }}{% endif %}</div>
+    {% endif %}
+
+    {% if report.authenticity.camera_hardware %}
+    <div class="detail-row"><strong>Camera / Device Signature:</strong> {{ report.authenticity.camera_hardware }}</div>
+    {% endif %}
+
+    {% if report.authenticity.ai_signatures %}
+    <div class="detail-row"><strong>AI Signatures Detected:</strong></div>
+    <ul class="detail-list">
+        {% for sig in report.authenticity.ai_signatures %}
+        <li>{{ sig }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if report.authenticity.mockup_disclaimers %}
+    <div class="detail-row"><strong>Synthetic Mockup Disclaimers:</strong></div>
+    <ul class="detail-list">
+        {% for d in report.authenticity.mockup_disclaimers %}
+        <li>{{ d }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="detail-row" style="font-size:9px;font-style:italic;margin-top:6px;">
+        Statutory Rule: Automated Legal Metrology and FSSAI compliance verification requires genuine photographic scans of physical packaging.
+        Synthetic/AI-generated images are fraudulent submissions and are automatically FAILED per notification guidelines.
+    </div>
+</div>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════════════════
+     DOCUMENT FOOTER
+══════════════════════════════════════════════════════════ -->
+<div id="reportFooter">
+    <table style="width: 100%; border-top: 1px solid #ccc; padding-top: 3px; font-size: 8px; color: #777;">
+        <tr>
+            <td style="text-align: left; width: 75%; vertical-align: middle;">
+                LabelGuard AI (SIH 26034) &nbsp;|&nbsp; Report: {{ report.scan_id }} &nbsp;|&nbsp;
+                Legal Metrology Act, 2009 &amp; LM (PC) Rules, 2011 — Rule 6 &amp; Rule 23 &nbsp;|&nbsp;
+                System-generated
+            </td>
+            <td style="text-align: right; width: 25%; vertical-align: middle; white-space: nowrap;">
+                Page <pdf:pagenumber> of <pdf:pagecount>
+            </td>
+        </tr>
     </table>
+</div>
+
 </body>
 </html>
